@@ -33,11 +33,6 @@ class LeaveRequestService
                 'status' => 'pending',
             ]);
 
-            // If it's an annual leave, reduce the user's quota
-            if ($data['leave_type'] === 'annual') {
-                $user->decrement('leave_quota', $data['total_days']);
-            }
-
             return $leaveRequest;
         });
     }
@@ -80,6 +75,11 @@ class LeaveRequestService
                 'approved_by' => $approver->id,
             ]);
 
+            // PENTING: Kurangi leave_quota di tabel User SESUAI jumlah hari cuti (hanya jika jenis cuti = annual)
+            if ($leaveRequest->leave_type === 'annual') {
+                $leaveRequest->user->decrement('leave_quota', $leaveRequest->total_days);
+            }
+
             return $leaveRequest;
         });
     }
@@ -110,8 +110,8 @@ class LeaveRequestService
                 'approved_by' => $approver->id,
             ]);
 
-            // If it was a pending annual leave request, restore the quota
-            if ($leaveRequest->leave_type === 'annual' && $leaveRequest->status !== 'approved_by_leader') {
+            // If it was an annual leave request that was approved by HRD, restore the quota
+            if ($leaveRequest->leave_type === 'annual' && $leaveRequest->status === 'approved') {
                 $leaveRequest->user->increment('leave_quota', $leaveRequest->total_days);
             }
 
@@ -141,11 +141,6 @@ class LeaveRequestService
                 'rejection_note' => 'Canceled by user',
             ]);
 
-            // Restore annual leave quota if applicable
-            if ($leaveRequest->leave_type === 'annual') {
-                $leaveRequest->user->increment('leave_quota', $leaveRequest->total_days);
-            }
-
             return $leaveRequest;
         });
     }
@@ -167,11 +162,6 @@ class LeaveRequestService
             }
 
             $result = $leaveRequest->delete();
-
-            // Restore annual leave quota if applicable
-            if ($leaveRequest->leave_type === 'annual') {
-                $leaveRequest->user->increment('leave_quota', $leaveRequest->total_days);
-            }
 
             return $result;
         });

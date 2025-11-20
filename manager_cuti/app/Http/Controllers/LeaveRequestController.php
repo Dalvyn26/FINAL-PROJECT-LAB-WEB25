@@ -20,22 +20,82 @@ class LeaveRequestController extends Controller
     }
 
     /**
-     * Display a listing of the leave requests.
+     * Display a listing of the leave requests based on user role.
      */
     public function index()
     {
         $user = Auth::user();
-        
-        $leaveRequests = match ($user->role) {
-            'admin', 'hrd' => LeaveRequest::with(['user', 'user.division', 'approver'])->paginate(10),
-            'division_leader' => LeaveRequest::whereHas('user', function ($query) use ($user) {
-                $query->where('division_id', $user->divisionLeader->id ?? 0);
-            })->with(['user', 'approver'])->paginate(10),
-            'user' => $user->leaveRequests()->with('approver')->paginate(10),
-            default => collect()
-        };
 
-        return view('leave-requests.index', compact('leaveRequests'));
+        // Redirect to appropriate index based on role
+        return match ($user->role) {
+            'division_leader' => $this->indexUser(), // Division leader also sees their own leave history
+            'hrd' => $this->indexHrd(),
+            'admin' => $this->indexAdmin(),
+            'user' => $this->indexUser(),
+            default => $this->indexUser()
+        };
+    }
+
+    /**
+     * Display a listing of the leave requests for user (karyawan).
+     */
+    public function indexUser()
+    {
+        $user = Auth::user();
+        $leaveRequests = $user->leaveRequests()->with('approver')->latest()->paginate(10);
+
+        // Calculate statistics
+        $currentYear = now()->year;
+        $totalLeavesThisYear = $user->leaveRequests()
+            ->whereYear('created_at', $currentYear)
+            ->count();
+
+        $sickLeavesThisYear = $user->leaveRequests()
+            ->where('leave_type', 'sick')
+            ->whereYear('created_at', $currentYear)
+            ->count();
+
+        return view('leave-requests.index', compact('leaveRequests', 'totalLeavesThisYear', 'sickLeavesThisYear'));
+    }
+
+    /**
+     * Display a listing of the leave requests for admin.
+     */
+    public function indexAdmin()
+    {
+        $leaveRequests = LeaveRequest::with(['user', 'user.division', 'approver'])->paginate(10);
+
+        return view('leave-requests.index-admin', compact('leaveRequests'));
+    }
+
+    /**
+     * Display a listing of the leave requests for leader.
+     */
+    public function indexLeader()
+    {
+        $user = Auth::user();
+
+        // Leader can see pending leave requests from users in their division
+        $leaveRequests = LeaveRequest::whereHas('user', function ($query) use ($user) {
+            $query->where('division_id', $user->divisionLeader->id);
+        })
+        ->where('status', 'pending')
+        ->with(['user', 'approver'])->paginate(10);
+
+        return view('leave-requests.index-leader', compact('leaveRequests'));
+    }
+
+    /**
+     * Display a listing of the leave requests for HRD.
+     */
+    public function indexHrd()
+    {
+        // HRD can see only approved_by_leader or requests from division leaders
+        $leaveRequests = LeaveRequest::where('status', 'approved_by_leader')
+            ->with(['user', 'user.division', 'approver'])
+            ->paginate(10);
+
+        return view('leave-requests.index-hrd', compact('leaveRequests'));
     }
 
     /**
@@ -53,16 +113,25 @@ class LeaveRequestController extends Controller
     {
         $request->validate([
             'leave_type' => ['required', Rule::in(['annual', 'sick'])],
-            'start_date' => 'required|date|after_or_equal:today',
+            'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'required|string|max:500',
             'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // For sick leave
         ]);
 
-        // Calculate total days
+        // Calculate total working days (excluding weekends)
         $startDate = \Carbon\Carbon::parse($request->start_date);
         $endDate = \Carbon\Carbon::parse($request->end_date);
-        $totalDays = $endDate->diffInDays($startDate) + 1;
+
+        // Count working days (excluding Saturday and Sunday)
+        $totalDays = 0;
+        $currentDate = clone $startDate;
+        while ($currentDate <= $endDate) {
+            if ($currentDate->isWeekday()) {
+                $totalDays++;
+            }
+            $currentDate->addDay();
+        }
 
         // Handle file upload if present
         $attachmentPath = null;
@@ -77,15 +146,36 @@ class LeaveRequestController extends Controller
                 ->withInput();
         }
 
+        // Additional validation for annual leave
+        if ($request->leave_type === 'annual') {
+            // Check if start_date is at least 3 days from today
+            $minStartDate = \Carbon\Carbon::now()->addDays(3)->startOfDay();
+            if ($startDate->lt($minStartDate)) {
+                return redirect()->back()
+                    ->withErrors(['start_date' => 'Annual leave must be requested at least 3 days in advance'])
+                    ->withInput();
+            }
+
+            // Check if user has sufficient leave quota
+            $user = Auth::user();
+            if (!$user->hasSufficientAnnualLeaveQuota($totalDays)) {
+                return redirect()->back()
+                    ->withErrors(['start_date' => "Insufficient leave quota. You have {$user->leave_quota} days remaining, but requested {$totalDays} days."])
+                    ->withInput();
+            }
+        }
+
         try {
-            $leaveRequest = $this->leaveRequestService->createLeaveRequest([
-                'leave_type' => $request->leave_type,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'total_days' => $totalDays,
-                'reason' => $request->reason,
-                'attachment_path' => $attachmentPath,
-            ], Auth::user());
+            $leaveRequest = DB::transaction(function () use ($request, $totalDays, $attachmentPath) {
+                return $this->leaveRequestService->createLeaveRequest([
+                    'leave_type' => $request->leave_type,
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                    'total_days' => $totalDays,
+                    'reason' => $request->reason,
+                    'attachment_path' => $attachmentPath,
+                ], Auth::user());
+            });
 
             return redirect()->route('leave-requests.index')
                 ->with('success', 'Leave request submitted successfully');
@@ -143,16 +233,25 @@ class LeaveRequestController extends Controller
         }
 
         $request->validate([
-            'start_date' => 'required|date|after_or_equal:today',
+            'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'required|string|max:500',
             'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
-        // Calculate total days
+        // Calculate total working days (excluding weekends)
         $startDate = \Carbon\Carbon::parse($request->start_date);
         $endDate = \Carbon\Carbon::parse($request->end_date);
-        $totalDays = $endDate->diffInDays($startDate) + 1;
+
+        // Count working days (excluding Saturday and Sunday)
+        $totalDays = 0;
+        $currentDate = clone $startDate;
+        while ($currentDate <= $endDate) {
+            if ($currentDate->isWeekday()) {
+                $totalDays++;
+            }
+            $currentDate->addDay();
+        }
 
         // Handle file upload if present
         $attachmentPath = $leaveRequest->attachment_path; // Keep existing if no new file
@@ -161,8 +260,40 @@ class LeaveRequestController extends Controller
             if ($leaveRequest->attachment_path) {
                 Storage::disk('public')->delete($leaveRequest->attachment_path);
             }
-            
+
             $attachmentPath = $request->file('attachment')->store('leave-attachments', 'public');
+        }
+
+        // Additional validation for sick leave
+        if ($leaveRequest->leave_type === 'sick' && !$attachmentPath) {
+            return redirect()->back()
+                ->withErrors(['attachment' => 'Medical certificate is required for sick leave'])
+                ->withInput();
+        }
+
+        // Additional validation for annual leave
+        if ($leaveRequest->leave_type === 'annual') {
+            // Check if start_date is at least 3 days from today
+            $minStartDate = \Carbon\Carbon::now()->addDays(3)->startOfDay();
+            if ($startDate->lt($minStartDate)) {
+                return redirect()->back()
+                    ->withErrors(['start_date' => 'Annual leave must be requested at least 3 days in advance'])
+                    ->withInput();
+            }
+
+            // For updates, we need to consider that quota was already reduced
+            // Calculate the difference between old and new total days
+            $quotaDiff = $totalDays - $leaveRequest->total_days;
+
+            if ($quotaDiff > 0) {
+                // Only check if the additional days exceed the available quota
+                $availableQuota = $leaveRequest->user->leave_quota + $leaveRequest->total_days; // Add back the original days
+                if ($quotaDiff > $availableQuota) {
+                    return redirect()->back()
+                        ->withErrors(['start_date' => "Insufficient leave quota. You need {$quotaDiff} more days but only have {$availableQuota} days available."])
+                        ->withInput();
+                }
+            }
         }
 
         // Update the leave request
@@ -218,8 +349,8 @@ class LeaveRequestController extends Controller
         try {
             $this->leaveRequestService->approveByLeader($leaveRequest, Auth::user());
 
-            return redirect()->route('leave-requests.index')
-                ->with('success', 'Leave request approved successfully');
+            return redirect()->back()
+                ->with('success', 'Leave request approved by leader successfully');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withErrors(['error' => $e->getMessage()]);
@@ -234,7 +365,7 @@ class LeaveRequestController extends Controller
         try {
             $this->leaveRequestService->finalApprove($leaveRequest, Auth::user());
 
-            return redirect()->route('leave-requests.index')
+            return redirect()->back()
                 ->with('success', 'Leave request approved successfully');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -254,7 +385,7 @@ class LeaveRequestController extends Controller
         try {
             $this->leaveRequestService->reject($leaveRequest, Auth::user(), $request->rejection_note);
 
-            return redirect()->route('leave-requests.index')
+            return redirect()->back()
                 ->with('success', 'Leave request rejected successfully');
         } catch (\Exception $e) {
             return redirect()->back()
