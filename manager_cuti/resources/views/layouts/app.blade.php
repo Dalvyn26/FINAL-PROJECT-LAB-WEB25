@@ -11,6 +11,9 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- SweetAlert2 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.0/dist/sweetalert2.min.css" rel="stylesheet">
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -77,6 +80,77 @@
                         });
                     }
                 }));
+            });
+        </script>
+
+        <!-- SweetAlert2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.0/dist/sweetalert2.all.min.js"></script>
+
+        <!-- SweetAlert2 Configuration Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Auto-detect flash messages (success/error)
+                @if(session('success'))
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: '{{ session('success') }}',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        background: '#ffffff',
+                        color: '#1f2937',
+                        iconColor: '#22c55e'
+                    });
+                @endif
+
+                @if(session('error'))
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: '{{ session('error') }}',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#e11d48',
+                        customClass: {
+                            popup: 'rounded-lg shadow-lg',
+                            title: 'font-semibold',
+                            confirmButton: 'bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg'
+                        }
+                    });
+                @endif
+
+                // Global delete/action confirmation
+                document.addEventListener('submit', function(e) {
+                    const form = e.target;
+                    const confirmDelete = form.getAttribute('data-confirm-delete');
+
+                    if (confirmDelete) {
+                        e.preventDefault(); // Prevent form submission
+
+                        Swal.fire({
+                            title: 'Apakah Anda yakin?',
+                            text: "Data yang dihapus tidak bisa dikembalikan!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#4f46e5',
+                            cancelButtonColor: '#e11d48',
+                            confirmButtonText: 'Ya, Hapus!',
+                            cancelButtonText: 'Batal',
+                            reverseButtons: true,
+                            customClass: {
+                                popup: 'rounded-lg shadow-lg',
+                                confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg',
+                                cancelButton: 'bg-rose-600 hover:bg-rose-700 text-white font-medium py-2 px-4 rounded-lg'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Submit the form programmatically
+                                form.submit();
+                            }
+                        });
+                    }
+                });
             });
         </script>
 
