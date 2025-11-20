@@ -18,7 +18,7 @@
                         </svg>
                     </div>
                     <div class="relative">
-                        <p class="text-sm font-semibold text-slate-600">Total Cuti Tahun Ini</p>
+                        <p class="text-sm font-semibold text-slate-600">Total Pengajuan Cuti Tahun Ini</p>
                         <p class="text-3xl font-bold text-slate-800 mt-1">{{ $totalLeavesThisYear }}</p>
                     </div>
                 </div>
