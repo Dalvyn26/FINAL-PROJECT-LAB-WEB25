@@ -57,6 +57,26 @@
                                 <div class="mb-4">
                                     <p class="text-sm text-slate-600"><strong>Reason:</strong></p>
                                     <p class="text-sm text-slate-700">{{ Str::limit($request->reason, 100) }}</p>
+
+                                    <!-- Medical Certificate Link for Sick Leave -->
+                                    @if($request->leave_type === 'sick')
+                                        @if($request->attachment_path)
+                                            <div class="mt-2">
+                                                <a href="{{ Storage::url($request->attachment_path) }}"
+                                                   target="_blank"
+                                                   class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center gap-1">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                                    </svg>
+                                                    View Medical Certificate
+                                                </a>
+                                            </div>
+                                        @else
+                                            <div class="mt-2">
+                                                <span class="text-rose-600 text-xs font-medium">No attachment found</span>
+                                            </div>
+                                        @endif
+                                    @endif
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-3">

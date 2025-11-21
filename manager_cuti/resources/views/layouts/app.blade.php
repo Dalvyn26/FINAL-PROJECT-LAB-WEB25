@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ mobileMenuOpen: false }" x-cloak>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ sidebarOpen: false }" x-cloak>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,11 +18,11 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-gray-50">
-        <div class="min-h-screen">
-            <!-- Mobile Menu Button -->
-            <div class="fixed top-4 left-4 z-40 md:hidden">
+        <div class="min-h-screen flex">
+            <!-- Mobile Hamburger Menu Button -->
+            <div class="fixed top-4 left-4 z-40 lg:hidden">
                 <button
-                    @click="mobileMenuOpen = !mobileMenuOpen"
+                    @click="sidebarOpen = true"
                     class="p-2 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                     aria-label="Toggle menu">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,21 +34,21 @@
             <!-- Sidebar -->
             @include('layouts.sidebar')
 
-            <!-- Mobile Sidebar Backdrop -->
+            <!-- Sidebar Backdrop (Mobile) -->
             <div
-                x-show="mobileMenuOpen"
-                @click="mobileMenuOpen = false"
-                class="fixed inset-0 z-20 bg-black bg-opacity-50 transition-opacity md:hidden"
-                x-transition:enter="ease-linear duration-300"
+                x-show="sidebarOpen"
+                @click="sidebarOpen = false"
+                class="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden transition-opacity"
+                x-transition:enter="ease-in duration-300"
                 x-transition:enter-start="opacity-0"
                 x-transition:enter-end="opacity-100"
-                x-transition:leave="ease-linear duration-300"
+                x-transition:leave="ease-out duration-300"
                 x-transition:leave-start="opacity-100"
                 x-transition:leave-end="opacity-0">
             </div>
 
             <!-- Main Content -->
-            <div class="md:ml-64">
+            <div class="lg:ml-64 flex-1 min-h-screen transition-all duration-300">
                 <!-- Page Header -->
                 @isset($header)
                     <header class="bg-white border-b border-slate-200 shadow-sm">
@@ -59,7 +59,7 @@
                 @endisset
 
                 <!-- Page Content -->
-                <main class="py-8">
+                <main class="py-8 px-4">
                     {{ $slot }}
                 </main>
             </div>
@@ -68,14 +68,14 @@
         <!-- Alpine.js script -->
         <script>
             document.addEventListener('alpine:init', () => {
-                Alpine.data('mobileMenu', () => ({
-                    open: false,
+                Alpine.data('mainLayout', () => ({
+                    sidebarOpen: false,
 
                     init() {
                         // Close sidebar when window is resized to desktop size
                         window.addEventListener('resize', () => {
-                            if (window.innerWidth >= 768) {
-                                this.open = false;
+                            if (window.innerWidth >= 1024) {  // lg breakpoint
+                                this.sidebarOpen = false;
                             }
                         });
                     }

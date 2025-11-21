@@ -117,7 +117,11 @@ class LeaveRequestController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'required|string|max:500',
-            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // For sick leave
+            'address_during_leave' => 'required|string|max:500',
+            'emergency_contact' => 'required|string|max:20',
+            'attachment' => $request->leave_type === 'sick'
+                ? 'required|file|mimes:pdf,jpg,jpeg,png|max:2048' // Required for sick leave
+                : 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // Optional for annual leave
         ]);
 
         // Calculate total working days (excluding weekends)
@@ -159,7 +163,7 @@ class LeaveRequestController extends Controller
 
             // Check if user has sufficient leave quota
             $user = Auth::user();
-            if (!$user->hasSufficientAnnualLeaveQuota($totalDays)) {
+            if ($totalDays > $user->leave_quota) {
                 return redirect()->back()
                     ->withErrors(['start_date' => "Insufficient leave quota. You have {$user->leave_quota} days remaining, but requested {$totalDays} days."])
                     ->withInput();
@@ -174,6 +178,8 @@ class LeaveRequestController extends Controller
                     'end_date' => $request->end_date,
                     'total_days' => $totalDays,
                     'reason' => $request->reason,
+                    'address_during_leave' => $request->address_during_leave,
+                    'emergency_contact' => $request->emergency_contact,
                     'attachment_path' => $attachmentPath,
                 ], Auth::user());
             });
@@ -237,7 +243,11 @@ class LeaveRequestController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'required|string|max:500',
-            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'address_during_leave' => 'required|string|max:500',
+            'emergency_contact' => 'required|string|max:20',
+            'attachment' => $request->leave_type === 'sick'
+                ? 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'  // Required for sick leave
+                : 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // Optional for annual leave
         ]);
 
         // Calculate total working days (excluding weekends)
@@ -303,6 +313,8 @@ class LeaveRequestController extends Controller
             'end_date' => $request->end_date,
             'total_days' => $totalDays,
             'reason' => $request->reason,
+            'address_during_leave' => $request->address_during_leave,
+            'emergency_contact' => $request->emergency_contact,
             'attachment_path' => $attachmentPath,
         ]);
 

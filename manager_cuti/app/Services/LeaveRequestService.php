@@ -29,6 +29,8 @@ class LeaveRequestService
                 'end_date' => $data['end_date'],
                 'total_days' => $data['total_days'],
                 'reason' => $data['reason'],
+                'address_during_leave' => $data['address_during_leave'],
+                'emergency_contact' => $data['emergency_contact'],
                 'attachment_path' => $data['attachment_path'] ?? null,
                 'status' => 'pending',
             ]);
@@ -103,6 +105,9 @@ class LeaveRequestService
                 throw new \Exception('Cannot reject an already approved leave request');
             }
 
+            // Store the attachment path to delete it later if needed
+            $attachmentPath = $leaveRequest->attachment_path;
+
             // Update the leave request status and rejection note
             $leaveRequest->update([
                 'status' => 'rejected',
@@ -113,6 +118,11 @@ class LeaveRequestService
             // If it was an annual leave request that was approved by HRD, restore the quota
             if ($leaveRequest->leave_type === 'annual' && $leaveRequest->status === 'approved') {
                 $leaveRequest->user->increment('leave_quota', $leaveRequest->total_days);
+            }
+
+            // Delete the attachment file if it exists
+            if ($attachmentPath) {
+                Storage::disk('public')->delete($attachmentPath);
             }
 
             return $leaveRequest;
@@ -135,11 +145,19 @@ class LeaveRequestService
                 throw new \Exception('Only pending leave requests can be canceled');
             }
 
+            // Store the attachment path to delete it later if needed
+            $attachmentPath = $leaveRequest->attachment_path;
+
             // Update the leave request status
             $leaveRequest->update([
                 'status' => 'rejected',
                 'rejection_note' => 'Canceled by user',
             ]);
+
+            // Delete the attachment file if it exists
+            if ($attachmentPath) {
+                Storage::disk('public')->delete($attachmentPath);
+            }
 
             return $leaveRequest;
         });
@@ -161,7 +179,15 @@ class LeaveRequestService
                 throw new \Exception('Only pending leave requests can be deleted');
             }
 
+            // Store the attachment path to delete it later if needed
+            $attachmentPath = $leaveRequest->attachment_path;
+
             $result = $leaveRequest->delete();
+
+            // Delete the attachment file if it exists
+            if ($attachmentPath) {
+                Storage::disk('public')->delete($attachmentPath);
+            }
 
             return $result;
         });

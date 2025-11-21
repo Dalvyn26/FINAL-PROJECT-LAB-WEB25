@@ -38,6 +38,7 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Dates</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Duration</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Type</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Attachments</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status Verif Leader</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                                 </tr>
@@ -67,10 +68,28 @@
                                             {{ $request->total_days }} days
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs font-bold rounded-full 
+                                            <span class="px-2 inline-flex text-xs font-bold rounded-full
                                                 {{ $request->isAnnualLeave() ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800' }}">
                                                 {{ ucfirst($request->leave_type) }}
                                             </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if($request->leave_type === 'sick')
+                                                @if($request->attachment_path)
+                                                    <a href="{{ Storage::url($request->attachment_path) }}"
+                                                       target="_blank"
+                                                       class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center gap-1">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                                        </svg>
+                                                        View
+                                                    </a>
+                                                @else
+                                                    <span class="text-rose-600 text-xs font-medium">Missing</span>
+                                                @endif
+                                            @else
+                                                <span class="text-slate-400 text-xs italic">-</span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <span class="px-2 inline-flex text-xs font-bold rounded-full bg-blue-100 text-blue-800">

@@ -21,6 +21,8 @@ class LeaveRequest extends Model
         'end_date',
         'total_days',
         'reason',
+        'address_during_leave',
+        'emergency_contact',
         'attachment_path',
         'status',
         'rejection_note',

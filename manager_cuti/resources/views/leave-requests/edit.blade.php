@@ -66,6 +66,19 @@
                             </div>
                         @endif
 
+                        <!-- Address During Leave -->
+                        <div class="mb-4">
+                            <label for="address_during_leave" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address During Leave *</label>
+                            <input type="text" name="address_during_leave" id="address_during_leave" value="{{ old('address_during_leave', $leaveRequest->address_during_leave) }}" required disabled class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-600">
+                        </div>
+
+                        <!-- Emergency Contact -->
+                        <div class="mb-4">
+                            <label for="emergency_contact" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Emergency Contact *</label>
+                            <input type="text" name="emergency_contact" id="emergency_contact" value="{{ old('emergency_contact', $leaveRequest->emergency_contact) }}" required disabled class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-600" placeholder="Phone number">
+                        </div>
+
+                        <!-- Leave Reason -->
                         <div class="mb-4">
                             <label for="reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Reason *</label>
                             <textarea name="reason" id="reason" rows="4" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">{{ old('reason', $leaveRequest->reason) }}</textarea>
