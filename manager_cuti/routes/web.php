@@ -2,14 +2,19 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LeaveRequestController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DivisionController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\Leader\DashboardController as LeaderDashboardController;
+use App\Http\Controllers\Hrd\DashboardController as HrdDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// Main Dashboard Route - redirects based on user role
 Route::get('/dashboard', function () {
     $user = auth()->user();
 
@@ -26,22 +31,21 @@ Route::get('/admin/dashboard', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'role:admin'])->name('admin.dashboard');
 
-Route::get('/hrd/dashboard', function () {
-    return view('hrd.dashboard');
-})->middleware(['auth', 'role:hrd'])->name('hrd.dashboard');
+Route::get('/hrd/dashboard', [HrdDashboardController::class, 'index'])->middleware(['auth', 'role:hrd'])->name('hrd.dashboard');
 
-Route::get('/leader/dashboard', function () {
-    return view('leader.dashboard');
-})->middleware(['auth', 'role:division_leader'])->name('leader.dashboard');
+Route::get('/leader/dashboard', [LeaderDashboardController::class, 'index'])->middleware(['auth', 'role:division_leader'])->name('leader.dashboard');
 
-Route::get('/user/dashboard', function () {
-    return view('user.dashboard');
-})->middleware(['auth', 'role:user'])->name('user.dashboard');
+Route::get('/user/dashboard', [UserDashboardController::class, 'index'])->middleware(['auth', 'role:user'])->name('user.dashboard');
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('divisions', DivisionController::class);
-    Route::resource('users', UserController::class);
+    Route::resource('users', 'App\Http\Controllers\Admin\UserController');
+
+    // Division Member Management
+    Route::post('/divisions/{division}/members', [DivisionController::class, 'storeMember'])->name('divisions.members.store');
+    Route::delete('/divisions/{division}/members/{user}', [DivisionController::class, 'removeMember'])->name('divisions.members.destroy');
 });
 
 // Leader Routes
@@ -56,6 +60,7 @@ Route::middleware(['auth', 'role:hrd'])->prefix('hrd')->name('hrd.')->group(func
     Route::get('/leave-requests', [LeaveRequestController::class, 'indexHrd'])->name('leave-requests.index');
     Route::post('/leave-requests/{leaveRequest}/final-approve', [LeaveRequestController::class, 'finalApprove'])->name('leave-requests.final-approve');
     Route::post('/leave-requests/{leaveRequest}/reject', [LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
+    Route::post('/leave-requests/bulk-update', [LeaveRequestController::class, 'bulkUpdate'])->name('leave-requests.bulk-update');
 });
 
 Route::middleware('auth')->group(function () {

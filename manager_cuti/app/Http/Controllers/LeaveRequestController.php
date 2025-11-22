@@ -76,10 +76,11 @@ class LeaveRequestController extends Controller
     {
         $user = Auth::user();
 
-        // Leader can see pending leave requests from users in their division
+        // Leader can see pending leave requests from users in their division, excluding their own requests
         $leaveRequests = LeaveRequest::whereHas('user', function ($query) use ($user) {
             $query->where('division_id', $user->divisionLeader->id);
         })
+        ->where('user_id', '!=', $user->id) // Exclude leader's own requests
         ->where('status', 'pending')
         ->with(['user', 'approver'])->paginate(10);
 
@@ -91,12 +92,96 @@ class LeaveRequestController extends Controller
      */
     public function indexHrd()
     {
-        // HRD can see only approved_by_leader or requests from division leaders
-        $leaveRequests = LeaveRequest::where('status', 'approved_by_leader')
-            ->with(['user', 'user.division', 'approver'])
-            ->paginate(10);
+        // HRD can see:
+        // 1. Requests approved by leaders (from regular staff - status: approved_by_leader)
+        // 2. Pending requests from division leaders (which bypass leader approval)
+        $leaveRequests = LeaveRequest::where(function ($query) {
+            $query->where('status', 'approved_by_leader')
+                  ->orWhere(function ($subQuery) {
+                      $subQuery->where('status', 'pending')
+                               ->whereHas('user', function ($userQuery) {
+                                   $userQuery->where('role', 'division_leader');
+                               });
+                  });
+        })
+        ->with(['user', 'user.division', 'approver'])
+        ->paginate(10);
 
         return view('leave-requests.index-hrd', compact('leaveRequests'));
+    }
+
+    /**
+     * Bulk update multiple leave requests
+     */
+    public function bulkUpdate(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:leave_requests,id',
+            'action' => 'required|in:approve,reject',
+            'rejection_note' => $request->action === 'reject' ? 'required|string|min:10|max:500' : 'nullable',
+        ]);
+
+        $ids = $request->ids;
+        $action = $request->action;
+        $rejectionNote = $request->rejection_note;
+
+        $successCount = 0;
+        $errorCount = 0;
+        $errors = [];
+
+        try {
+            DB::transaction(function () use ($ids, $action, $rejectionNote, &$successCount, &$errorCount, &$errors) {
+                foreach ($ids as $id) {
+                    $leaveRequest = LeaveRequest::find($id);
+
+                    if (!$leaveRequest) {
+                        $errors[] = "Leave request ID {$id} not found";
+                        $errorCount++;
+                        continue;
+                    }
+
+                    try {
+                        if ($action === 'approve') {
+                            // Validate annual leave quota
+                            if ($leaveRequest->leave_type === 'annual') {
+                                if (!$leaveRequest->user->hasSufficientAnnualLeaveQuota($leaveRequest->total_days)) {
+                                    $errors[] = "Insufficient leave quota for {$leaveRequest->user->name}'s request (ID: {$id})";
+                                    $errorCount++;
+                                    continue;
+                                }
+                            }
+
+                            $this->leaveRequestService->finalApprove($leaveRequest, Auth::user());
+                            $successCount++;
+                        } elseif ($action === 'reject') {
+                            $this->leaveRequestService->reject($leaveRequest, Auth::user(), $rejectionNote);
+                            $successCount++;
+                        }
+                    } catch (\Exception $e) {
+                        $errors[] = "Error processing request ID {$id}: " . $e->getMessage();
+                        $errorCount++;
+                    }
+                }
+            });
+
+            if ($successCount > 0) {
+                $message = "{$successCount} leave request(s) processed successfully";
+                if ($errorCount > 0) {
+                    $message .= " with {$errorCount} error(s)";
+                }
+                session()->flash('success', $message);
+            }
+
+            if ($errorCount > 0) {
+                session()->flash('bulk_errors', $errors);
+            }
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -172,6 +257,10 @@ class LeaveRequestController extends Controller
 
         try {
             $leaveRequest = DB::transaction(function () use ($request, $totalDays, $attachmentPath) {
+                // All leave requests start with 'pending' status regardless of role
+                // For division leaders, their requests will be visible to HRD for approval
+                $initialStatus = 'pending';
+
                 return $this->leaveRequestService->createLeaveRequest([
                     'leave_type' => $request->leave_type,
                     'start_date' => $request->start_date,
@@ -181,6 +270,7 @@ class LeaveRequestController extends Controller
                     'address_during_leave' => $request->address_during_leave,
                     'emergency_contact' => $request->emergency_contact,
                     'attachment_path' => $attachmentPath,
+                    'status' => $initialStatus,
                 ], Auth::user());
             });
 
@@ -204,9 +294,9 @@ class LeaveRequestController extends Controller
     {
         // Authorization check
         $user = Auth::user();
-        $canView = $user->id === $leaveRequest->user_id || 
-                   $user->isAdmin() || 
-                   $user->isHrd() || 
+        $canView = $user->id === $leaveRequest->user_id ||
+                   $user->isAdmin() ||
+                   $user->isHrd() ||
                    ($user->isDivisionLeader() && $leaveRequest->user->division_id === $user->divisionLeader->id);
 
         if (!$canView) {
@@ -357,10 +447,15 @@ class LeaveRequestController extends Controller
     /**
      * Approve the leave request by division leader
      */
-    public function approveByLeader(LeaveRequest $leaveRequest)
+    public function approveByLeader(Request $request, LeaveRequest $leaveRequest)
     {
+        // Validate optional leader note
+        $request->validate([
+            'leader_note' => 'nullable|string|max:500',
+        ]);
+
         try {
-            $this->leaveRequestService->approveByLeader($leaveRequest, Auth::user());
+            $this->leaveRequestService->approveByLeader($leaveRequest, Auth::user(), $request->leader_note);
 
             return redirect()->back()
                 ->with('success', 'Leave request approved by leader successfully');
@@ -392,7 +487,7 @@ class LeaveRequestController extends Controller
     public function reject(Request $request, LeaveRequest $leaveRequest)
     {
         $request->validate([
-            'rejection_note' => 'required|string|max:500',
+            'rejection_note' => 'required|string|min:10|max:500', // Minimum 10 characters
         ]);
 
         try {

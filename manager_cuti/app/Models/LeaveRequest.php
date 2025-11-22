@@ -27,6 +27,7 @@ class LeaveRequest extends Model
         'status',
         'rejection_note',
         'approved_by',
+        'leader_note',
     ];
 
     /**

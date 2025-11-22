@@ -46,7 +46,7 @@
                         </svg>
                     </div>
                     <div class="relative">
-                        <p class="text-sm font-semibold text-slate-600">Total Cuti Sakit</p>
+                        <p class="text-sm font-semibold text-slate-600">Total Pengajuan Cuti Sakit</p>
                         <p class="text-3xl font-bold text-slate-800 mt-1">{{ $sickLeavesThisYear }}</p>
                     </div>
                 </div>
