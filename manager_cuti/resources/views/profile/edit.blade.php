@@ -116,7 +116,7 @@
 
                 <!-- Right Column: Edit Form -->
                 <div class="lg:col-span-2">
-                    <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 transition-all">
+                    <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 transition-all" x-data="{ photoName: null, photoPreview: null }">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4">Edit Profile Information</h3>
 
                         @if(session('status'))
@@ -204,57 +204,62 @@
                                         Current file: <a href="{{ Storage::url($user->avatar) }}" target="_blank" class="text-indigo-600 hover:text-indigo-800">View Current Avatar</a>
                                     </p>
                                 @endif
-                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50"
+                                <div class="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition relative"
+                                     @click="
+                                         const photoInput = document.getElementById('avatar');
+                                         if (photoInput) {
+                                             photoInput.click();
+                                         }
+                                     "
                                      @dragover.prevent="$event.target.classList.add('border-indigo-500')"
                                      @dragleave.prevent="$event.target.classList.remove('border-indigo-500')"
                                      @drop.prevent="
                                          $event.target.classList.remove('border-indigo-500'); 
-                                         document.getElementById('avatar').files = $event.dataTransfer.files; 
-                                         $event.target.querySelector('input[type=file]').dispatchEvent(new Event('change'));
+                                         $refs.photo.files = $event.dataTransfer.files; 
+                                         $refs.photo.dispatchEvent(new Event('change'));
                                      ">
-                                    <div class="space-y-1 text-center w-full">
-                                        <template x-if="!photoName">
-                                            <div>
-                                                <div class="flex text-sm text-slate-600 justify-center">
-                                                    <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                    </svg>
-                                                </div>
-                                                <div class="flex text-sm text-slate-600 justify-center">
-                                                    <label for="avatar" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2">
-                                                        <span>Click to upload profile picture</span>
-                                                        <input id="avatar" name="avatar" type="file" accept="image/*"
-                                                               class="sr-only"
-                                                               x-ref="photoFile"
-                                                               @change="
-                                                                   const file = $refs.photoFile.files[0]; 
-                                                                   photoName = file ? file.name : null; 
-                                                                   const reader = new FileReader(); 
-                                                                   reader.onload = e => photoPreview = e.target.result; 
-                                                                   if(file) { reader.readAsDataURL(file); }
-                                                               ">
-                                                    </label>
-                                                </div>
-                                                <p class="text-xs text-slate-500">
-                                                    PNG, JPG, GIF up to 3MB
-                                                </p>
-                                            </div>
-                                        </template>
-                                        <template x-if="photoName">
-                                            <div class="flex flex-col items-center">
-                                                <div class="flex text-sm text-emerald-600 justify-center mb-2">
-                                                    <svg class="mx-auto h-12 w-12 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                    </svg>
-                                                </div>
-                                                <p class="text-sm font-medium text-slate-700" x-text="photoName"></p>
-                                                <p class="text-xs text-emerald-600">File selected successfully!</p>
-                                            </div>
-                                        </template>
-                                        @error('avatar')
-                                            <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
-                                        @enderror
+                                    <input type="file" 
+                                           name="avatar" 
+                                           id="avatar"
+                                           class="hidden" 
+                                           x-ref="photo" 
+                                           accept="image/*"
+                                           @change="
+                                               if ($refs.photo.files && $refs.photo.files[0]) {
+                                                   photoName = $refs.photo.files[0].name;
+                                                   const reader = new FileReader();
+                                                   reader.onload = (e) => { photoPreview = e.target.result; };
+                                                   reader.readAsDataURL($refs.photo.files[0]);
+                                               }
+                                           ">
+                                    
+                                    <!-- State 1: Belum Ada File (Default) -->
+                                    <div x-show="!photoName" class="space-y-2 pointer-events-none">
+                                        <!-- Ikon Cloud Upload -->
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                        <!-- Teks Utama -->
+                                        <p class="text-sm font-medium text-indigo-600">Click to upload profile picture</p>
+                                        <!-- Teks Helper -->
+                                        <p class="text-xs text-gray-500">PNG, JPG, GIF up to 3MB</p>
                                     </div>
+                                    
+                                    <!-- State 2: File Terpilih (Success) -->
+                                    <div x-show="photoName" class="space-y-2 pointer-events-none">
+                                        <!-- Ikon Centang/Check Circle -->
+                                        <svg class="mx-auto h-12 w-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <!-- Nama File -->
+                                        <p class="text-sm font-medium text-slate-700" x-text="photoName"></p>
+                                        <!-- Teks Success -->
+                                        <p class="text-xs text-green-600">File selected successfully</p>
+                                    </div>
+                                    
+                                    @error('avatar')
+                                        <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
                         @endif
