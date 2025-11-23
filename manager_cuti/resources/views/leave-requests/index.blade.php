@@ -122,16 +122,28 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            @if($request->user_id === auth()->id() && $request->isPending())
-                                                <form action="{{ route('leave-requests.cancel', $request) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('POST')
-                                                    <button type="submit" class="text-slate-500 hover:text-red-600 font-medium text-sm transition" 
-                                                            onclick="return confirm('Are you sure you want to cancel this leave request?')">
-                                                        Cancel
-                                                    </button>
-                                                </form>
-                                            @endif
+                                            <div class="flex items-center gap-2">
+                                                @if($request->user_id === auth()->id() && $request->isPending())
+                                                    <form action="{{ route('leave-requests.cancel', $request) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        @method('POST')
+                                                        <button type="submit" class="text-slate-500 hover:text-red-600 font-medium text-sm transition" 
+                                                                onclick="return confirm('Are you sure you want to cancel this leave request?')">
+                                                            Cancel
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                                
+                                                @if($request->status === 'approved')
+                                                    <a href="{{ route('leave-requests.download-pdf', $request) }}" 
+                                                       class="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition"
+                                                       title="Download Surat Cuti (PDF)">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                        </svg>
+                                                    </a>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

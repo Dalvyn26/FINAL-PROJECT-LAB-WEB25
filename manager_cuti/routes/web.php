@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
     // Leave Request Routes
     Route::resource('leave-requests', LeaveRequestController::class);
     Route::post('/leave-requests/{leaveRequest}/cancel', [LeaveRequestController::class, 'cancel'])->name('leave-requests.cancel');
+    Route::get('/leave-requests/{leaveRequest}/download-pdf', [LeaveRequestController::class, 'downloadPdf'])->name('leave-requests.download-pdf');
 });
 
 require __DIR__.'/auth.php';

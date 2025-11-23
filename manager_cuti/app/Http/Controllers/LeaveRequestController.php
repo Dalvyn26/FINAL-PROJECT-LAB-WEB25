@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LeaveRequestController extends Controller
 {
@@ -539,5 +540,45 @@ class LeaveRequestController extends Controller
             return redirect()->back()
                 ->withErrors(['error' => $e->getMessage()]);
         }
+    }
+
+    /**
+     * Download PDF surat cuti untuk pengajuan yang sudah approved
+     */
+    public function downloadPdf(LeaveRequest $leaveRequest)
+    {
+        $user = Auth::user();
+
+        // Load relationships
+        $leaveRequest->load(['user.division', 'approver']);
+
+        // Validasi: Hanya user pemilik cuti ATAU HRD/Admin yang boleh download
+        $canDownload = $user->id === $leaveRequest->user_id || 
+                       $user->isAdmin() || 
+                       $user->isHrd();
+
+        if (!$canDownload) {
+            abort(403, 'Unauthorized to download this leave request');
+        }
+
+        // Validasi Status: Hanya bisa download jika status == 'approved'
+        if ($leaveRequest->status !== 'approved') {
+            return redirect()->back()
+                ->withErrors(['error' => 'Surat cuti hanya dapat diunduh untuk pengajuan yang sudah disetujui (Approved)']);
+        }
+
+        // Load view pdf.leave_letter dengan data cuti
+        $pdf = Pdf::loadView('pdf.leave_letter', [
+            'leaveRequest' => $leaveRequest,
+            'user' => $leaveRequest->user,
+            'approver' => $leaveRequest->approver,
+        ]);
+
+        // Generate nama file
+        $fileName = 'Surat_Cuti_' . $leaveRequest->user->name . '_' . $leaveRequest->id . '.pdf';
+        $fileName = str_replace(' ', '_', $fileName);
+
+        // Return download
+        return $pdf->download($fileName);
     }
 }
