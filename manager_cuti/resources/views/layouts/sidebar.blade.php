@@ -333,9 +333,11 @@
         <div class="border-t border-slate-200 p-4">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <svg class="w-10 h-10 rounded-full text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
+                    @if(Auth::user()->avatar)
+                        <img src="{{ Storage::url(Auth::user()->avatar) }}?v={{ time() }}" class="w-10 h-10 rounded-full object-cover" alt="{{ Auth::user()->name }}">
+                    @else
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name ?? 'User') }}&background=0ea5e9&color=fff" class="w-10 h-10 rounded-full" alt="{{ Auth::user()->name }}">
+                    @endif
                 </div>
                 <div class="ml-3">
                     <p class="text-sm font-medium text-slate-900">{{ Auth::user()->name }}</p>

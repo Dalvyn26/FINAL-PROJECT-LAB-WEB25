@@ -8,7 +8,7 @@
     <div class="py-12 bg-gray-50">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Division Info Card -->
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 mb-6 transition-all">
+            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 mb-8 transition-all">
                 <div class="flex justify-between items-start mb-6">
                     <div>
                         <h3 class="text-xl font-bold text-slate-800">{{ $division->name }}</h3>
@@ -24,44 +24,31 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-slate-50 p-4 rounded-xl">
-                        <h4 class="text-sm font-semibold text-slate-600 mb-2">Division Leader</h4>
-                        @if($division->leader)
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                    <span class="text-indigo-700 font-medium">{{ strtoupper(substr($division->leader->name, 0, 1)) }}</span>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-slate-900">{{ $division->leader->name }}</p>
-                                    <p class="text-xs text-slate-500">{{ $division->leader->email }}</p>
-                                </div>
+                <!-- Division Leader Card -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <h4 class="text-md font-semibold text-slate-700 mb-3">Division Leader</h4>
+                    
+                    @if($division->leader)
+                        <div class="flex items-center">
+                            <x-avatar :user="$division->leader" classes="w-12 h-12 mr-4" />
+                            <div>
+                                <div class="font-medium text-slate-800">{{ $division->leader->name }}</div>
+                                <div class="text-sm text-slate-500">{{ $division->leader->email }}</div>
                             </div>
-                        @else
-                            <p class="text-sm text-slate-400 italic">No leader assigned</p>
-                        @endif
-                    </div>
-
-                    <div class="bg-slate-50 p-4 rounded-xl">
-                        <h4 class="text-sm font-semibold text-slate-600 mb-2">Member Count</h4>
-                        <p class="text-lg font-bold text-slate-800">{{ $division->users_count }} member{{ $division->users_count != 1 ? 's' : '' }}</p>
-                    </div>
-
-                    <div class="bg-slate-50 p-4 rounded-xl">
-                        <h4 class="text-sm font-semibold text-slate-600 mb-2">Created Date</h4>
-                        <p class="text-sm text-slate-700">{{ \Carbon\Carbon::parse($division->created_at)->format('d M Y') }}</p>
-                        <p class="text-xs text-slate-500">{{ \Carbon\Carbon::parse($division->created_at)->format('H:i') }} WIB</p>
-                    </div>
+                        </div>
+                    @else
+                        <p class="text-sm text-slate-500 italic">No leader assigned to this division</p>
+                    @endif
                 </div>
             </div>
 
-            <!-- Add Member Card -->
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 mb-6 transition-all">
+            <!-- Add Member Form -->
+            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 mb-8 transition-all">
                 <h3 class="text-lg font-semibold text-slate-800 mb-4">Add Member to Division</h3>
                 
-                @if(session('success'))
+                @if(session('status'))
                     <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg mb-4">
-                        {{ session('success') }}
+                        {{ session('status') }}
                     </div>
                 @endif
 
@@ -80,7 +67,7 @@
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="user_id" class="block text-sm font-medium text-slate-600 mb-1">Select User</label>
+                                <label for="user_id" class="block text-sm font-medium text-slate-700 mb-1">Select User</label>
                                 <select name="user_id" id="user_id" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                     <option value="">Select User to Add</option>
                                     @foreach($availableUsers as $user)
@@ -102,7 +89,7 @@
                 @endif
             </div>
 
-            <!-- Members List -->
+            <!-- Division Members Table -->
             <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 transition-all">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-semibold text-slate-800">Division Members</h3>
@@ -117,7 +104,6 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Join Date</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
                                 </tr>
@@ -127,11 +113,10 @@
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                    <span class="text-indigo-700 text-sm font-medium">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
-                                                </div>
-                                                <div class="ml-3">
+                                                <x-avatar :user="$member" classes="w-10 h-10 mr-3" />
+                                                <div>
                                                     <div class="text-sm font-medium text-slate-900">{{ $member->name }}</div>
+                                                    <div class="text-xs text-slate-500">{{ $member->email }}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -139,7 +124,7 @@
                                             {{ $member->email }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs font-bold rounded-full 
+                                            <span class="px-3 py-1 inline-flex text-xs font-bold rounded-full 
                                                 @switch($member->role)
                                                     @case('admin')
                                                         bg-purple-100 text-purple-800
@@ -158,9 +143,6 @@
                                                 @endswitch">
                                                 {{ ucfirst(str_replace('_', ' ', $member->role)) }}
                                             </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                                            {{ $member->join_date ? \Carbon\Carbon::parse($member->join_date)->format('d M Y') : '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs font-bold rounded-full

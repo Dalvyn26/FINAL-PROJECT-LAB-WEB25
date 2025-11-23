@@ -28,6 +28,7 @@ class User extends Authenticatable
         'join_date',
         'leave_quota',
         'active_status',
+        'avatar',
     ];
 
     /**

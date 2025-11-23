@@ -84,16 +84,14 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($division->leader)
                                             <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                    <span class="text-indigo-700 text-sm font-medium">{{ strtoupper(substr($division->leader->name, 0, 1)) }}</span>
-                                                </div>
-                                                <div class="ml-3">
-                                                    <div class="text-sm font-medium text-slate-900">{{ $division->leader->name }}</div>
-                                                    <div class="text-sm text-slate-500">{{ $division->leader->email }}</div>
+                                                <x-avatar :user="$division->leader" classes="w-10 h-10 mr-3" />
+                                                <div>
+                                                    <div class="font-medium text-slate-900">{{ $division->leader->name }}</div>
+                                                    <div class="text-xs text-slate-500">{{ $division->leader->email }}</div>
                                                 </div>
                                             </div>
                                         @else
-                                            <span class="text-sm text-slate-400 italic">-</span>
+                                            <span class="text-sm text-slate-400 italic">No Leader</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">

@@ -107,6 +107,9 @@ class DivisionController extends Controller
      */
     public function show(Division $division)
     {
+        // Load leader relationship eagerly
+        $division->load('leader');
+
         $members = $division->users()->orderBy('name')->paginate(10);
         $availableUsers = User::where('role', 'user')
             ->whereNull('division_id')

@@ -156,21 +156,17 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($users as $user)
                                 <tr class="hover:bg-slate-50 transition">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                <span class="text-indigo-700 font-medium">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-slate-900">{{ $user->name }}</div>
-                                            </div>
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle">
+                                        <div class="flex items-center gap-3">
+                                            <x-avatar :user="$user" classes="w-10 h-10" />
+                                            <div class="font-medium text-slate-900">{{ $user->name }}</div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-500">
                                         {{ $user->email }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs font-bold rounded-full 
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-500">
+                                        <span class="px-2 py-1 inline-flex text-xs font-bold rounded-full
                                             @switch($user->role)
                                                 @case('admin')
                                                     bg-purple-100 text-purple-800
@@ -190,14 +186,14 @@
                                             {{ ucfirst(str_replace('_', ' ', $user->role)) }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-500">
                                         {{ $user->division ? $user->division->name : 'None' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-500">
                                         {{ $user->join_date ? \Carbon\Carbon::parse($user->join_date)->format('d M Y') : '-' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs font-bold rounded-full
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-500">
+                                        <span class="px-2 py-1 inline-flex text-xs font-bold rounded-full
                                             {{ $user->active_status ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
                                             {{ $user->active_status ? 'Active' : 'Inactive' }}
                                         </span>

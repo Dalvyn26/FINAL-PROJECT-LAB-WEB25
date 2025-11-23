@@ -188,9 +188,13 @@
 
                                 <div class="mb-4">
                                     <label for="leave_type" class="block text-sm font-medium text-slate-600 mb-1">Leave Type *</label>
-                                    <select name="leave_type" id="leave_type" x-model="leaveType" x-on:change="updateFormState()" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <select name="leave_type" id="leave_type" x-model="leaveType" x-on:change="updateFormState()" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                         <option value="">Select Leave Type</option>
-                                        <option value="annual">Annual Leave</option>
+                                        @if($isEligible)
+                                            <option value="annual">Annual Leave</option>
+                                        @else
+                                            <option value="annual" disabled class="text-gray-400">Annual Leave (Not Eligible: Work Period Under 1 Year)</option>
+                                        @endif
                                         <option value="sick">Sick Leave</option>
                                     </select>
                                 </div>

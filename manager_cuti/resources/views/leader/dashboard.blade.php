@@ -57,15 +57,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($onLeaveThisWeek as $request)
                             <div class="flex items-center p-4 bg-slate-50 rounded-lg border border-slate-200">
-                                <div class="flex-shrink-0">
-                                    <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                        <span class="text-indigo-700 font-medium">{{ strtoupper(substr($request->user->name, 0, 1)) }}</span>
-                                    </div>
-                                </div>
-                                <div class="ml-4 flex-1">
+                                <x-avatar :user="$request->user" classes="w-10 h-10 mr-3" />
+                                <div class="flex-1">
                                     <p class="text-sm font-medium text-slate-800">{{ $request->user->name }}</p>
                                     <div class="flex items-center mt-1 space-x-2">
-                                        <span class="px-2 py-1 inline-flex text-xs font-bold rounded-full 
+                                        <span class="px-2 py-1 inline-flex text-xs font-bold rounded-full
                                             {{ $request->isAnnualLeave() ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800' }}">
                                             {{ ucfirst($request->leave_type) . ' Leave' }}
                                         </span>
@@ -107,10 +103,8 @@
                                 <tr class="hover:bg-slate-50 transition">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                <span class="text-indigo-700 font-medium">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
-                                            </div>
-                                            <div class="ml-4">
+                                            <x-avatar :user="$member" classes="w-10 h-10 mr-3" />
+                                            <div>
                                                 <div class="text-sm font-medium text-slate-900">{{ $member->name }}</div>
                                             </div>
                                         </div>

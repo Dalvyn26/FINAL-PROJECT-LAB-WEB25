@@ -68,10 +68,8 @@
                                     <tr class="hover:bg-slate-50 transition">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                    <span class="text-indigo-700 font-medium">{{ strtoupper(substr($request->user->name, 0, 1)) }}</span>
-                                                </div>
-                                                <div class="ml-4">
+                                                <x-avatar :user="$request->user" classes="w-10 h-10 mr-3" />
+                                                <div>
                                                     <div class="text-sm font-medium text-slate-900">{{ $request->user->name }}</div>
                                                     <div class="text-sm text-slate-500">{{ $request->user->email }}</div>
                                                 </div>

@@ -189,7 +189,15 @@ class LeaveRequestController extends Controller
      */
     public function create()
     {
-        return view('leave-requests.create');
+        $user = Auth::user();
+
+        // Calculate if user is eligible for annual leave (work period >= 1 year)
+        $isEligible = false;
+        if ($user->join_date) {
+            $isEligible = \Carbon\Carbon::parse($user->join_date)->diffInYears(now()) >= 1;
+        }
+
+        return view('leave-requests.create', compact('isEligible'));
     }
 
     /**
@@ -197,6 +205,18 @@ class LeaveRequestController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate eligibility for annual leave
+        $isEligible = false;
+        if (Auth::user()->join_date) {
+            $isEligible = \Carbon\Carbon::parse(Auth::user()->join_date)->diffInYears(now()) >= 1;
+        }
+
+        if ($request->leave_type === 'annual' && !$isEligible) {
+            return redirect()->back()
+                ->withErrors(['leave_type' => 'You are not eligible for annual leave yet (Work period under 1 year)'])
+                ->withInput();
+        }
+
         $request->validate([
             'leave_type' => ['required', Rule::in(['annual', 'sick'])],
             'start_date' => 'required|date',

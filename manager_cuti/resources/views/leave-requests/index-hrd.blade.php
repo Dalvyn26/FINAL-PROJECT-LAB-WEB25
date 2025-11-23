@@ -135,10 +135,8 @@
                                 
                                 <!-- User Info -->
                                 <div class="flex items-center mb-4">
-                                    <div class="flex-shrink-0 h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center">
-                                        <span class="text-indigo-700 font-medium">{{ strtoupper(substr($request->user->name, 0, 1)) }}</span>
-                                    </div>
-                                    <div class="ml-3">
+                                    <x-avatar :user="$request->user" classes="w-12 h-12 mr-3" />
+                                    <div>
                                         <h4 class="text-sm font-semibold text-slate-800">{{ $request->user->name }}</h4>
                                         <p class="text-xs text-slate-500">{{ $request->user->division ? $request->user->division->name : 'N/A' }}</p>
                                     </div>

@@ -15,16 +15,33 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
-            ],
-        ];
+        $user = $this->user();
+
+        if ($user->role === 'admin') {
+            // Admin users can update all fields
+            return [
+                'name' => ['required', 'string', 'max:255'],
+                'email' => [
+                    'required',
+                    'string',
+                    'lowercase',
+                    'email',
+                    'max:255',
+                    Rule::unique(User::class)->ignore($user->id),
+                ],
+                'phone' => ['nullable', 'string', 'max:20'],
+                'address' => ['nullable', 'string', 'max:500'],
+                'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:3072'], // Max 3MB
+                'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            ];
+        } else {
+            // Non-admin users can only update limited fields (name and email are not required)
+            return [
+                'phone' => ['nullable', 'string', 'max:20'],
+                'address' => ['nullable', 'string', 'max:500'],
+                'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:3072'], // Max 3MB
+                'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            ];
+        }
     }
 }
