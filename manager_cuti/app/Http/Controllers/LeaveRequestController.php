@@ -142,18 +142,38 @@ class LeaveRequestController extends Controller
                     }
 
                     try {
+                        $user = Auth::user();
+                        
                         if ($action === 'approve') {
-                            // Validate annual leave quota
-                            if ($leaveRequest->leave_type === 'annual') {
-                                if (!$leaveRequest->user->hasSufficientAnnualLeaveQuota($leaveRequest->total_days)) {
-                                    $errors[] = "Insufficient leave quota for {$leaveRequest->user->name}'s request (ID: {$id})";
-                                    $errorCount++;
-                                    continue;
+                            // Check user role to determine which approval method to use
+                            if ($user->role === 'division_leader') {
+                                // Division leader approval - status becomes 'approved_by_leader'
+                                // Validate annual leave quota
+                                if ($leaveRequest->leave_type === 'annual') {
+                                    if (!$leaveRequest->user->hasSufficientAnnualLeaveQuota($leaveRequest->total_days)) {
+                                        $errors[] = "Insufficient leave quota for {$leaveRequest->user->name}'s request (ID: {$id})";
+                                        $errorCount++;
+                                        continue;
+                                    }
                                 }
-                            }
+                                
+                                // Use approveByLeader for division leaders
+                                $this->leaveRequestService->approveByLeader($leaveRequest, $user, null);
+                                $successCount++;
+                            } else {
+                                // HRD final approval - status becomes 'approved'
+                                // Validate annual leave quota
+                                if ($leaveRequest->leave_type === 'annual') {
+                                    if (!$leaveRequest->user->hasSufficientAnnualLeaveQuota($leaveRequest->total_days)) {
+                                        $errors[] = "Insufficient leave quota for {$leaveRequest->user->name}'s request (ID: {$id})";
+                                        $errorCount++;
+                                        continue;
+                                    }
+                                }
 
-                            $this->leaveRequestService->finalApprove($leaveRequest, Auth::user());
-                            $successCount++;
+                                $this->leaveRequestService->finalApprove($leaveRequest, $user);
+                                $successCount++;
+                            }
                         } elseif ($action === 'reject') {
                             $this->leaveRequestService->reject($leaveRequest, Auth::user(), $rejectionNote);
                             $successCount++;

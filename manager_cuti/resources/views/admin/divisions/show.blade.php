@@ -29,8 +29,8 @@
                     <h4 class="text-md font-semibold text-slate-700 mb-3">Division Leader</h4>
                     
                     @if($division->leader)
-                        <div class="flex items-center">
-                            <x-avatar :user="$division->leader" classes="w-12 h-12 mr-4" />
+                        <div class="flex items-center gap-4">
+                            <x-avatar :user="$division->leader" classes="w-12 h-12" />
                             <div>
                                 <div class="font-medium text-slate-800">{{ $division->leader->name }}</div>
                                 <div class="text-sm text-slate-500">{{ $division->leader->email }}</div>
@@ -111,19 +111,16 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($members as $member)
                                     <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <x-avatar :user="$member" classes="w-10 h-10 mr-3" />
-                                                <div>
-                                                    <div class="text-sm font-medium text-slate-900">{{ $member->name }}</div>
-                                                    <div class="text-xs text-slate-500">{{ $member->email }}</div>
-                                                </div>
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle">
+                                            <div class="flex items-center gap-3">
+                                                <x-avatar :user="$member" classes="w-10 h-10" />
+                                                <div class="font-medium text-gray-900">{{ $member->name }}</div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-600">
                                             {{ $member->email }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle">
                                             <span class="px-3 py-1 inline-flex text-xs font-bold rounded-full 
                                                 @switch($member->role)
                                                     @case('admin')
@@ -144,13 +141,13 @@
                                                 {{ ucfirst(str_replace('_', ' ', $member->role)) }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle">
                                             <span class="px-2 inline-flex text-xs font-bold rounded-full
                                                 {{ $member->active_status ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
                                                 {{ $member->active_status ? 'Active' : 'Inactive' }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle text-sm">
                                             <form action="{{ route('admin.divisions.members.destroy', ['division' => $division, 'user' => $member]) }}" method="POST" class="inline" data-confirm-delete="true" data-confirm-message="Apakah Anda yakin ingin mengeluarkan user ini dari divisi?">
                                                 @csrf
                                                 @method('DELETE')

@@ -66,26 +66,26 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($onLeaveThisMonth as $request)
                                     <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <x-avatar :user="$request->user" classes="w-10 h-10 mr-3" />
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle">
+                                            <div class="flex items-center gap-3">
+                                                <x-avatar :user="$request->user" classes="w-10 h-10" />
                                                 <div>
-                                                    <div class="text-sm font-medium text-slate-900">{{ $request->user->name }}</div>
-                                                    <div class="text-sm text-slate-500">{{ $request->user->email }}</div>
+                                                    <div class="font-medium text-gray-900">{{ $request->user->name }}</div>
+                                                    <div class="text-xs text-gray-500">{{ $request->user->email }}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-600">
                                             {{ $request->user->division ? $request->user->division->name : 'N/A' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-600">
                                             {{ \Carbon\Carbon::parse($request->start_date)->format('d M Y') }} - 
                                             {{ \Carbon\Carbon::parse($request->end_date)->format('d M Y') }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-600">
                                             {{ $request->total_days }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle">
                                             <span class="px-3 py-1 inline-flex text-xs font-bold rounded-full 
                                                 {{ $request->isAnnualLeave() ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800' }}">
                                                 {{ ucfirst($request->leave_type) . ' Leave' }}

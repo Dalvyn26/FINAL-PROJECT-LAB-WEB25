@@ -92,27 +92,25 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($newEmployees as $employee)
                                     <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                    <span class="text-indigo-700 font-medium">{{ strtoupper(substr($employee->name, 0, 1)) }}</span>
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-slate-900">{{ $employee->name }}</div>
-                                                    <div class="text-sm text-slate-500">{{ $employee->email }}</div>
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle">
+                                            <div class="flex items-center gap-3">
+                                                <x-avatar :user="$employee" classes="w-10 h-10" />
+                                                <div>
+                                                    <div class="font-medium text-gray-900">{{ $employee->name }}</div>
+                                                    <div class="text-xs text-gray-500">{{ $employee->email }}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-600">
                                             {{ $employee->division ? $employee->division->name : 'None' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-600">
                                             {{ \Carbon\Carbon::parse($employee->join_date)->format('d M Y') }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-600">
                                             {{ \Carbon\Carbon::parse($employee->join_date)->diffForHumans(now(), \Carbon\CarbonInterface::DIFF_ABSOLUTE) }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle">
                                             <span class="px-2 inline-flex text-xs font-bold rounded-full
                                                 {{ $employee->active_status ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
                                                 {{ $employee->active_status ? 'Active' : 'Inactive' }}

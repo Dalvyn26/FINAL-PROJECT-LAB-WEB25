@@ -53,6 +53,7 @@ Route::middleware(['auth', 'role:division_leader'])->prefix('leader')->name('lea
     Route::get('/leave-requests', [LeaveRequestController::class, 'indexLeader'])->name('leave-requests.index');
     Route::post('/leave-requests/{leaveRequest}/approve-by-leader', [LeaveRequestController::class, 'approveByLeader'])->name('leave-requests.approve-by-leader');
     Route::post('/leave-requests/{leaveRequest}/reject', [LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
+    Route::post('/leave-requests/bulk-update', [LeaveRequestController::class, 'bulkUpdate'])->name('leave-requests.bulk-update');
 });
 
 // HRD Routes

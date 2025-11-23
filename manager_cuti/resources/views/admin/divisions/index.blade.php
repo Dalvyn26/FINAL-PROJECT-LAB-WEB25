@@ -75,29 +75,29 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($divisions as $division)
                                 <tr class="hover:bg-slate-50 transition">
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle">
                                         <div class="text-sm font-semibold text-slate-900">{{ $division->name }}</div>
                                         @if($division->description)
                                             <div class="text-sm text-slate-500">{{ Str::limit($division->description, 50) }}</div>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle">
                                         @if($division->leader)
-                                            <div class="flex items-center">
-                                                <x-avatar :user="$division->leader" classes="w-10 h-10 mr-3" />
+                                            <div class="flex items-center gap-3">
+                                                <x-avatar :user="$division->leader" classes="w-10 h-10" />
                                                 <div>
-                                                    <div class="font-medium text-slate-900">{{ $division->leader->name }}</div>
-                                                    <div class="text-xs text-slate-500">{{ $division->leader->email }}</div>
+                                                    <div class="font-medium text-gray-900">{{ $division->leader->name }}</div>
+                                                    <div class="text-xs text-gray-500">{{ $division->leader->email }}</div>
                                                 </div>
                                             </div>
                                         @else
                                             <span class="text-sm text-slate-400 italic">No Leader</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-600">
                                         {{ $division->users_count }} member{{ $division->users_count != 1 ? 's' : '' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle text-sm">
                                         <div class="flex space-x-3">
                                             <a href="{{ route('admin.divisions.show', $division) }}" class="text-blue-600 hover:text-blue-900 transition">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

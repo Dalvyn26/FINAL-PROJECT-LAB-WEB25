@@ -101,21 +101,19 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($members as $member)
                                 <tr class="hover:bg-slate-50 transition">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <x-avatar :user="$member" classes="w-10 h-10 mr-3" />
-                                            <div>
-                                                <div class="text-sm font-medium text-slate-900">{{ $member->name }}</div>
-                                            </div>
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle">
+                                        <div class="flex items-center gap-3">
+                                            <x-avatar :user="$member" classes="w-10 h-10" />
+                                            <div class="font-medium text-gray-900">{{ $member->name }}</div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-600">
                                         {{ $member->email }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle text-sm text-slate-600">
                                         {{ $member->leave_quota }} days
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap align-middle">
                                         <span class="px-2 inline-flex text-xs font-bold rounded-full 
                                             {{ $member->active_status ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
                                             {{ $member->active_status ? 'Active' : 'Inactive' }}
