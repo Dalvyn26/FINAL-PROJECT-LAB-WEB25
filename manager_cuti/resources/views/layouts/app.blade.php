@@ -8,8 +8,9 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
         <!-- SweetAlert2 CSS -->
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.0/dist/sweetalert2.min.css" rel="stylesheet">
@@ -17,13 +18,13 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-gray-50">
+    <body class="font-sans antialiased bg-slate-50" style="font-family: 'Inter', sans-serif;">
         <div class="min-h-screen flex">
             <!-- Mobile Hamburger Menu Button -->
             <div class="fixed top-4 left-4 z-40 lg:hidden">
                 <button
                     @click="sidebarOpen = true"
-                    class="p-2 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                    class="p-2.5 rounded-xl bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-200"
                     aria-label="Toggle menu">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -51,7 +52,7 @@
             <div class="lg:ml-64 flex-1 min-h-screen transition-all duration-300">
                 <!-- Page Header -->
                 @isset($header)
-                    <header class="bg-white border-b border-slate-200 shadow-sm">
+                    <header class="bg-white/80 backdrop-blur-sm border-b border-slate-100 shadow-sm sticky top-0 z-30">
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                             {{ $header }}
                         </div>
@@ -59,7 +60,7 @@
                 @endisset
 
                 <!-- Page Content -->
-                <main class="py-8 px-4">
+                <main class="py-8 px-4 sm:px-6 lg:px-8">
                     {{ $slot }}
                 </main>
             </div>

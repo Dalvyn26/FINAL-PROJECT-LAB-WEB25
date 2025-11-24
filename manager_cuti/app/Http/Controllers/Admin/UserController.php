@@ -113,7 +113,9 @@ class UserController extends Controller
     public function create()
     {
         $divisions = Division::all();
-        return view('admin.users.create', compact('divisions'));
+        // Check if HRD already exists
+        $hrdExists = User::where('role', 'hrd')->exists();
+        return view('admin.users.create', compact('divisions', 'hrdExists'));
     }
 
     /**
@@ -125,7 +127,20 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,hrd,division_leader,user',
+            'role' => [
+                'required',
+                'in:hrd,division_leader,user',
+                function ($attribute, $value, $fail) {
+                    // Prevent creating admin role
+                    if ($value === 'admin') {
+                        $fail('Admin role cannot be created.');
+                    }
+                    // Prevent creating HRD if one already exists
+                    if ($value === 'hrd' && User::where('role', 'hrd')->exists()) {
+                        $fail('HRD role already exists. Only one HRD is allowed.');
+                    }
+                },
+            ],
             'division_id' => 'nullable|exists:divisions,id',
             'leave_quota' => 'required|integer|min:0|max:365',
         ]);
@@ -150,12 +165,23 @@ class UserController extends Controller
     }
 
     /**
+     * Display the specified user.
+     */
+    public function show(User $user)
+    {
+        $user->load(['division', 'division.leader']);
+        return view('admin.users.show', compact('user'));
+    }
+
+    /**
      * Show the form for editing the specified user.
      */
     public function edit(User $user)
     {
         $divisions = Division::all();
-        return view('admin.users.edit', compact('user', 'divisions'));
+        // Check if HRD already exists (excluding current user being edited)
+        $hrdExists = User::where('role', 'hrd')->where('id', '!=', $user->id)->exists();
+        return view('admin.users.edit', compact('user', 'divisions', 'hrdExists'));
     }
 
     /**
@@ -167,7 +193,20 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
-            'role' => 'required|in:admin,hrd,division_leader,user',
+            'role' => [
+                'required',
+                'in:hrd,division_leader,user',
+                function ($attribute, $value, $fail) use ($user) {
+                    // Prevent changing to admin role
+                    if ($value === 'admin') {
+                        $fail('Admin role cannot be assigned.');
+                    }
+                    // Prevent changing to HRD if one already exists (excluding current user)
+                    if ($value === 'hrd' && User::where('role', 'hrd')->where('id', '!=', $user->id)->exists()) {
+                        $fail('HRD role already exists. Only one HRD is allowed.');
+                    }
+                },
+            ],
             'division_id' => 'nullable|exists:divisions,id',
             'leave_quota' => 'required|integer|min:0|max:365',
         ]);

@@ -1,147 +1,206 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-slate-800 leading-tight">
-            {{ __('User Dashboard') }}
-        </h2>
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="font-semibold text-2xl text-slate-900 leading-tight tracking-tight">
+                    {{ __('User Dashboard') }}
+                </h2>
+                <p class="text-sm text-slate-500 mt-1">Overview of your leave quota and recent requests</p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12 bg-gray-50">
+    <div class="py-8 bg-[#F8FAFC]" x-data="{ mounted: false }" x-init="mounted = true">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Sisa Kuota Card -->
-                <div class="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl p-6 text-white shadow-lg transition-transform hover:scale-[1.02]">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-xl bg-indigo-400/30">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                            </svg>
+            <!-- Header Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+                 x-show="mounted"
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 translate-y-4"
+                 x-transition:enter-end="opacity-100 translate-y-0">
+                
+                <!-- Card 1: Remaining Annual Leave (Main Highlight) -->
+                <div class="group bg-gradient-to-br from-[#4F46E5] via-[#6366F1] to-[#A855F7] rounded-[22px] p-8 text-white shadow-xl shadow-indigo-500/20 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/30 hover:-translate-y-1 relative overflow-hidden"
+                     style="animation-delay: 0ms;">
+                    <!-- Subtle glow effect -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="p-4 rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                </svg>
+                            </div>
                         </div>
-                        <div class="ml-4">
-                            <h3 class="text-sm font-semibold opacity-80">Remaining Annual Leave</h3>
-                            <p class="text-4xl font-bold mt-1">{{ $remainingQuota }} days</p>
+                        <div>
+                            <h3 class="text-sm font-medium text-white/90 mb-2">Remaining Annual Leave</h3>
+                            <p class="text-5xl font-bold tracking-tight mb-1">{{ $remainingQuota }}</p>
+                            <p class="text-sm text-white/80">days available</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Statistik Pengajuan Card -->
-                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 transition-all hover:shadow-md">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-lg bg-blue-100">
+                <!-- Card 2: Leave Statistics -->
+                <div class="group bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1"
+                     style="animation-delay: 100ms;">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="p-3 rounded-xl bg-blue-50 shadow-sm">
                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                         </div>
-                        <div class="ml-4">
-                            <h3 class="text-sm font-semibold text-slate-600">Leave Statistics</h3>
-                            <div class="mt-2 space-y-1">
-                                <p class="text-lg font-semibold text-slate-800">{{ $totalLeaves }} total requests</p>
-                                <p class="text-lg text-slate-600">{{ $totalSickLeave }} sick leave</p>
-                            </div>
+                        <h3 class="text-sm font-semibold text-slate-700">Leave Statistics</h3>
+                    </div>
+                    <div class="space-y-3 pt-3 border-t border-[#E5E7EB]">
+                        <div>
+                            <p class="text-xs font-medium text-[#6B7280] mb-1">Total Requests</p>
+                            <p class="text-2xl font-bold text-slate-900">{{ $totalLeaves }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-[#6B7280] mb-1">Sick Leave</p>
+                            <p class="text-xl font-semibold text-slate-700">{{ $totalSickLeave }}</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Informasi Divisi Card -->
-                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 transition-all hover:shadow-md">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-lg bg-emerald-100">
+                <!-- Card 3: Division Information -->
+                <div class="group bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1"
+                     style="animation-delay: 200ms;">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="p-3 rounded-xl bg-emerald-50 shadow-sm">
                             <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
                         </div>
-                        <div class="ml-4">
-                            <h3 class="text-sm font-semibold text-slate-600">Division Information</h3>
-                            <div class="mt-2 space-y-1">
-                                <p class="text-sm font-medium text-slate-800">
-                                    <span class="font-semibold">Division:</span> 
-                                    @if($user->division)
-                                        {{ $user->division->name }}
-                                    @else
-                                        <span class="italic text-slate-500">Belum ada divisi</span>
-                                    @endif
-                                </p>
-                                <p class="text-sm text-slate-800">
-                                    <span class="font-semibold">Leader:</span> 
-                                    @if($user->division && $user->division->leader)
-                                        {{ $user->division->leader->name }}
-                                    @else
-                                        <span class="italic text-slate-500">Tidak ada ketua</span>
-                                    @endif
-                                </p>
-                            </div>
+                        <h3 class="text-sm font-semibold text-slate-700">Division Information</h3>
+                    </div>
+                    <div class="space-y-3 pt-3 border-t border-[#E5E7EB]">
+                        <div>
+                            <p class="text-xs font-medium text-[#6B7280] mb-1">Division</p>
+                            <p class="text-base font-semibold text-slate-900">
+                                @if($user->division)
+                                    {{ $user->division->name }}
+                                @else
+                                    <span class="italic text-slate-400">Belum ada divisi</span>
+                                @endif
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-[#6B7280] mb-1">Leader</p>
+                            <p class="text-base font-semibold text-slate-900">
+                                @if($user->division && $user->division->leader)
+                                    {{ $user->division->leader->name }}
+                                @else
+                                    <span class="italic text-slate-400">Tidak ada ketua</span>
+                                @endif
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Leave Requests -->
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 transition-all">
-                <h3 class="text-lg font-semibold text-slate-800 mb-4">Recent Leave Requests</h3>
+            <!-- Recent Leave Requests Table -->
+            <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[22px] p-6 transition-all duration-300"
+                 x-show="mounted"
+                 x-transition:enter="transition ease-out duration-500 delay-300"
+                 x-transition:enter-start="opacity-0 translate-y-4"
+                 x-transition:enter-end="opacity-100 translate-y-0">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-900 mb-1">Recent Leave Requests</h3>
+                        <p class="text-sm text-[#6B7280]">Your latest leave request submissions</p>
+                    </div>
+                </div>
                 
                 @if($user->leaveRequests->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-slate-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Dates</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Days</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Submitted</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($user->leaveRequests()->latest()->take(5)->get() as $request)
-                                    <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs font-bold rounded-full
-                                                {{ $request->isAnnualLeave() ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                                {{ ucfirst($request->leave_type) . ' Leave' }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                                            {{ \Carbon\Carbon::parse($request->start_date)->format('d M Y') }} - 
-                                            {{ \Carbon\Carbon::parse($request->end_date)->format('d M Y') }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                                            {{ $request->total_days }} days
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-3 py-1 inline-flex text-xs font-bold rounded-full
-                                                @if($request->isPending()) bg-yellow-100 text-yellow-800
-                                                @elseif($request->isApprovedByLeader()) bg-blue-100 text-blue-800
-                                                @elseif($request->isApproved()) bg-emerald-100 text-emerald-800
-                                                @elseif($request->isRejected()) bg-rose-100 text-rose-800
-                                                @else bg-gray-100 text-gray-800
-                                                @endif">
-                                                {{ ucfirst(str_replace('_', ' ', $request->status)) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                                            {{ \Carbon\Carbon::parse($request->created_at)->diffForHumans() }}
-                                        </td>
+                    <div class="overflow-x-auto -mx-2">
+                        <div class="inline-block min-w-full align-middle px-2">
+                            <table class="min-w-full divide-y divide-[#E5E7EB]">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Type</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Dates</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Days</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Submitted</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-[#E5E7EB]">
+                                    @foreach($user->leaveRequests()->latest()->take(5)->get() as $index => $request)
+                                        <tr class="hover:bg-[#F8FAFC] transition-all duration-200 hover:shadow-sm group"
+                                            x-data="{ mounted: false }"
+                                            x-init="setTimeout(() => mounted = true, {{ $index * 50 }})"
+                                            x-show="mounted"
+                                            x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0 translate-x-4"
+                                            x-transition:enter-end="opacity-100 translate-x-0">
+                                            <td class="px-6 py-5 whitespace-nowrap">
+                                                <span class="px-3 py-1.5 inline-flex text-xs font-semibold rounded-full shadow-sm
+                                                    {{ $request->isAnnualLeave() ? 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200' : 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' }}">
+                                                    {{ ucfirst($request->leave_type) . ' Leave' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-5 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-slate-900">{{ \Carbon\Carbon::parse($request->start_date)->format('d M Y') }}</div>
+                                                <div class="text-xs text-[#6B7280] mt-0.5">{{ \Carbon\Carbon::parse($request->end_date)->format('d M Y') }}</div>
+                                            </td>
+                                            <td class="px-6 py-5 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-slate-100 text-slate-700">
+                                                    {{ $request->total_days }} days
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-5 whitespace-nowrap">
+                                                <span class="px-3 py-1.5 inline-flex text-xs font-semibold rounded-full shadow-sm transition-all duration-200 hover:scale-105
+                                                    @if($request->isPending()) bg-amber-50 text-amber-700 ring-1 ring-amber-200
+                                                    @elseif($request->isApprovedByLeader()) bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200
+                                                    @elseif($request->isApproved()) bg-blue-50 text-blue-700 ring-1 ring-blue-200
+                                                    @elseif($request->isRejected()) bg-rose-50 text-rose-700 ring-1 ring-rose-200
+                                                    @else bg-slate-50 text-slate-700 ring-1 ring-slate-200
+                                                    @endif">
+                                                    {{ ucfirst(str_replace('_', ' ', $request->status)) }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-5 whitespace-nowrap">
+                                                <div class="flex items-center gap-2 text-sm text-[#6B7280]">
+                                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    <span>{{ \Carbon\Carbon::parse($request->created_at)->diffForHumans() }}</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     
                     @if($user->leaveRequests()->count() > 5)
-                        <div class="mt-4 text-center">
-                            <a href="{{ route('leave-requests.index') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                        <div class="mt-6 text-center pt-4 border-t border-[#E5E7EB]">
+                            <a href="{{ route('leave-requests.index') }}" 
+                               class="inline-flex items-center gap-2 text-[#4F46E5] hover:text-[#6366F1] font-semibold text-sm transition-all duration-200 hover:underline group">
                                 View All Requests
+                                <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
                             </a>
                         </div>
                     @endif
                 @else
-                    <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01"></path>
-                        </svg>
-                        <h3 class="mt-2 text-sm font-medium text-slate-900">No leave requests</h3>
-                        <p class="mt-1 text-sm text-slate-500">You haven't made any leave requests yet.</p>
-                        <div class="mt-6">
-                            <a href="{{ route('leave-requests.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent text-sm font-medium rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <div class="text-center py-16">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-100 mb-4">
+                            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-semibold text-slate-900 mb-1">No leave requests</h3>
+                        <p class="text-sm text-[#6B7280] mb-6">You haven't made any leave requests yet.</p>
+                        <div>
+                            <a href="{{ route('leave-requests.create') }}" 
+                               class="inline-flex items-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#6366F1] hover:from-[#4338CA] hover:to-[#4F46E5] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
                                 Request Leave
                             </a>
                         </div>

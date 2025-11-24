@@ -1,18 +1,33 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-slate-800 leading-tight">
-            {{ __('Edit Division') }}
-        </h2>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+            </div>
+            <div>
+                <h2 class="font-bold text-xl text-slate-800 leading-tight">
+                    Edit Division
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">{{ $division->name }}</p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12 bg-gray-50">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 transition-all">
-                <div class="text-slate-700">
-                    <h3 class="text-lg font-semibold text-slate-800 mb-6">Edit Division: {{ $division->name }}</h3>
+    <div class="py-8 bg-slate-50 min-h-screen animate-fade-in">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white border border-slate-200/60 shadow-sm rounded-2xl overflow-hidden transition-all duration-300 animate-fade-up">
+                <!-- Gradient Header Strip -->
+                <div class="h-1 bg-gradient-to-r from-indigo-500 via-indigo-400 to-indigo-500"></div>
+                
+                <div class="p-8">
 
                     @if($errors->any())
-                        <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-lg mb-4">
+                        <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl mb-6 flex items-start gap-2 animate-fade-up">
+                            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
                             <ul class="list-disc list-inside">
                                 @foreach($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -25,59 +40,97 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="mb-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-3">Division Information</h4>
+                        <!-- Division Information Section -->
+                        <div class="mb-8">
+                            <h4 class="text-base font-bold text-slate-800 mb-5 pb-3 border-b border-slate-200">Division Information</h4>
                             
-                            <div class="mb-4">
-                                <label for="name" class="block text-sm font-medium text-slate-700 mb-1">
-                                    Division Name *
-                                    <span class="text-red-500">*</span>
+                            <div class="mb-6">
+                                <label for="name" class="block text-sm font-bold text-slate-700 mb-2">
+                                    Division Name
+                                    <span class="text-rose-500 ml-1">*</span>
                                 </label>
                                 <input type="text" name="name" id="name" value="{{ old('name', $division->name) }}" required 
-                                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                       placeholder="Enter division name"
+                                       class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all">
                                 @error('name')
-                                    <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        {{ $message }}
+                                    </p>
                                 @enderror
                             </div>
 
-                            <div class="mb-4">
-                                <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                                <textarea name="description" id="description" rows="3" 
-                                          class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">{{ old('description', $division->description) }}</textarea>
+                            <div class="mb-6">
+                                <label for="description" class="block text-sm font-bold text-slate-700 mb-2">Description</label>
+                                <textarea name="description" id="description" rows="4" 
+                                          placeholder="Enter division description (optional)"
+                                          class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none">{{ old('description', $division->description) }}</textarea>
                                 @error('description')
-                                    <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        {{ $message }}
+                                    </p>
                                 @enderror
                             </div>
                         </div>
 
-                        <div class="mb-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-3">Division Leader Assignment</h4>
+                        <!-- Division Leader Assignment Section -->
+                        <div class="mb-8">
+                            <h4 class="text-base font-bold text-slate-800 mb-5 pb-3 border-b border-slate-200 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                                </svg>
+                                Division Leader Assignment
+                            </h4>
                             
-                            <div class="mb-4">
-                                <label for="leader_id" class="block text-sm font-medium text-slate-700 mb-1">Leader</label>
-                                <select name="leader_id" id="leader_id" 
-                                        class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="">Select Leader (Optional)</option>
-                                    @forelse($availableLeaders as $leader)
-                                        <option value="{{ $leader->id }}" {{ old('leader_id', $division->leader_id) == $leader->id ? 'selected' : '' }}>
-                                            {{ $leader->name }} ({{ $leader->email }})
-                                        </option>
-                                    @empty
-                                        <option value="">No available leaders</option>
-                                    @endforelse
-                                </select>
-                                <p class="mt-1 text-sm text-slate-500">Only division leaders who are not currently assigned to other divisions can be selected.</p>
+                            <div class="mb-6 animate-fade-up" style="animation-delay: 100ms;">
+                                <label for="leader_id" class="block text-sm font-bold text-slate-700 mb-2">Leader</label>
+                                <div class="relative">
+                                    <select name="leader_id" id="leader_id" 
+                                            class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 appearance-none transition-all">
+                                        <option value="">Select Leader (Optional)</option>
+                                        @forelse($availableLeaders as $leader)
+                                            <option value="{{ $leader->id }}" {{ old('leader_id', $division->leader_id) == $leader->id ? 'selected' : '' }}>
+                                                {{ $leader->name }} ({{ $leader->email }})
+                                            </option>
+                                        @empty
+                                            <option value="">No available leaders</option>
+                                        @endforelse
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-xs text-slate-500">Only division leaders who are not currently assigned to other divisions can be selected.</p>
                                 @error('leader_id')
-                                    <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        {{ $message }}
+                                    </p>
                                 @enderror
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-end mt-6">
-                            <a href="{{ route('admin.divisions.index') }}" class="mr-4 bg-slate-300 hover:bg-slate-400 text-slate-800 font-medium py-2 px-4 rounded-lg transition-all hover:-translate-y-0.5">
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-6 border-t border-slate-200">
+                            <a href="{{ route('admin.divisions.index') }}" class="group inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-6 rounded-full transition-all duration-200 hover:shadow-md">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
                                 Cancel
                             </a>
-                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all hover:-translate-y-0.5">
+                            <button type="submit" class="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2.5 px-6 rounded-full transition-all duration-200 hover:shadow-lg hover:scale-105">
+                                <svg class="w-4 h-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
                                 Update Division
                             </button>
                         </div>

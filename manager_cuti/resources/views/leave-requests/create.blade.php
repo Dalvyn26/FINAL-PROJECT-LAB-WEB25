@@ -21,12 +21,17 @@
     <body class="font-sans antialiased bg-gray-50">
         <x-app-layout>
             <x-slot name="header">
-                <h2 class="font-semibold text-xl text-slate-800 leading-tight">
-                    {{ __('Request Leave') }}
-                </h2>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="font-semibold text-2xl text-slate-900 leading-tight tracking-tight">
+                            {{ __('Request Leave') }}
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">Submit a new leave request for approval</p>
+                    </div>
+                </div>
             </x-slot>
 
-            <div class="py-12 bg-gray-50" x-data="{
+            <div class="py-8 bg-[#F8FAFC]" x-data="{
                 leaveType: '{{ old('leave_type') }}',
                 startDate: '',
                 endDate: '',
@@ -162,20 +167,31 @@
                 });
             }">
                 <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-                    <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 transition-all">
-                        <div class="text-slate-700">
-                            <h3 class="text-lg font-semibold text-slate-800 mb-6">Apply for Leave</h3>
-                            
-                            <!-- Display user's leave quota -->
-                            <div class="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
-                                <p class="text-slate-700">
-                                    Your remaining annual leave quota: <span class="font-bold text-slate-800">{{ Auth()->user()->leave_quota }} days</span>
+                    <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-8 transition-all duration-300">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="p-2 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1]">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-slate-900">Apply for Leave</h3>
+                        </div>
+                        
+                        <!-- Display user's leave quota -->
+                        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-sm text-slate-700">
+                                    Your remaining annual leave quota: <span class="font-bold text-slate-900">{{ Auth()->user()->leave_quota }} days</span>
                                 </p>
                             </div>
+                        </div>
 
                             @if($errors->any())
-                                <div class="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded-lg mb-4">
-                                    <ul>
+                                <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl mb-6">
+                                    <ul class="list-disc list-inside space-y-1">
                                         @foreach($errors->all() as $error)
                                             <li>{{ $error }}</li>
                                         @endforeach
@@ -186,9 +202,9 @@
                             <form method="POST" action="{{ route('leave-requests.store') }}" enctype="multipart/form-data">
                                 @csrf
 
-                                <div class="mb-4">
-                                    <label for="leave_type" class="block text-sm font-medium text-slate-600 mb-1">Leave Type *</label>
-                                    <select name="leave_type" id="leave_type" x-model="leaveType" x-on:change="updateFormState()" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <div class="mb-6">
+                                    <label for="leave_type" class="block text-sm font-semibold text-slate-700 mb-2">Leave Type *</label>
+                                    <select name="leave_type" id="leave_type" x-model="leaveType" x-on:change="updateFormState()" class="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200 hover:border-[#6B7280]">
                                         <option value="">Select Leave Type</option>
                                         @if($isEligible)
                                             <option value="annual">Annual Leave</option>
@@ -203,13 +219,13 @@
                                 <input type="hidden" name="start_date" id="start_date_hidden" required>
                                 <input type="hidden" name="end_date" id="end_date_hidden" required>
 
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium text-slate-600 mb-1">Leave Dates *</label>
+                                <div class="mb-6">
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Leave Dates *</label>
                                     <div class="relative">
                                         <input type="text" id="date_range_picker" readonly 
                                                placeholder="Select date range..." 
-                                               class="w-full px-4 py-3 pl-12 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer">
-                                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">
+                                               class="w-full px-4 py-3 pl-12 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] cursor-pointer transition-all duration-200 hover:border-[#6B7280]">
+                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#6B7280]">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
@@ -219,24 +235,28 @@
 
                                 <!-- Weekend Warning Message -->
                                 <template x-if="showWeekendWarning">
-                                    <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                                        <p class="text-amber-700 text-sm">
-                                            <svg class="inline h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                        <div class="flex items-start gap-3">
+                                            <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                                             </svg>
-                                            Untuk cuti di hari Sabtu dan Minggu tidak membutuhkan pengajuan cuti, kecuali jika bersambung dengan hari kerja (misal: Jumat - Senin).
-                                        </p>
+                                            <p class="text-amber-700 text-sm leading-relaxed">
+                                                Untuk cuti di hari Sabtu dan Minggu tidak membutuhkan pengajuan cuti, kecuali jika bersambung dengan hari kerja (misal: Jumat - Senin).
+                                            </p>
+                                        </div>
                                     </div>
                                 </template>
 
                                 <!-- Holiday Info Message -->
-                                <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                    <p class="text-blue-700 text-sm">
-                                        <svg class="inline h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                    <div class="flex items-start gap-3">
+                                        <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                                         </svg>
-                                        <strong>Catatan:</strong> Hari libur nasional (yang ada di sistem) tidak akan mengurangi kuota cuti Anda. Sistem akan otomatis melewati hari Sabtu, Minggu, dan hari libur nasional saat menghitung durasi cuti.
-                                    </p>
+                                        <p class="text-blue-700 text-sm leading-relaxed">
+                                            <strong>Catatan:</strong> Hari libur nasional (yang ada di sistem) tidak akan mengurangi kuota cuti Anda. Sistem akan otomatis melewati hari Sabtu, Minggu, dan hari libur nasional saat menghitung durasi cuti.
+                                        </p>
+                                    </div>
                                 </div>
 
                                 <div x-show="leaveType === 'sick'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-95">
@@ -245,22 +265,24 @@
                                             Medical Certificate *
                                             <span class="text-red-500">*</span>
                                         </label>
-                                        <div x-ref="uploadArea" @click="$refs.fileInput.click()" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer">
+                                        <div x-ref="uploadArea" @click="$refs.fileInput.click()" class="mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-[#E5E7EB] border-dashed rounded-xl bg-[#F8FAFC] hover:bg-indigo-50/50 hover:border-[#4F46E5]/40 transition-all duration-300 cursor-pointer group">
                                             <input id="attachment" name="attachment" type="file" accept=".pdf,.jpg,.jpeg,.png" x-ref="fileInput" @change="fileName = $refs.fileInput.files[0]?.name" class="hidden">
 
                                             <div class="space-y-1 text-center">
                                                 <template x-if="!fileName">
                                                     <div>
                                                         <div class="flex text-sm text-slate-600 justify-center">
-                                                            <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                                                            </svg>
+                                                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1] mb-2 group-hover:scale-110 transition-transform duration-300">
+                                                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                                                </svg>
+                                                            </div>
                                                         </div>
-                                                        <p class="mt-2 text-sm text-slate-600">
-                                                            <span class="font-medium text-indigo-600 hover:text-indigo-500">Upload medical certificate</span>
-                                                            <span> or drag and drop</span>
+                                                        <p class="mt-2 text-sm font-semibold text-slate-700">
+                                                            <span class="text-[#4F46E5]">Upload medical certificate</span>
+                                                            <span class="text-[#6B7280]"> or drag and drop</span>
                                                         </p>
-                                                        <p class="text-xs text-slate-500">
+                                                        <p class="text-xs text-[#6B7280] mt-1">
                                                             Format: PDF, JPG, JPEG, PNG. Max: 2MB
                                                         </p>
                                                     </div>
@@ -285,46 +307,53 @@
                                 </div>
 
                                 <!-- Address During Leave -->
-                                <div class="mb-4">
-                                    <label for="address_during_leave" class="block text-sm font-medium text-slate-600 mb-1">
+                                <div class="mb-6">
+                                    <label for="address_during_leave" class="block text-sm font-semibold text-slate-700 mb-2">
                                         Address During Leave *
-                                        <span class="text-red-500">*</span>
                                     </label>
-                                    <textarea name="address_during_leave" id="address_during_leave" rows="3" required class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">{{ old('address_during_leave') }}</textarea>
+                                    <textarea name="address_during_leave" id="address_during_leave" rows="3" required class="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200 hover:border-[#6B7280] resize-none">{{ old('address_during_leave') }}</textarea>
                                     @error('address_during_leave')
                                         <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <!-- Emergency Contact -->
-                                <div class="mb-4">
-                                    <label for="emergency_contact" class="block text-sm font-medium text-slate-600 mb-1">
+                                <div class="mb-6">
+                                    <label for="emergency_contact" class="block text-sm font-semibold text-slate-700 mb-2">
                                         Emergency Contact *
-                                        <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="emergency_contact" id="emergency_contact" value="{{ old('emergency_contact') }}" required class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="+62 812-3456-7890">
+                                    <div class="relative">
+                                        <input type="text" name="emergency_contact" id="emergency_contact" value="{{ old('emergency_contact') }}" required class="w-full px-4 py-3 pl-12 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200 hover:border-[#6B7280]" placeholder="+62 812-3456-7890">
+                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#6B7280]">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
                                     @error('emergency_contact')
                                         <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <!-- Leave Reason -->
-                                <div class="mb-4">
-                                    <label for="reason" class="block text-sm font-medium text-slate-600 mb-1">
+                                <div class="mb-6">
+                                    <label for="reason" class="block text-sm font-semibold text-slate-700 mb-2">
                                         Reason *
-                                        <span class="text-red-500">*</span>
                                     </label>
-                                    <textarea name="reason" id="reason" rows="4" required class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">{{ old('reason') }}</textarea>
+                                    <textarea name="reason" id="reason" rows="4" required class="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200 hover:border-[#6B7280] resize-none">{{ old('reason') }}</textarea>
                                     @error('reason')
                                         <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
-                                <div class="flex items-center justify-end mt-6">
-                                    <a href="{{ route('leave-requests.index') }}" class="mr-4 bg-slate-500 hover:bg-slate-600 text-white font-medium py-2 px-4 rounded-lg transition-all hover:-translate-y-0.5">
+                                <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-[#E5E7EB]">
+                                    <a href="{{ route('leave-requests.index') }}" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 hover:scale-105">
                                         Cancel
                                     </a>
-                                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all hover:-translate-y-0.5" :disabled="!isWeekendValid" x-bind:class="!isWeekendValid ? 'opacity-50 cursor-not-allowed' : ''">
+                                    <button type="submit" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#6366F1] hover:from-[#4338CA] hover:to-[#4F46E5] text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md" :disabled="!isWeekendValid" x-bind:class="!isWeekendValid ? 'opacity-50 cursor-not-allowed' : ''">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
                                         Submit Request
                                     </button>
                                 </div>
