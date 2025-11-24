@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LeaveRequest;
 use App\Models\User;
+use App\Models\Holiday;
 use App\Services\LeaveRequestService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class LeaveRequestController extends Controller
 {
@@ -250,19 +252,10 @@ class LeaveRequestController extends Controller
                 : 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // Optional for annual leave
         ]);
 
-        // Calculate total working days (excluding weekends)
-        $startDate = \Carbon\Carbon::parse($request->start_date);
-        $endDate = \Carbon\Carbon::parse($request->end_date);
-
-        // Count working days (excluding Saturday and Sunday)
-        $totalDays = 0;
-        $currentDate = clone $startDate;
-        while ($currentDate <= $endDate) {
-            if ($currentDate->isWeekday()) {
-                $totalDays++;
-            }
-            $currentDate->addDay();
-        }
+        // Calculate total working days (excluding weekends and holidays)
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
+        $totalDays = $this->calculateWorkingDays($startDate, $endDate);
 
         // Handle file upload if present
         $attachmentPath = null;
@@ -381,19 +374,10 @@ class LeaveRequestController extends Controller
                 : 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // Optional for annual leave
         ]);
 
-        // Calculate total working days (excluding weekends)
-        $startDate = \Carbon\Carbon::parse($request->start_date);
-        $endDate = \Carbon\Carbon::parse($request->end_date);
-
-        // Count working days (excluding Saturday and Sunday)
-        $totalDays = 0;
-        $currentDate = clone $startDate;
-        while ($currentDate <= $endDate) {
-            if ($currentDate->isWeekday()) {
-                $totalDays++;
-            }
-            $currentDate->addDay();
-        }
+        // Calculate total working days (excluding weekends and holidays)
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
+        $totalDays = $this->calculateWorkingDays($startDate, $endDate);
 
         // Handle file upload if present
         $attachmentPath = $leaveRequest->attachment_path; // Keep existing if no new file
@@ -580,5 +564,63 @@ class LeaveRequestController extends Controller
 
         // Return download
         return $pdf->download($fileName);
+    }
+
+    /**
+     * Get holidays for a date range (API endpoint for frontend).
+     */
+    public function getHolidays(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $holidays = Holiday::whereBetween('holiday_date', [
+            $request->start_date,
+            $request->end_date
+        ])->get(['holiday_date', 'title'])->map(function ($holiday) {
+            return [
+                'date' => $holiday->holiday_date->format('Y-m-d'),
+                'title' => $holiday->title,
+            ];
+        });
+
+        return response()->json($holidays);
+    }
+
+    /**
+     * Calculate working days excluding weekends and holidays.
+     * 
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @return int
+     */
+    private function calculateWorkingDays(Carbon $startDate, Carbon $endDate): int
+    {
+        // Get all holidays within the date range
+        $holidays = Holiday::whereBetween('holiday_date', [
+            $startDate->format('Y-m-d'),
+            $endDate->format('Y-m-d')
+        ])->pluck('holiday_date')->map(function ($date) {
+            return Carbon::parse($date)->format('Y-m-d');
+        })->toArray();
+
+        $totalDays = 0;
+        $currentDate = clone $startDate;
+
+        while ($currentDate <= $endDate) {
+            // Skip weekends (Saturday = 6, Sunday = 0)
+            if ($currentDate->isWeekday()) {
+                // Check if current date is a holiday
+                $dateString = $currentDate->format('Y-m-d');
+                if (!in_array($dateString, $holidays)) {
+                    $totalDays++;
+                }
+            }
+            $currentDate->addDay();
+        }
+
+        return $totalDays;
     }
 }

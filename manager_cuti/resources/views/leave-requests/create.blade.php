@@ -229,6 +229,16 @@
                                     </div>
                                 </template>
 
+                                <!-- Holiday Info Message -->
+                                <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <p class="text-blue-700 text-sm">
+                                        <svg class="inline h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <strong>Catatan:</strong> Hari libur nasional (yang ada di sistem) tidak akan mengurangi kuota cuti Anda. Sistem akan otomatis melewati hari Sabtu, Minggu, dan hari libur nasional saat menghitung durasi cuti.
+                                    </p>
+                                </div>
+
                                 <div x-show="leaveType === 'sick'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-95">
                                     <div class="mb-4">
                                         <label for="attachment" class="block text-sm font-medium text-slate-600 mb-1">

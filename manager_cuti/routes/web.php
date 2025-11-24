@@ -5,6 +5,7 @@ use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DivisionController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\HolidayController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\Leader\DashboardController as LeaderDashboardController;
 use App\Http\Controllers\Hrd\DashboardController as HrdDashboardController;
@@ -42,10 +43,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('divisions', DivisionController::class);
     Route::resource('users', 'App\Http\Controllers\Admin\UserController');
+    Route::resource('holidays', HolidayController::class);
 
     // Division Member Management
     Route::post('/divisions/{division}/members', [DivisionController::class, 'storeMember'])->name('divisions.members.store');
     Route::delete('/divisions/{division}/members/{user}', [DivisionController::class, 'removeMember'])->name('divisions.members.destroy');
+
+    // Holiday Sync
+    Route::post('/holidays/sync', [HolidayController::class, 'fetchGoogleHolidays'])->name('holidays.sync');
 });
 
 // Leader Routes
@@ -73,6 +78,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('leave-requests', LeaveRequestController::class);
     Route::post('/leave-requests/{leaveRequest}/cancel', [LeaveRequestController::class, 'cancel'])->name('leave-requests.cancel');
     Route::get('/leave-requests/{leaveRequest}/download-pdf', [LeaveRequestController::class, 'downloadPdf'])->name('leave-requests.download-pdf');
+    
+    // API: Get holidays for date range (for frontend calculation)
+    Route::get('/api/holidays', [LeaveRequestController::class, 'getHolidays'])->name('api.holidays');
 });
 
 require __DIR__.'/auth.php';
