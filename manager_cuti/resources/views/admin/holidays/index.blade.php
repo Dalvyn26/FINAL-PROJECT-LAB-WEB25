@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
             </div>
             <div>
-                <h2 class="font-bold text-xl text-slate-800 leading-tight">
+                <h2 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight">
                     Cuti-in Holiday Management
                 </h2>
                 <p class="text-xs text-slate-500 mt-0.5">Manage company holidays and national holidays</p>
@@ -15,8 +15,8 @@
         </div>
     </x-slot>
 
-    <div class="py-8 bg-slate-50 min-h-screen animate-fade-in" x-data="holidayModal()">
-        <div class="max-w-7xl mx-auto">
+    <div class="py-6 sm:py-8 bg-slate-50 min-h-screen animate-fade-in" x-data="holidayModal()">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white border border-slate-200/60 shadow-sm rounded-2xl overflow-hidden transition-all duration-300 animate-fade-up">
                 <!-- Gradient Top Border -->
                 <div class="h-1 bg-gradient-to-r from-indigo-500 via-indigo-400 to-indigo-500"></div>
@@ -28,23 +28,24 @@
                             <h3 class="text-lg font-bold text-slate-800">Hari Libur</h3>
                             <p class="text-xs text-slate-500 mt-1">Total {{ $holidays->total() }} holidays</p>
                         </div>
-                        <div class="flex flex-wrap gap-3">
+                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                             <!-- Sync Google Calendar Button -->
-                            <form action="{{ route('admin.holidays.sync') }}" method="POST" class="inline">
+                            <form action="{{ route('admin.holidays.sync') }}" method="POST" class="inline w-full sm:w-auto">
                                 @csrf
                                 <button type="submit" 
-                                        class="group inline-flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-2.5 px-5 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+                                        class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 text-sm sm:text-base"
                                         title="Import libur nasional otomatis">
-                                    <svg class="w-5 h-5 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12m0 0l4-4m-4 4l-4 4"></path>
                                     </svg>
-                                    Sync Google Calendar
+                                    <span class="hidden sm:inline">Sync Google Calendar</span>
+                                    <span class="sm:hidden">Sync</span>
                                 </button>
                             </form>
                             <!-- Add Holiday Button -->
                             <button @click="openModal()" 
-                                    class="group inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2.5 px-6 rounded-full transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:scale-105">
-                                <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2.5 px-4 sm:px-6 rounded-full transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:scale-105 text-sm sm:text-base">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
                                 Add Holiday
@@ -352,8 +353,8 @@
             <div class="fixed inset-0 bg-black bg-opacity-50" @click="closeModal()"></div>
             
             <!-- Modal Content -->
-            <div class="flex items-center justify-center min-h-screen px-4">
-                <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative z-50"
+            <div class="flex items-center justify-center min-h-screen px-4 py-4">
+                <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-4 sm:p-6 relative z-50 max-h-[90vh] overflow-y-auto"
                      @click.away="closeModal()"
                      x-transition:enter="ease-out duration-300"
                      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"

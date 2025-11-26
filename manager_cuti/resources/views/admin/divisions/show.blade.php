@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                 </svg>
             </div>
             <div>
-                <h2 class="font-bold text-xl text-slate-800 leading-tight">
+                <h2 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight">
                     Division Details
                 </h2>
                 <p class="text-xs text-slate-500 mt-0.5">View and manage division members</p>
@@ -15,8 +15,8 @@
         </div>
     </x-slot>
 
-    <div class="py-8 bg-slate-50 min-h-screen animate-fade-in">
-        <div class="max-w-7xl mx-auto">
+    <div class="py-6 sm:py-8 bg-slate-50 min-h-screen animate-fade-in">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Division Info Card -->
             <div class="bg-white border border-slate-200/60 shadow-sm rounded-2xl overflow-hidden mb-8 transition-all duration-300 animate-fade-up">
                 <!-- Division Header with Gradient Banner -->
@@ -35,14 +35,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <a href="{{ route('admin.divisions.edit', $division) }}" class="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2.5 px-5 rounded-full transition-all duration-200 hover:shadow-lg hover:scale-105">
+                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                            <a href="{{ route('admin.divisions.edit', $division) }}" class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2.5 px-4 sm:px-5 rounded-full transition-all duration-200 hover:shadow-lg hover:scale-105 text-sm sm:text-base">
                                 <svg class="w-4 h-4 group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                 </svg>
                                 Edit Division
                             </a>
-                            <a href="{{ route('admin.divisions.index') }}" class="inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-5 rounded-full transition-all duration-200 hover:shadow-md">
+                            <a href="{{ route('admin.divisions.index') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-4 sm:px-5 rounded-full transition-all duration-200 hover:shadow-md text-sm sm:text-base">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                                 </svg>

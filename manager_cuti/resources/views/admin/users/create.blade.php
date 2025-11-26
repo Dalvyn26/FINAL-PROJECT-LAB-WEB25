@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
             </div>
             <div>
-                <h2 class="font-bold text-xl text-slate-800 leading-tight">
+                <h2 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight">
                     Create User
                 </h2>
                 <p class="text-xs text-slate-500 mt-0.5">Add a new employee to your organization</p>
@@ -15,13 +15,13 @@
         </div>
     </x-slot>
 
-    <div class="py-8 bg-slate-50 min-h-screen animate-fade-in">
-        <div class="max-w-4xl mx-auto">
+    <div class="py-6 sm:py-8 bg-slate-50 min-h-screen animate-fade-in">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white border border-slate-200/60 shadow-sm rounded-2xl overflow-hidden transition-all duration-300 animate-fade-up">
                 <!-- Gradient Top Border -->
                 <div class="h-1 bg-gradient-to-r from-indigo-500 via-indigo-400 to-indigo-500"></div>
                 
-                <div class="p-8">
+                <div class="p-4 sm:p-6 lg:p-8">
 
                     @if($errors->any())
                         <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl mb-6 flex items-start gap-2 animate-fade-up">

@@ -1,18 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-                <h2 class="font-semibold text-2xl text-slate-900 leading-tight tracking-tight">
+                <h2 class="font-semibold text-xl sm:text-2xl text-slate-900 leading-tight tracking-tight">
                     {{ __('Edit User') }}
                 </h2>
-                <p class="text-sm text-slate-500 mt-1">Update user information and settings</p>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Update user information and settings</p>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-8 bg-[#F8FAFC]" x-data="{ mounted: false }" x-init="mounted = true">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[22px] p-8 md:p-10 transition-all duration-300"
+    <div class="py-6 sm:py-8 bg-[#F8FAFC]" x-data="{ mounted: false }" x-init="mounted = true">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[22px] p-4 sm:p-6 lg:p-8 xl:p-10 transition-all duration-300"
                  x-show="mounted"
                  x-transition:enter="transition ease-out duration-500"
                  x-transition:enter-start="opacity-0 translate-y-4"
@@ -20,15 +20,15 @@
                 
                 <!-- Header Section -->
                 <div class="mb-8 pb-6 border-b border-[#E5E7EB]">
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="p-2 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1]">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                            </svg>
+                        <div class="flex items-center gap-2 sm:gap-3 mb-2">
+                            <div class="p-2 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1]">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900 truncate">Edit User: {{ $user->name }}</h3>
                         </div>
-                        <h3 class="text-2xl font-bold text-slate-900">Edit User: {{ $user->name }}</h3>
-                    </div>
-                    <p class="text-sm text-[#6B7280] ml-11">Modify user details and permissions</p>
+                        <p class="text-xs sm:text-sm text-[#6B7280] ml-0 sm:ml-11">Modify user details and permissions</p>
                 </div>
 
                 @if($errors->any())

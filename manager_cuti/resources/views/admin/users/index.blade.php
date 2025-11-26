@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
             </div>
             <div>
-                <h2 class="font-bold text-xl text-slate-800 leading-tight">
+                <h2 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight">
                     Cuti-in User Management
                 </h2>
                 <p class="text-xs text-slate-500 mt-0.5">Manage all users, roles, and statuses</p>
@@ -15,21 +15,22 @@
         </div>
     </x-slot>
 
-    <div class="py-8 bg-slate-50 min-h-screen animate-fade-in">
-        <div class="max-w-7xl mx-auto">
+    <div class="py-6 sm:py-8 bg-slate-50 min-h-screen animate-fade-in">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white border border-slate-200/60 shadow-sm rounded-2xl overflow-hidden transition-all duration-300 animate-fade-up">
                 <!-- Header Section -->
-                <div class="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                         <div>
-                            <h3 class="text-lg font-bold text-slate-800">Users</h3>
+                            <h3 class="text-base sm:text-lg font-bold text-slate-800">Users</h3>
                             <p class="text-xs text-slate-500 mt-1">Total {{ $users->total() }} users found</p>
                         </div>
-                        <a href="{{ route('admin.users.create') }}" class="group inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2.5 px-5 rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
-                            <svg class="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="{{ route('admin.users.create') }}" class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 text-sm sm:text-base">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
-                            Add User
+                            <span class="hidden sm:inline">Add User</span>
+                            <span class="sm:hidden">Add</span>
                         </a>
                     </div>
                 </div>
@@ -208,8 +209,8 @@
                     </form>
                 </div>
 
-                <!-- Table Section -->
-                <div class="overflow-x-auto">
+                <!-- Desktop Table Section -->
+                <div class="hidden lg:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-100">
                         <thead class="bg-slate-50/50">
                             <tr>
@@ -358,8 +359,81 @@
                     </table>
                 </div>
 
+                <!-- Mobile Card View -->
+                <div class="lg:hidden px-4 sm:px-6 pb-6 space-y-4">
+                    @forelse($users as $user)
+                        <div class="bg-white border border-slate-200/60 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3 flex-1 min-w-0">
+                                    <div class="flex-shrink-0">
+                                        @if($user->avatar)
+                                            <img src="{{ Storage::url($user->avatar) }}?v={{ time() }}" class="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm" alt="{{ $user->name }}">
+                                        @else
+                                            <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name ?? 'User') }}&background=4F46E5&color=fff" class="w-12 h-12 rounded-full ring-2 ring-white shadow-sm" alt="{{ $user->name }}">
+                                        @endif
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="text-sm font-bold text-slate-900 truncate">{{ $user->name }}</h3>
+                                        <p class="text-xs text-slate-500 truncate">{{ $user->email }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 ml-2">
+                                    <a href="{{ route('admin.users.show', $user) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </a>
+                                    <a href="{{ route('admin.users.edit', $user) }}" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="space-y-2 pt-4 border-t border-slate-100">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-semibold text-slate-500">Role:</span>
+                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full
+                                        @switch($user->role)
+                                            @case('admin') bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 ring-1 ring-purple-200 @break
+                                            @case('hrd') bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 ring-1 ring-blue-200 @break
+                                            @case('division_leader') bg-gradient-to-r from-amber-100 to-amber-50 text-amber-700 ring-1 ring-amber-200 @break
+                                            @case('user') bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-700 ring-1 ring-emerald-200 @break
+                                            @default bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 ring-1 ring-slate-200
+                                        @endswitch">
+                                        {{ ucfirst(str_replace('_', ' ', $user->role)) }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-semibold text-slate-500">Division:</span>
+                                    <span class="text-xs font-medium text-slate-700">{{ $user->division ? $user->division->name : 'None' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-semibold text-slate-500">Status:</span>
+                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full {{ $user->active_status ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200' : 'bg-rose-100 text-rose-700 ring-1 ring-rose-200' }}">
+                                        {{ $user->active_status ? 'Active' : 'Inactive' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="bg-white border border-slate-200/60 rounded-2xl p-12 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
+                                    <svg class="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-sm font-semibold text-slate-900 mb-1">No users found</h3>
+                                <p class="text-sm text-slate-500">Try adjusting your filters to see more results.</p>
+                            </div>
+                        </div>
+                    @endforelse
+                </div>
+
                 <!-- Pagination -->
-                <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/30">
+                <div class="px-4 sm:px-6 py-4 sm:py-5 border-t border-slate-100 bg-slate-50/30">
                     {{ $users->links() }}
                 </div>
             </div>

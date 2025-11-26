@@ -1,28 +1,28 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
                 </div>
                 <div>
-                    <h2 class="font-bold text-xl text-slate-800 leading-tight">
+                    <h2 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight truncate">
                         View User: {{ $user->name }}
                     </h2>
                     <p class="text-xs text-slate-500 mt-0.5">User profile and information details</p>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-xl transition-all duration-200 hover:shadow-lg hover:scale-105">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                <a href="{{ route('admin.users.edit', $user) }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-200 hover:shadow-lg hover:scale-105 text-sm sm:text-base">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                     </svg>
                     Edit User
                 </a>
-                <a href="{{ route('admin.users.index') }}" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-5 rounded-xl transition-all duration-200 hover:shadow-md">
+                <a href="{{ route('admin.users.index') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-200 hover:shadow-md text-sm sm:text-base">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
@@ -32,23 +32,23 @@
         </div>
     </x-slot>
 
-    <div class="py-8 bg-[#F8FAFC]">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6 sm:py-8 bg-[#F8FAFC]">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] overflow-hidden transition-all duration-300">
                 <!-- Profile Header -->
-                <div class="bg-gradient-to-br from-[#4F46E5] to-[#6366F1] px-8 py-8">
-                    <div class="flex items-center gap-6">
-                        <div class="relative">
+                <div class="bg-gradient-to-br from-[#4F46E5] to-[#6366F1] px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
+                        <div class="relative flex-shrink-0">
                             @if($user->avatar)
-                                <img src="{{ Storage::url($user->avatar) }}?v={{ time() }}" class="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow-xl" alt="{{ $user->name }}">
+                                <img src="{{ Storage::url($user->avatar) }}?v={{ time() }}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover ring-4 ring-white shadow-xl" alt="{{ $user->name }}">
                             @else
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name ?? 'User') }}&background=4F46E5&color=fff&size=128" class="w-24 h-24 rounded-full ring-4 ring-white shadow-xl" alt="{{ $user->name }}">
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name ?? 'User') }}&background=4F46E5&color=fff&size=128" class="w-20 h-20 sm:w-24 sm:h-24 rounded-full ring-4 ring-white shadow-xl" alt="{{ $user->name }}">
                             @endif
-                            <div class="absolute -bottom-1 -right-1 w-7 h-7 {{ $user->active_status ? 'bg-emerald-500' : 'bg-slate-400' }} border-4 border-white rounded-full"></div>
+                            <div class="absolute -bottom-1 -right-1 w-6 h-6 sm:w-7 sm:h-7 {{ $user->active_status ? 'bg-emerald-500' : 'bg-slate-400' }} border-4 border-white rounded-full"></div>
                         </div>
-                        <div class="flex-1 text-white">
-                            <h3 class="text-2xl font-bold mb-1">{{ $user->name }}</h3>
-                            <p class="text-white/80 mb-3">{{ $user->email }}</p>
+                        <div class="flex-1 text-white text-center sm:text-left">
+                            <h3 class="text-xl sm:text-2xl font-bold mb-1">{{ $user->name }}</h3>
+                            <p class="text-sm sm:text-base text-white/80 mb-3">{{ $user->email }}</p>
                             <div class="flex items-center gap-3">
                                 <span class="px-3 py-1.5 inline-flex text-xs font-semibold rounded-full bg-white/20 backdrop-blur-sm
                                     @switch($user->role)
@@ -78,8 +78,8 @@
                 </div>
 
                 <!-- User Details -->
-                <div class="p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-4 sm:p-6 lg:p-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <!-- Basic Information -->
                         <div class="space-y-6">
                             <div>

@@ -1,13 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-slate-800 leading-tight">
-            {{ __('Create Holiday') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h2 class="font-semibold text-lg sm:text-xl text-slate-800 leading-tight">
+                {{ __('Create Holiday') }}
+            </h2>
+        </div>
     </x-slot>
 
-    <div class="py-12 bg-gray-50">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 transition-all">
+    <div class="py-6 sm:py-12 bg-gray-50">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-4 sm:p-6 transition-all">
                 <div class="text-slate-700">
                     <h3 class="text-lg font-semibold text-slate-800 mb-6">Add New Holiday</h3>
 
