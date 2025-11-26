@@ -1,17 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-slate-800 leading-tight">
-            {{ __('Leave Request Details') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h2 class="font-semibold text-lg sm:text-xl text-slate-800 leading-tight">
+                {{ __('Leave Request Details') }}
+            </h2>
+        </div>
     </x-slot>
 
-    <div class="py-12 bg-gray-50">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 transition-all">
+    <div class="py-6 sm:py-12 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-4 sm:p-6 transition-all">
                 <div class="text-slate-700">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-semibold text-slate-800">Leave Request Details</h3>
-                        <span class="px-3 py-1 inline-flex text-sm font-bold rounded-full 
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
+                        <h3 class="text-lg sm:text-xl font-semibold text-slate-800">Leave Request Details</h3>
+                        <span class="px-3 py-1 inline-flex text-xs sm:text-sm font-bold rounded-full 
                             @if($leaveRequest->isPending()) bg-yellow-100 text-yellow-800
                             @elseif($leaveRequest->isApprovedByLeader()) bg-blue-100 text-blue-800
                             @elseif($leaveRequest->isApproved()) bg-emerald-100 text-emerald-800
@@ -21,7 +23,7 @@
                         </span>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                         <div class="bg-slate-50 dark:bg-slate-700 rounded-xl p-4">
                             <p class="text-sm text-slate-500 dark:text-slate-400">Employee</p>
                             <p class="font-medium text-slate-800 dark:text-slate-200">{{ $leaveRequest->user->name }}</p>
@@ -90,8 +92,8 @@
                         </div>
                     @endif>
 
-                    <div class="flex items-center justify-end mt-6">
-                        <a href="{{ route('leave-requests.index') }}" class="bg-slate-500 hover:bg-slate-600 text-white font-medium py-2 px-4 rounded-lg transition-all hover:-translate-y-0.5">
+                    <div class="flex items-center justify-end mt-4 sm:mt-6">
+                        <a href="{{ route('leave-requests.index') }}" class="w-full sm:w-auto text-center bg-slate-500 hover:bg-slate-600 text-white font-medium py-2.5 px-4 sm:px-6 rounded-lg transition-all hover:-translate-y-0.5 text-sm sm:text-base">
                             Back to List
                         </a>
                     </div>

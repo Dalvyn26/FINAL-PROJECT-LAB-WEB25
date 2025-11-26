@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-                <h2 class="font-semibold text-2xl text-slate-900 leading-tight tracking-tight">
+                <h2 class="font-semibold text-xl sm:text-2xl text-slate-900 leading-tight tracking-tight">
                     {{ __('Final Approval') }}
                 </h2>
-                <p class="text-sm text-slate-500 mt-1">Review and approve leave requests from your team</p>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Review and approve leave requests from your team</p>
             </div>
         </div>
     </x-slot>
@@ -67,50 +67,52 @@
                  x-transition:leave="transition ease-in duration-200" 
                  x-transition:leave-start="opacity-100 translate-y-0" 
                  x-transition:leave-end="opacity-0 translate-y-4"
-                 class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white border border-[#E5E7EB] rounded-2xl shadow-xl p-5 z-50 w-full max-w-4xl flex justify-between items-center backdrop-blur-sm">
+                 class="fixed bottom-4 sm:bottom-6 left-4 right-4 sm:left-1/2 sm:right-auto sm:transform sm:-translate-x-1/2 bg-white border border-[#E5E7EB] rounded-2xl shadow-xl p-4 sm:p-5 z-50 sm:w-full sm:max-w-4xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 backdrop-blur-sm">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1] flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1] flex items-center justify-center flex-shrink-0">
                         <span class="text-white font-bold text-sm" x-text="selectedIds.length"></span>
                     </div>
-                    <div>
-                        <div class="text-sm font-semibold text-slate-900" x-text="selectedIds.length + ' item(s) selected'"></div>
-                        <div class="text-xs text-[#6B7280]">Select actions below</div>
+                    <div class="min-w-0">
+                        <div class="text-sm font-semibold text-slate-900 truncate" x-text="selectedIds.length + ' item(s) selected'"></div>
+                        <div class="text-xs text-[#6B7280] hidden sm:block">Select actions below</div>
                     </div>
                 </div>
-                <div class="flex gap-3">
-                    <form method="POST" action="{{ route('hrd.leave-requests.bulk-update') }}" class="inline">
+                <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                    <form method="POST" action="{{ route('hrd.leave-requests.bulk-update') }}" class="inline flex-1 sm:flex-initial">
                         @csrf
                         <input type="hidden" name="action" value="approve">
                         <template x-for="id in selectedIds" :key="id">
                             <input type="hidden" :name="'ids[]'" :value="id">
                         </template>
                         <button type="submit" 
-                                class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-2.5 px-5 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md"
+                                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md text-sm sm:text-base"
                                 @click="return confirm('Are you sure you want to approve ' + selectedIds.length + ' request(s)?')">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            Approve Selected
+                            <span class="hidden sm:inline">Approve Selected</span>
+                            <span class="sm:hidden">Approve</span>
                         </button>
                     </form>
                     <button @click="openBulkRejectModal()" 
-                            class="inline-flex items-center gap-2 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-semibold py-2.5 px-5 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md">
+                            class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md text-sm sm:text-base">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
-                        Reject Selected
+                        <span class="hidden sm:inline">Reject Selected</span>
+                        <span class="sm:hidden">Reject</span>
                     </button>
                 </div>
             </div>
 
-            <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-6 transition-all duration-300"
+            <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300"
                  x-show="mounted"
                  x-transition:enter="transition ease-out duration-500"
                  x-transition:enter-start="opacity-0 translate-y-4"
                  x-transition:enter-end="opacity-100 translate-y-0">
-                <div class="flex justify-between items-center mb-6 pb-4 border-b border-[#E5E7EB]">
-                    <div class="flex items-center gap-4">
-                        <div class="flex items-center gap-3">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 pb-4 border-b border-[#E5E7EB]">
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <div class="flex items-center gap-2 sm:gap-3">
                             <input type="checkbox"
                                    x-model="selectAll"
                                    @change="toggleSelectAll"
@@ -118,7 +120,7 @@
                             <label class="text-sm font-semibold text-slate-700 cursor-pointer">Select All</label>
                         </div>
                     </div>
-                    <h3 class="text-lg font-semibold text-slate-900">Leave Requests for Final Approval</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-slate-900">Leave Requests for Final Approval</h3>
                 </div>
 
                 @if(session('success'))
@@ -148,9 +150,9 @@
                 @endif
 
                 @if($leaveRequests->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         @foreach($leaveRequests as $index => $request)
-                            <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative group"
+                            <div class="bg-white border border-[#E5E7EB] rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative group"
                                  :class="selectedIds.includes('{{ $request->id }}') ? 'ring-2 ring-[#4F46E5] bg-indigo-50/50 border-[#4F46E5]' : 'hover:border-[#4F46E5]/30'"
                                  x-data="{ mounted: false }"
                                  x-init="setTimeout(() => mounted = true, {{ $index * 50 }})"
@@ -349,8 +351,8 @@
                      x-transition:leave="ease-in duration-200"
                      x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                      x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                     class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                    <div class="bg-white px-6 pt-6 pb-4 sm:p-6 sm:pb-4">
+                     class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                    <div class="bg-white px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-4">
                         <div class="sm:flex sm:items-start">
                             <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-2xl bg-rose-100 sm:mx-0 sm:h-10 sm:w-10">
                                 <svg class="h-6 w-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -380,12 +382,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-[#F8FAFC] px-6 py-4 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+                    <div class="bg-[#F8FAFC] px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
                         <button
                             @click="if(rejectNote.length < 10) { alert('Rejection note must be at least 10 characters'); return false; };
                             document.getElementById('individualRejectionForm').action = `/hrd/leave-requests/${rejectId}/reject`;
                             document.getElementById('individualRejectionForm').submit();"
-                            class="w-full inline-flex justify-center items-center gap-2 rounded-xl border border-transparent shadow-sm px-4 py-2.5 bg-gradient-to-r from-rose-500 to-rose-600 text-base font-semibold text-white hover:from-rose-600 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-all duration-300 hover:scale-105 sm:ml-3 sm:w-auto sm:text-sm"
+                            class="w-full sm:w-auto inline-flex justify-center items-center gap-2 rounded-xl border border-transparent shadow-sm px-4 py-2.5 bg-gradient-to-r from-rose-500 to-rose-600 text-sm sm:text-base font-semibold text-white hover:from-rose-600 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-all duration-300 hover:scale-105 sm:ml-3"
                             x-bind:disabled="rejectNote.length < 10"
                             x-bind:class="rejectNote.length < 10 ? 'opacity-50 cursor-not-allowed' : ''">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -395,7 +397,7 @@
                         </button>
                         <button @click="closeRejectModal"
                                 type="button"
-                                class="mt-3 w-full inline-flex justify-center rounded-xl border border-[#E5E7EB] shadow-sm px-4 py-2.5 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4F46E5] transition-all duration-200 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                class="mt-3 sm:mt-0 w-full sm:w-auto inline-flex justify-center rounded-xl border border-[#E5E7EB] shadow-sm px-4 py-2.5 bg-white text-sm sm:text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4F46E5] transition-all duration-200 sm:ml-3">
                             Cancel
                         </button>
                     </div>
@@ -410,8 +412,8 @@
                 
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 
-                <div x-show="showBulkRejectModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                    <div class="bg-white px-6 pt-6 pb-4 sm:p-6 sm:pb-4">
+                <div x-show="showBulkRejectModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                    <div class="bg-white px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-4">
                         <div class="sm:flex sm:items-start">
                             <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-2xl bg-rose-100 sm:mx-0 sm:h-10 sm:w-10">
                                 <svg class="h-6 w-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -440,14 +442,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-[#F8FAFC] px-6 py-4 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
-                        <button form="bulkRejectionForm" type="submit" class="w-full inline-flex justify-center items-center gap-2 rounded-xl border border-transparent shadow-sm px-4 py-2.5 bg-gradient-to-r from-rose-500 to-rose-600 text-base font-semibold text-white hover:from-rose-600 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-all duration-300 hover:scale-105 sm:ml-3 sm:w-auto sm:text-sm" @click="if(bulkRejectionNote.length < 10) { alert('Rejection note must be at least 10 characters'); return false; }">
+                    <div class="bg-[#F8FAFC] px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+                        <button form="bulkRejectionForm" type="submit" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 rounded-xl border border-transparent shadow-sm px-4 py-2.5 bg-gradient-to-r from-rose-500 to-rose-600 text-sm sm:text-base font-semibold text-white hover:from-rose-600 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-all duration-300 hover:scale-105 sm:ml-3" @click="if(bulkRejectionNote.length < 10) { alert('Rejection note must be at least 10 characters'); return false; }">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                             Reject Selected
                         </button>
-                        <button @click="showBulkRejectModal = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-xl border border-[#E5E7EB] shadow-sm px-4 py-2.5 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4F46E5] transition-all duration-200 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        <button @click="showBulkRejectModal = false" type="button" class="mt-3 sm:mt-0 w-full sm:w-auto inline-flex justify-center rounded-xl border border-[#E5E7EB] shadow-sm px-4 py-2.5 bg-white text-sm sm:text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4F46E5] transition-all duration-200 sm:ml-3">
                             Cancel
                         </button>
                     </div>

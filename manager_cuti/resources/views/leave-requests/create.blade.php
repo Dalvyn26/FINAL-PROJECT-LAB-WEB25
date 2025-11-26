@@ -21,12 +21,12 @@
     <body class="font-sans antialiased bg-gray-50">
         <x-app-layout>
             <x-slot name="header">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h2 class="font-semibold text-2xl text-slate-900 leading-tight tracking-tight">
+                        <h2 class="font-semibold text-xl sm:text-2xl text-slate-900 leading-tight tracking-tight">
                             {{ __('Request Leave') }}
                         </h2>
-                        <p class="text-sm text-slate-500 mt-1">Submit a new leave request for approval</p>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">Submit a new leave request for approval</p>
                     </div>
                 </div>
             </x-slot>
@@ -166,8 +166,8 @@
                     }
                 });
             }">
-                <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-                    <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-8 transition-all duration-300">
+                <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 lg:p-8 transition-all duration-300">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="p-2 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1]">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -346,11 +346,11 @@
                                     @enderror
                                 </div>
 
-                                <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-[#E5E7EB]">
-                                    <a href="{{ route('leave-requests.index') }}" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 hover:scale-105">
+                                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-[#E5E7EB]">
+                                    <a href="{{ route('leave-requests.index') }}" class="w-full sm:w-auto text-center px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 hover:scale-105">
                                         Cancel
                                     </a>
-                                    <button type="submit" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#6366F1] hover:from-[#4338CA] hover:to-[#4F46E5] text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md" :disabled="!isWeekendValid" x-bind:class="!isWeekendValid ? 'opacity-50 cursor-not-allowed' : ''">
+                                    <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#6366F1] hover:from-[#4338CA] hover:to-[#4F46E5] text-white font-semibold py-3 px-6 sm:px-8 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md" :disabled="!isWeekendValid" x-bind:class="!isWeekendValid ? 'opacity-50 cursor-not-allowed' : ''">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                         </svg>

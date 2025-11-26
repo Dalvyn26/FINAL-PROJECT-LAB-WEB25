@@ -1,14 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Edit Leave Request') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h2 class="font-semibold text-lg sm:text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ __('Edit Leave Request') }}
+            </h2>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
+                <div class="p-4 sm:p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-medium mb-6">Edit Leave Request</h3>
                     
                     <!-- Display user's leave quota -->
@@ -84,11 +86,11 @@
                             <textarea name="reason" id="reason" rows="4" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">{{ old('reason', $leaveRequest->reason) }}</textarea>
                         </div>
 
-                        <div class="flex items-center justify-end mt-6">
-                            <a href="{{ route('leave-requests.index') }}" class="mr-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 mt-6">
+                            <a href="{{ route('leave-requests.index') }}" class="w-full sm:w-auto text-center bg-gray-500 hover:bg-gray-700 text-white font-bold py-2.5 px-4 sm:px-6 rounded text-sm sm:text-base">
                                 Cancel
                             </a>
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <button type="submit" class="w-full sm:w-auto text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2.5 px-4 sm:px-6 rounded text-sm sm:text-base">
                                 Update Request
                             </button>
                         </div>
