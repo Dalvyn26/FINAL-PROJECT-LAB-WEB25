@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,6 +15,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
+    })
+    ->withSchedule(function (Schedule $schedule): void {
+        // Reset annual leave quota every January 1st at 00:00
+        // Cron format: minute hour day month day-of-week
+        // 0 0 1 1 * = Every year on January 1st at 00:00
+        $schedule->command('leave:reset-quota')
+            ->cron('0 0 1 1 *')
+            ->timezone('Asia/Makassar')
+            ->description('Reset annual leave quota for all eligible employees');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
