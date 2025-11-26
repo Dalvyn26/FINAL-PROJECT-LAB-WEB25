@@ -1,32 +1,32 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-                <h2 class="font-semibold text-2xl text-slate-900 leading-tight tracking-tight">
+                <h2 class="font-semibold text-xl sm:text-2xl text-slate-900 leading-tight tracking-tight">
                     {{ __('Profile') }}
                 </h2>
-                <p class="text-sm text-slate-500 mt-1">Manage your account settings and preferences</p>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Manage your account settings and preferences</p>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-8 bg-[#F8FAFC]">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <form method="POST" action="{{ route('profile.update', $user) }}" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="py-6 sm:py-8 bg-[#F8FAFC]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <form method="POST" action="{{ route('profile.update', $user) }}" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
                 @csrf
                 @method('PATCH')
 
                 <!-- Left Column: Profile Card & Leave Quota -->
                 <div class="lg:col-span-1 space-y-6">
                     <!-- Profile Card -->
-                    <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-8 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)]" 
+                    <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-6 sm:p-8 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)]" 
                          x-data="{ photoName: null, photoPreview: null }">
                         <div class="text-center">
-                            <div class="flex justify-center mb-6">
+                            <div class="flex justify-center mb-4 sm:mb-6">
                                 <div class="relative">
                                     <div class="relative">
                                         <template x-if="photoPreview">
-                                            <img :src="photoPreview" alt="Preview Avatar" class="w-32 h-32 rounded-full object-cover ring-4 ring-white shadow-xl">
+                                            <img :src="photoPreview" alt="Preview Avatar" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover ring-4 ring-white shadow-xl">
                                         </template>
                                         <template x-if="!photoPreview">
                                             <?php
@@ -34,20 +34,20 @@
                                                     ? Storage::url($user->avatar) . '?v=' . time() 
                                                     : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=4F46E5&color=fff&size=128';
                                             ?>
-                                            <img src="{{ $avatarUrl }}" alt="Avatar" class="w-32 h-32 rounded-full object-cover ring-4 ring-white shadow-xl">
+                                            <img src="{{ $avatarUrl }}" alt="Avatar" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover ring-4 ring-white shadow-xl">
                                         </template>
                                         <div class="absolute inset-0 rounded-full bg-gradient-to-br from-[#4F46E5] to-[#6366F1] opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
                                     </div>
-                                    <div class="absolute -bottom-1 -right-1 w-10 h-10 bg-gradient-to-br from-[#4F46E5] to-[#6366F1] rounded-full flex items-center justify-center shadow-lg ring-4 ring-white">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="absolute -bottom-1 -right-1 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#4F46E5] to-[#6366F1] rounded-full flex items-center justify-center shadow-lg ring-4 ring-white">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
                                     </div>
                                 </div>
                             </div>
                             
-                            <h3 class="text-2xl font-bold text-slate-900 mb-1">{{ $user->name }}</h3>
-                            <p class="text-[#6B7280] text-sm mb-4">{{ $user->email }}</p>
+                            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">{{ $user->name }}</h3>
+                            <p class="text-[#6B7280] text-xs sm:text-sm mb-4">{{ $user->email }}</p>
                             
                             <div class="mb-6">
                                 <span class="px-4 py-1.5 inline-flex text-xs font-semibold rounded-full 
@@ -108,10 +108,10 @@
                     
                     <!-- Leave Quota Card (for user and division_leader) -->
                     @if(in_array($user->role, ['user', 'division_leader']))
-                        <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-6 transition-all duration-300">
-                            <h4 class="text-lg font-semibold text-slate-900 mb-6">Leave Quota Info</h4>
+                        <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300">
+                            <h4 class="text-base sm:text-lg font-semibold text-slate-900 mb-4 sm:mb-6">Leave Quota Info</h4>
                             
-                            <div class="grid grid-cols-3 gap-3 mb-6">
+                            <div class="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
                                 <!-- Total Quota -->
                                 <div class="text-center bg-slate-50 rounded-xl p-4 border border-[#E5E7EB]">
                                     <p class="text-xs font-semibold text-[#6B7280] mb-1">Total</p>
@@ -150,15 +150,15 @@
 
                 <!-- Right Column: Edit Form -->
                 <div class="lg:col-span-2">
-                    <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-8 transition-all duration-300" 
+                    <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 lg:p-8 transition-all duration-300" 
                          x-data="{ photoName: null, photoPreview: null }">
-                        <div class="flex items-center gap-3 mb-6">
+                        <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
                             <div class="p-2 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1]">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-xl font-semibold text-slate-900">Edit Profile Information</h3>
+                            <h3 class="text-lg sm:text-xl font-semibold text-slate-900">Edit Profile Information</h3>
                         </div>
 
                         @if(session('status'))
@@ -178,7 +178,7 @@
                         @endif
 
                         <!-- Name & Email (Admin only editable) -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                             <div>
                                 <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Full Name *</label>
                                 <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" 
@@ -204,7 +204,7 @@
 
                         <!-- Username & Role (Admin only editable) -->
                         @if($user->role === 'admin')
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                                 <div>
                                     <label for="username" class="block text-sm font-semibold text-slate-700 mb-2">Username</label>
                                     <input type="text" name="username" id="username" value="{{ old('username', $user->name) }}" 
@@ -319,10 +319,10 @@
                         </div>
 
                         <!-- Save Button -->
-                        <div class="flex items-center justify-end mt-8 pt-6 border-t border-[#E5E7EB]">
+                        <div class="flex items-center justify-end mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-[#E5E7EB]">
                             <button type="submit" 
-                                    class="inline-flex items-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#6366F1] hover:from-[#4338CA] hover:to-[#4F46E5] text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#6366F1] hover:from-[#4338CA] hover:to-[#4F46E5] text-white font-semibold py-3 px-6 sm:px-8 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md text-sm sm:text-base">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 Save Changes
@@ -333,64 +333,4 @@
             </form>
         </div>
     </div>
-
-    <!-- Delete Account Section -->
-    @if($user->role === 'admin' && $user->id === auth()->id())
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="mt-8 bg-white/80 backdrop-blur-sm border border-rose-200 shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-6 transition-all duration-300">
-                <div class="max-w-xl">
-                    <h3 class="text-lg font-semibold text-slate-900 mb-2">Delete Account</h3>
-                    <p class="text-sm text-[#6B7280] mb-6">
-                        Once your account is deleted, all of its resources and data will be permanently deleted. 
-                        Before deleting your account, please download any data or information that you wish to retain.
-                    </p>
-
-                    <x-danger-button
-                        x-data=""
-                        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-                        class="rounded-xl"
-                    >
-                        Delete Account
-                    </x-danger-button>
-                </div>
-            </div>
-
-            <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-                <form method="post" action="{{ route('profile.destroy', $user) }}" class="p-6">
-                    @csrf
-                    @method('delete')
-
-                    <h2 class="text-lg font-medium text-slate-900">Are you sure your want to delete your account?</h2>
-
-                    <p class="mt-1 text-sm text-[#6B7280]">
-                        Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.
-                    </p>
-
-                    <div class="mt-6">
-                        <x-input-label for="password" value="Password" class="sr-only" />
-
-                        <x-text-input
-                            id="password"
-                            name="password"
-                            type="password"
-                            class="mt-1 block w-3/4 rounded-xl"
-                            placeholder="Password"
-                        />
-
-                        <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
-                    </div>
-
-                    <div class="mt-6 flex justify-end gap-3">
-                        <x-secondary-button type="button" x-on:click="$dispatch('close')" class="rounded-xl">
-                            {{ __('Cancel') }}
-                        </x-secondary-button>
-
-                        <x-danger-button class="ms-3 rounded-xl">
-                            {{ __('Delete Account') }}
-                        </x-danger-button>
-                    </div>
-                </form>
-            </x-modal>
-        </div>
-    @endif
 </x-app-layout>
