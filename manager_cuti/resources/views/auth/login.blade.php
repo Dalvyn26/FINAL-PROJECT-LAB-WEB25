@@ -241,10 +241,8 @@
                 <div class="relative text-center max-w-lg" style="z-index: 10;">
                     <!-- Logo/Brand Icon -->
                     <div class="mb-8 animate-float">
-                        <div class="w-32 h-32 mx-auto bg-gradient-to-br from-indigo-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                            <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
+                        <div class="w-32 h-32 mx-auto flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                            <img src="{{ asset('logo/LogoCutiin.png') }}" alt="Cuti-in Logo" class="w-32 h-32">
                         </div>
                     </div>
                     
