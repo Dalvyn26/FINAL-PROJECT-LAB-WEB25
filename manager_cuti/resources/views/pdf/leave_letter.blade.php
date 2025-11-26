@@ -164,8 +164,8 @@
         <td style="padding-left:10px;">
             <div class="company-title">{{ config('app.name') }}</div>
             <div class="company-info">
-                Jl. Raya Perusahaan No. 123, Jakarta 12345<br>
-                Telp: (021) 12345678 | Email: info@perusahaan.com
+                Jl. Tamalanrea Indah No. 123, Makassar 12345<br>
+                Telp: (021) 12345678 | Email: suhada.dalvyn@gmail.com
             </div>
         </td>
     </tr>
