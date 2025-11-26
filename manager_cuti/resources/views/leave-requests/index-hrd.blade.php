@@ -248,11 +248,11 @@
                                                 <div class="text-xs text-indigo-700">
                                                     <span class="font-medium">{{ $request->approver->name }}</span>
                                                     <span class="mx-1.5">•</span>
-                                                    <span>{{ \Carbon\Carbon::parse($request->updated_at)->format('d M Y') }}</span>
+                                                    <span>{{ \Carbon\Carbon::parse($request->updated_at)->format('d M Y, H:i') }}</span>
                                                 </div>
                                                 @if($request->leader_note)
                                                     <div class="mt-2 pt-2 border-t border-indigo-200">
-                                                        <div class="text-xs font-semibold text-indigo-900 mb-1">Note:</div>
+                                                        <div class="text-xs font-semibold text-indigo-900 mb-1">Approval Note:</div>
                                                         <div class="text-xs text-indigo-700">{{ $request->leader_note }}</div>
                                                     </div>
                                                 @endif

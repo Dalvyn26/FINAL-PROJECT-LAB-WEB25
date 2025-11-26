@@ -16,6 +16,8 @@
         allIds: @json($leaveRequests->pluck('id')->toArray()).map(String),
         showBulkRejectModal: false,
         bulkRejectionNote: '',
+        showBulkApproveModal: false,
+        bulkApprovalNote: '',
         rejectModalOpen: false,
         rejectId: null,
         rejectNote: '',
@@ -31,6 +33,16 @@
                 this.showBulkRejectModal = true;
                 this.bulkRejectionNote = '';
             }
+        },
+        openBulkApproveModal() {
+            if (this.selectedIds.length > 0) {
+                this.showBulkApproveModal = true;
+                this.bulkApprovalNote = '';
+            }
+        },
+        closeBulkApproveModal() {
+            this.showBulkApproveModal = false;
+            this.bulkApprovalNote = '';
         },
         openRejectModal(id) {
             this.rejectId = id;
@@ -78,22 +90,14 @@
                     </div>
                 </div>
                 <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
-                    <form method="POST" action="{{ route('leader.leave-requests.bulk-update') }}" class="inline">
-                        @csrf
-                        <input type="hidden" name="action" value="approve">
-                        <template x-for="id in selectedIds" :key="id">
-                            <input type="hidden" :name="'ids[]'" :value="id">
-                        </template>
-                        <button type="submit" 
-                                class="flex-1 sm:flex-initial w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md text-sm sm:text-base"
-                                @click="return confirm('Are you sure you want to approve ' + selectedIds.length + ' request(s)?')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="hidden sm:inline">Approve Selected</span>
-                            <span class="sm:hidden">Approve</span>
-                        </button>
-                    </form>
+                    <button @click="openBulkApproveModal()" 
+                            class="flex-1 sm:flex-initial w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md text-sm sm:text-base">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Approve Selected</span>
+                        <span class="sm:hidden">Approve</span>
+                    </button>
                     <button @click="openBulkRejectModal()" 
                             class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md text-sm sm:text-base">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,6 +263,58 @@
                         <p class="text-sm text-[#6B7280] max-w-md mx-auto">There are no leave requests waiting for your approval.</p>
                     </div>
                 @endif
+            </div>
+        </div>
+
+        <!-- Bulk Approval Modal -->
+        <div x-show="showBulkApproveModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="showBulkApproveModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closeBulkApproveModal"></div>
+                
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                
+                <div x-show="showBulkApproveModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                    <div class="bg-white px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-2xl bg-emerald-100 sm:mx-0 sm:h-10 sm:w-10">
+                                <svg class="h-6 w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-semibold text-slate-900" id="modal-title">
+                                    Approve Leave Requests
+                                </h3>
+                                <div class="mt-4">
+                                    <p class="text-sm text-[#6B7280] mb-4">
+                                        Are you sure you want to approve <span class="font-semibold text-slate-900" x-text="selectedIds.length"></span> leave request(s)?
+                                    </p>
+                                    <form id="bulkApprovalForm" method="POST" action="{{ route('leader.leave-requests.bulk-update') }}">
+                                        @csrf
+                                        <input type="hidden" name="action" value="approve">
+                                        <template x-for="id in selectedIds" :key="id">
+                                            <input type="hidden" :name="'ids[]'" :value="id">
+                                        </template>
+                                        <label for="bulk_approval_note" class="block text-sm font-semibold text-slate-700 mb-2">Approval Note (Optional)</label>
+                                        <textarea name="leader_note" id="bulk_approval_note" rows="4" x-model="bulkApprovalNote" maxlength="500" class="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200 resize-none"></textarea>
+                                        <p class="mt-2 text-xs text-[#6B7280]">Optional: Add a note about this approval</p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-[#F8FAFC] px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+                        <button form="bulkApprovalForm" type="submit" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 rounded-xl border border-transparent shadow-sm px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-sm sm:text-base font-semibold text-white hover:from-emerald-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-300 hover:scale-105 sm:ml-3">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Approve Selected
+                        </button>
+                        <button @click="closeBulkApproveModal" type="button" class="mt-3 sm:mt-0 w-full sm:w-auto inline-flex justify-center rounded-xl border border-[#E5E7EB] shadow-sm px-4 py-2.5 bg-white text-sm sm:text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4F46E5] transition-all duration-200 sm:ml-3">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 

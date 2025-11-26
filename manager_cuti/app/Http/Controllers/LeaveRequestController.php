@@ -123,18 +123,20 @@ class LeaveRequestController extends Controller
             'ids.*' => 'exists:leave_requests,id',
             'action' => 'required|in:approve,reject',
             'rejection_note' => $request->action === 'reject' ? 'required|string|min:10|max:500' : 'nullable',
+            'leader_note' => $request->action === 'approve' && Auth::user()->role === 'division_leader' ? 'nullable|string|max:500' : 'nullable',
         ]);
 
         $ids = $request->ids;
         $action = $request->action;
         $rejectionNote = $request->rejection_note;
+        $leaderNote = $request->leader_note;
 
         $successCount = 0;
         $errorCount = 0;
         $errors = [];
 
         try {
-            DB::transaction(function () use ($ids, $action, $rejectionNote, &$successCount, &$errorCount, &$errors) {
+            DB::transaction(function () use ($ids, $action, $rejectionNote, $leaderNote, &$successCount, &$errorCount, &$errors) {
                 foreach ($ids as $id) {
                     $leaveRequest = LeaveRequest::find($id);
 
@@ -160,8 +162,8 @@ class LeaveRequestController extends Controller
                                     }
                                 }
                                 
-                                // Use approveByLeader for division leaders
-                                $this->leaveRequestService->approveByLeader($leaveRequest, $user, null);
+                                // Use approveByLeader for division leaders with optional note
+                                $this->leaveRequestService->approveByLeader($leaveRequest, $user, $leaderNote);
                                 $successCount++;
                             } else {
                                 // HRD final approval - status becomes 'approved'
