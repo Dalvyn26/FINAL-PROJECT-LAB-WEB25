@@ -39,10 +39,8 @@
             <div class="flex items-center h-16 px-6 border-b border-slate-100">
                 <div class="flex items-center gap-2.5">
                     <!-- Logo Icon -->
-                    <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+                    <div class="flex items-center justify-center w-9 h-9">
+                        <img src="{{ asset('logo/LogoCutiin.png') }}" alt="Cuti-in Logo" class="w-9 h-9">
                     </div>
                     <div class="text-lg font-bold text-slate-800 tracking-tight">
                         Cuti-in
@@ -226,10 +224,8 @@
         <div class="flex items-center h-16 px-6 border-b border-slate-100">
             <div class="flex items-center gap-2.5">
                 <!-- Logo Icon -->
-                <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-sm">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                <div class="flex items-center justify-center w-9 h-9">
+                    <img src="{{ asset('logo/LogoCutiin.png') }}" alt="Cuti-in Logo" class="w-9 h-9">
                 </div>
                 <div class="text-lg font-bold text-slate-800 tracking-tight">
                     Cuti-in

@@ -551,11 +551,20 @@ class LeaveRequestController extends Controller
                 ->withErrors(['error' => 'Surat cuti hanya dapat diunduh untuk pengajuan yang sudah disetujui (Approved)']);
         }
 
+        // Encode logo to base64 untuk menghindari kebutuhan GD extension
+        $logoPath = public_path('logo/LogoCutiin.png');
+        $logoBase64 = null;
+        if (file_exists($logoPath)) {
+            $logoData = file_get_contents($logoPath);
+            $logoBase64 = base64_encode($logoData);
+        }
+
         // Load view pdf.leave_letter dengan data cuti
         $pdf = Pdf::loadView('pdf.leave_letter', [
             'leaveRequest' => $leaveRequest,
             'user' => $leaveRequest->user,
             'approver' => $leaveRequest->approver,
+            'logoBase64' => $logoBase64,
         ]);
 
         // Generate nama file
