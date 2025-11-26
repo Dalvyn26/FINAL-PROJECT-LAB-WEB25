@@ -1,7 +1,8 @@
 <!-- Mobile sidebar backdrop and menu -->
 <div 
-    x-show="$wire.sidebarOpen"
-    @keydown.escape.window="$wire.sidebarOpen = false"
+    x-show="sidebarOpen"
+    @keydown.escape.window="sidebarOpen = false"
+    x-cloak
     class="fixed inset-0 z-40 lg:hidden"
     x-transition:enter="duration-300 ease-out"
     x-transition:enter-start="opacity-0"
@@ -12,8 +13,7 @@
     
     <!-- Backdrop -->
     <div 
-        x-show="$wire.sidebarOpen"
-        @click="$wire.sidebarOpen = false"
+        @click="sidebarOpen = false"
         class="fixed inset-0 bg-black bg-opacity-50"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="opacity-0"
@@ -25,14 +25,14 @@
     
     <!-- Mobile sidebar -->
     <div 
-        x-show="$wire.sidebarOpen"
+        x-show="sidebarOpen"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="-translate-x-full"
         x-transition:enter-end="translate-x-0"
         x-transition:leave="duration-200 ease-in"
         x-transition:leave-start="translate-x-0"
         x-transition:leave-end="-translate-x-full"
-        class="relative flex-1 flex max-w-xs w-full bg-white border-r border-slate-100 shadow-xl">
+        class="relative flex-1 flex max-w-xs w-full bg-white border-r border-slate-100 shadow-xl z-50">
         
         <div class="flex-1 h-full flex flex-col bg-white shadow-sm">
             <!-- Logo/Brand -->
@@ -58,7 +58,7 @@
 
                     <!-- Dashboard -->
                     <a href="{{ route('dashboard') }}"
-                       @click="$wire.sidebarOpen = false"
+                       @click="sidebarOpen = false"
                        class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
                         <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('dashboard') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
@@ -69,7 +69,7 @@
 
                     <!-- Profile -->
                     <a href="{{ route('profile.edit') }}"
-                       @click="$wire.sidebarOpen = false"
+                       @click="sidebarOpen = false"
                        class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('profile.edit') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
                         <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('profile.edit') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -85,7 +85,7 @@
 
                         <!-- User Management -->
                         <a href="{{ route('admin.users.index') }}"
-                           @click="$wire.sidebarOpen = false"
+                           @click="sidebarOpen = false"
                            class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.users.*') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('admin.users.*') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -95,7 +95,7 @@
 
                         <!-- Division Management -->
                         <a href="{{ route('admin.divisions.index') }}"
-                           @click="$wire.sidebarOpen = false"
+                           @click="sidebarOpen = false"
                            class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.divisions.*') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('admin.divisions.*') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
@@ -105,7 +105,7 @@
 
                         <!-- Holiday Management -->
                         <a href="{{ route('admin.holidays.index') }}"
-                           @click="$wire.sidebarOpen = false"
+                           @click="sidebarOpen = false"
                            class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.holidays.*') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('admin.holidays.*') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -122,7 +122,7 @@
 
                         <!-- Final Approval -->
                         <a href="{{ route('hrd.leave-requests.index') }}"
-                           @click="$wire.sidebarOpen = false"
+                           @click="sidebarOpen = false"
                            class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('hrd.leave-requests.*') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('hrd.leave-requests.*') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -132,7 +132,7 @@
 
                         <!-- Leave Summary -->
                         <a href="{{ route('hrd.dashboard') }}"
-                           @click="$wire.sidebarOpen = false"
+                           @click="sidebarOpen = false"
                            class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('hrd.dashboard') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('hrd.dashboard') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -149,7 +149,7 @@
 
                         <!-- Team Approval -->
                         <a href="{{ route('leader.leave-requests.index') }}"
-                           @click="$wire.sidebarOpen = false"
+                           @click="sidebarOpen = false"
                            class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('leader.leave-requests.*') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('leader.leave-requests.*') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
@@ -166,7 +166,7 @@
 
                         <!-- Request Leave -->
                         <a href="{{ route('leave-requests.create') }}"
-                           @click="$wire.sidebarOpen = false"
+                           @click="sidebarOpen = false"
                            class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('leave-requests.create') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('leave-requests.create') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -176,7 +176,7 @@
 
                         <!-- My Leave History -->
                         <a href="{{ route('leave-requests.index') }}"
-                           @click="$wire.sidebarOpen = false"
+                           @click="sidebarOpen = false"
                            class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('leave-requests.index') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('leave-requests.index') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>

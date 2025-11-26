@@ -21,13 +21,16 @@
     <body class="font-sans antialiased bg-slate-50" style="font-family: 'Inter', sans-serif;">
         <div class="min-h-screen flex">
             <!-- Mobile Hamburger Menu Button -->
-            <div class="fixed top-4 left-4 z-40 lg:hidden">
+            <div class="fixed top-4 right-4 z-50 lg:hidden">
                 <button
-                    @click="sidebarOpen = true"
+                    @click="sidebarOpen = !sidebarOpen"
                     class="p-2.5 rounded-xl bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-200"
                     aria-label="Toggle menu">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg x-show="!sidebarOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <svg x-show="sidebarOpen" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
@@ -35,18 +38,6 @@
             <!-- Sidebar -->
             @include('layouts.sidebar')
 
-            <!-- Sidebar Backdrop (Mobile) -->
-            <div
-                x-show="sidebarOpen"
-                @click="sidebarOpen = false"
-                class="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden transition-opacity"
-                x-transition:enter="ease-in duration-300"
-                x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100"
-                x-transition:leave="ease-out duration-300"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0">
-            </div>
 
             <!-- Main Content -->
             <div class="lg:ml-64 flex-1 min-h-screen transition-all duration-300">
