@@ -89,6 +89,75 @@
                 updateFormState() {
                     this.validateDateRange();
                 },
+                resetForm() {
+                    // Reset Alpine.js state
+                    this.leaveType = '';
+                    this.startDate = '';
+                    this.endDate = '';
+                    this.fileName = null;
+                    this.allWeekend = false;
+                    this.showWeekendWarning = false;
+                    this.isWeekendValid = true;
+                    
+                    // Reset form using native form reset
+                    const form = document.querySelector('form[method=\'POST\']');
+                    if (form) {
+                        form.reset();
+                    }
+                    
+                    // Reset all form fields explicitly
+                    // 1. Leave Type (select)
+                    const leaveTypeSelect = document.getElementById('leave_type');
+                    if (leaveTypeSelect) {
+                        leaveTypeSelect.value = '';
+                        // Trigger change event to update Alpine.js
+                        leaveTypeSelect.dispatchEvent(new Event('change'));
+                    }
+                    
+                    // 2. Hidden date inputs
+                    const startDateHidden = document.getElementById('start_date_hidden');
+                    const endDateHidden = document.getElementById('end_date_hidden');
+                    if (startDateHidden) startDateHidden.value = '';
+                    if (endDateHidden) endDateHidden.value = '';
+                    
+                    // 3. Date range picker display
+                    const datePicker = document.getElementById('date_range_picker');
+                    if (datePicker) {
+                        datePicker.value = '';
+                    }
+                    
+                    // 4. File input
+                    const fileInput = document.getElementById('attachment');
+                    if (fileInput) {
+                        fileInput.value = '';
+                    }
+                    
+                    // 5. Address During Leave (textarea)
+                    const addressTextarea = document.getElementById('address_during_leave');
+                    if (addressTextarea) {
+                        addressTextarea.value = '';
+                    }
+                    
+                    // 6. Emergency Contact (text input)
+                    const emergencyInput = document.getElementById('emergency_contact');
+                    if (emergencyInput) {
+                        emergencyInput.value = '';
+                    }
+                    
+                    // 7. Reason (textarea)
+                    const reasonTextarea = document.getElementById('reason');
+                    if (reasonTextarea) {
+                        reasonTextarea.value = '';
+                    }
+                    
+                    // Reset Flatpickr
+                    if (this.flatpickrInstance) {
+                        this.flatpickrInstance.clear();
+                    }
+                    
+                    // Update form state after reset
+                    this.updateFormState();
+                },
                 initFlatpickr() {
                     const self = this;
                     const dateInput = document.getElementById('date_range_picker');
@@ -350,6 +419,12 @@
                                     <a href="{{ route('leave-requests.index') }}" class="w-full sm:w-auto text-center px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 hover:scale-105">
                                         Cancel
                                     </a>
+                                    <button type="button" @click="resetForm()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-100 hover:bg-amber-200 text-amber-700 font-semibold py-3 px-6 sm:px-8 rounded-xl transition-all duration-300 hover:scale-105">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                        Reset
+                                    </button>
                                     <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#4F46E5] to-[#6366F1] hover:from-[#4338CA] hover:to-[#4F46E5] text-white font-semibold py-3 px-6 sm:px-8 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md" :disabled="!isWeekendValid" x-bind:class="!isWeekendValid ? 'opacity-50 cursor-not-allowed' : ''">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
