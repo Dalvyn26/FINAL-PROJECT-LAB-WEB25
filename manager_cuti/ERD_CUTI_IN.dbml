@@ -1,0 +1,72 @@
+// ERD Database Sistem Manajemen Cuti Karyawan - CUTI-IN
+// Format: dbdiagram.io (https://dbdiagram.io)
+// Copy paste kode ini ke https://dbdiagram.io untuk melihat diagram visual
+
+Table users {
+  id bigint [pk, increment]
+  name string [not null]
+  email string [unique, not null]
+  email_verified_at timestamp [null]
+  password string [not null]
+  remember_token string [null]
+  role enum('admin', 'hrd', 'division_leader', 'user') [default: 'user', not null]
+  division_id bigint [ref: > divisions.id, null]
+  phone string [null]
+  address text [null]
+  join_date date [null]
+  leave_quota integer [default: 12, not null]
+  active_status boolean [default: true, not null]
+  avatar string [null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  
+  Note: 'Tabel utama untuk menyimpan data pengguna/karyawan. Mendukung 4 role: admin, hrd, division_leader, user'
+}
+
+Table divisions {
+  id bigint [pk, increment]
+  name string [not null]
+  description text [null]
+  leader_id bigint [ref: > users.id, null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  
+  Note: 'Tabel untuk menyimpan data divisi/departemen. Setiap divisi memiliki satu leader (ketua divisi)'
+}
+
+Table leave_requests {
+  id bigint [pk, increment]
+  user_id bigint [ref: - users.id, not null]
+  leave_type enum('annual', 'sick') [not null]
+  start_date date [not null]
+  end_date date [not null]
+  total_days integer [not null]
+  reason text [not null]
+  address_during_leave text [null]
+  emergency_contact string [null]
+  attachment_path string [null]
+  status enum('pending', 'approved_by_leader', 'approved', 'rejected') [default: 'pending', not null]
+  rejection_note text [null]
+  approved_by bigint [ref: > users.id, null]
+  leader_note text [null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  
+  Note: 'Tabel untuk menyimpan pengajuan cuti karyawan. Status: pending -> approved_by_leader -> approved (atau rejected)'
+}
+
+Table holidays {
+  id bigint [pk, increment]
+  title string [not null]
+  holiday_date date [unique, not null]
+  description text [null]
+  is_national_holiday boolean [default: false, not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  
+  Note: 'Tabel untuk menyimpan hari libur nasional dan internal perusahaan'
+}
+
+// Relasi Tambahan (Self-referencing)
+// users.approved_by -> users.id (untuk tracking siapa yang approve leave request)
+
