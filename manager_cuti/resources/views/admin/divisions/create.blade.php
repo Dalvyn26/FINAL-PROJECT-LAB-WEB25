@@ -96,12 +96,13 @@
                                     <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M5.935 6.5l1.5 1.5m0 0l1.5-1.5m-1.5 1.5L5.935 6.5m0 0L4.5 5.065M5.935 6.5l1.5 1.5m0 0l1.5-1.5m-1.5 1.5L5.935 6.5m0 0L4.5 5.065M5.935 6.5l1.5 1.5m0 0l1.5-1.5m-1.5 1.5L5.935 6.5m0 0L4.5 5.065"></path>
                                     </svg>
-                                    Leader
+                                    Ketua Divisi
+                                    <span class="text-rose-500 ml-1">*</span>
                                 </label>
                                 <div class="relative">
-                                    <select name="leader_id" id="leader_id" 
+                                    <select name="leader_id" id="leader_id" required
                                             class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 appearance-none transition-all">
-                                        <option value="">Select Leader (Optional)</option>
+                                        <option value="">Pilih Ketua Divisi</option>
                                         @forelse($availableLeaders as $leader)
                                             <option value="{{ $leader->id }}" {{ old('leader_id') == $leader->id ? 'selected' : '' }}>
                                                 {{ $leader->name }} ({{ $leader->email }})
@@ -116,7 +117,7 @@
                                         </svg>
                                     </div>
                                 </div>
-                                <p class="mt-2 text-xs text-slate-500">Only division leaders who are not currently assigned to other divisions can be selected.</p>
+                                <p class="mt-2 text-xs text-slate-500">Hanya division leader yang belum menjadi ketua divisi lain yang dapat dipilih.</p>
                                 @error('leader_id')
                                     <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

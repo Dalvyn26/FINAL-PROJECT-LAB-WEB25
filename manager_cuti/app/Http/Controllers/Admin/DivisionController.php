@@ -83,13 +83,14 @@ class DivisionController extends Controller
             'name' => 'required|string|max:255|unique:divisions,name',
             'description' => 'nullable|string',
             'leader_id' => [
-                'nullable',
+                'required',
                 Rule::exists('users', 'id')->where('role', 'division_leader'),
                 Rule::unique('divisions', 'leader_id')
             ],
         ], [
-            'leader_id.exists' => 'The selected leader must have division leader role.',
-            'leader_id.unique' => 'Selected leader is already assigned to another division.'
+            'leader_id.required' => 'Ketua divisi wajib dipilih.',
+            'leader_id.exists' => 'Ketua divisi yang dipilih harus memiliki role division leader.',
+            'leader_id.unique' => 'Ketua divisi yang dipilih sudah menjadi ketua divisi lain.'
         ]);
 
         $division = Division::create([
