@@ -29,6 +29,20 @@
                             <p class="text-xs text-slate-500 mt-1">Total {{ $holidays->total() }} holidays</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                            <!-- Bulk Delete Button -->
+                            <template x-if="selectedIds.length > 0">
+                                <form action="{{ route('admin.holidays.bulk-delete') }}" method="POST" class="inline w-full sm:w-auto" data-confirm-delete="true">
+                                    @csrf
+                                    <input type="hidden" name="ids" :value="JSON.stringify(selectedIds)">
+                                    <button type="submit" 
+                                            class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 text-sm sm:text-base">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                        <span x-text="`Delete (${selectedIds.length})`"></span>
+                                    </button>
+                                </form>
+                            </template>
                             <!-- Sync Google Calendar Button -->
                             <form action="{{ route('admin.holidays.sync') }}" method="POST" class="inline w-full sm:w-auto">
                                 @csrf
@@ -173,6 +187,12 @@
                     <table class="min-w-full divide-y divide-slate-100">
                         <thead class="bg-slate-50/50">
                             <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-200 w-12">
+                                    <input type="checkbox" 
+                                           @change="toggleSelectAll()"
+                                           :checked="selectAll && selectedIds.length === holidayIds.length"
+                                           class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500">
+                                </th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-200">Tanggal</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-200">Nama Libur</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-200">Tipe</th>
@@ -182,6 +202,13 @@
                         <tbody class="bg-white divide-y divide-slate-100">
                             @forelse($holidays as $index => $holiday)
                                 <tr class="hover:bg-indigo-50/30 transition-all duration-200 {{ $index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30' }}">
+                                    <td class="px-6 py-5 whitespace-nowrap">
+                                        <input type="checkbox" 
+                                               value="{{ $holiday->id }}"
+                                               @change="toggleSelect({{ $holiday->id }})"
+                                               :checked="selectedIds.includes({{ $holiday->id }})"
+                                               class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500">
+                                    </td>
                                     <td class="px-6 py-5 whitespace-nowrap">
                                         <div>
                                             <div class="text-sm font-bold text-slate-900">
@@ -239,7 +266,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-12 text-center">
+                                    <td colspan="5" class="px-6 py-12 text-center">
                                         <div class="flex flex-col items-center justify-center">
                                             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
                                                 <svg class="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,9 +285,40 @@
 
                 <!-- Mobile Card View -->
                 <div class="lg:hidden px-6 pb-6 space-y-4 pt-6">
+                    <!-- Mobile Select All -->
+                    <div class="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm mb-4">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" 
+                                       @change="toggleSelectAll()"
+                                       :checked="selectAll && selectedIds.length === holidayIds.length"
+                                       class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500">
+                                <span class="text-sm font-semibold text-slate-700">Select All</span>
+                            </label>
+                            <template x-if="selectedIds.length > 0">
+                                <form action="{{ route('admin.holidays.bulk-delete') }}" method="POST" class="inline" data-confirm-delete="true">
+                                    @csrf
+                                    <input type="hidden" name="ids" :value="JSON.stringify(selectedIds)">
+                                    <button type="submit" 
+                                            class="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 text-sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                        <span x-text="`Delete (${selectedIds.length})`"></span>
+                                    </button>
+                                </form>
+                            </template>
+                        </div>
+                    </div>
                     @forelse($holidays as $holiday)
                         <div class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-200">
                             <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-start gap-3 flex-1">
+                                    <input type="checkbox" 
+                                           value="{{ $holiday->id }}"
+                                           @change="toggleSelect({{ $holiday->id }})"
+                                           :checked="selectedIds.includes({{ $holiday->id }})"
+                                           class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 mt-1">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-3 mb-2">
                                         <div class="flex-shrink-0">
@@ -275,10 +333,12 @@
                                             <div class="text-xs text-slate-500">{{ $holiday->holiday_date->translatedFormat('l') }}</div>
                                         </div>
                                     </div>
-                                    <h3 class="text-base font-semibold text-slate-900 mb-1">{{ $holiday->title }}</h3>
-                                    @if($holiday->description)
-                                        <p class="text-xs text-slate-500">{{ Str::limit($holiday->description, 80) }}</p>
-                                    @endif
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="text-base font-semibold text-slate-900 mb-1">{{ $holiday->title }}</h3>
+                                        @if($holiday->description)
+                                            <p class="text-xs text-slate-500">{{ Str::limit($holiday->description, 80) }}</p>
+                                        @endif
+                                    </div>
                                 </div>
                                 <div class="flex items-center gap-2 ml-4">
                                     <button @click="openModal({{ $holiday->id }}, '{{ $holiday->title }}', '{{ $holiday->holiday_date->format('Y-m-d') }}', '{{ addslashes($holiday->description ?? '') }}')" 
@@ -443,10 +503,33 @@
                 isOpen: false,
                 isEdit: false,
                 holidayId: null,
+                selectedIds: [],
+                selectAll: false,
+                holidayIds: @json($holidays->pluck('id')->toArray()),
                 formData: {
                     title: '',
                     holiday_date: '',
                     description: ''
+                },
+
+                toggleSelectAll() {
+                    this.selectAll = !this.selectAll;
+                    if (this.selectAll) {
+                        this.selectedIds = [...this.holidayIds];
+                    } else {
+                        this.selectedIds = [];
+                    }
+                },
+
+                toggleSelect(id) {
+                    const index = this.selectedIds.indexOf(id);
+                    if (index > -1) {
+                        this.selectedIds.splice(index, 1);
+                    } else {
+                        this.selectedIds.push(id);
+                    }
+                    // Update selectAll state
+                    this.selectAll = this.selectedIds.length === this.holidayIds.length;
                 },
 
                 openModal(holidayId = null, title = '', date = '', description = '') {

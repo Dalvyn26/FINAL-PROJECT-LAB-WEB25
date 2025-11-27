@@ -127,6 +127,28 @@ class HolidayController extends Controller
     }
 
     /**
+     * Remove multiple holidays from storage.
+     */
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|string',
+        ]);
+
+        $ids = json_decode($request->ids, true);
+        
+        if (!is_array($ids) || empty($ids)) {
+            return redirect()->route('admin.holidays.index')
+                ->withErrors(['error' => 'No holidays selected for deletion']);
+        }
+
+        $count = Holiday::whereIn('id', $ids)->delete();
+
+        return redirect()->route('admin.holidays.index')
+            ->with('success', "Berhasil menghapus {$count} hari libur");
+    }
+
+    /**
      * Fetch and sync holidays from Google Calendar (Indonesian National Holidays).
      */
     public function fetchGoogleHolidays()

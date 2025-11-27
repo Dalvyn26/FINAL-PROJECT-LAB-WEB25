@@ -44,14 +44,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('divisions', DivisionController::class);
     Route::resource('users', 'App\Http\Controllers\Admin\UserController');
+    
+    // Holiday routes - must be defined before resource to avoid route conflict
+    Route::post('/holidays/sync', [HolidayController::class, 'fetchGoogleHolidays'])->name('holidays.sync');
+    Route::post('/holidays/bulk-delete', [HolidayController::class, 'bulkDelete'])->name('holidays.bulk-delete');
     Route::resource('holidays', HolidayController::class);
+
+    // Leave Summary for Admin
+    Route::get('/leave-summary', [\App\Http\Controllers\Admin\LeaveSummaryController::class, 'index'])->name('leave-summary.index');
 
     // Division Member Management
     Route::post('/divisions/{division}/members', [DivisionController::class, 'storeMember'])->name('divisions.members.store');
     Route::delete('/divisions/{division}/members/{user}', [DivisionController::class, 'removeMember'])->name('divisions.members.destroy');
-
-    // Holiday Sync
-    Route::post('/holidays/sync', [HolidayController::class, 'fetchGoogleHolidays'])->name('holidays.sync');
 });
 
 // Leader Routes
