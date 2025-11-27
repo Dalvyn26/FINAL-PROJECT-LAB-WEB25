@@ -29,25 +29,68 @@ class LeaveSummaryController extends Controller
         $month = $request->get('month', now()->month);
         $year = $request->get('year', now()->year);
         
-        // Get current month's start and end dates
-        $monthStart = Carbon::create($year, $month, 1)->startOfMonth();
-        $monthEnd = Carbon::create($year, $month, 1)->endOfMonth();
+        // Statistics - Match dashboard logic EXACTLY: count by created_at (when request was created)
+        // Use fresh query to ensure we get latest data from database
+        // Total Requests: All requests created in selected month/year
+        $totalRequests = LeaveRequest::query()
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->count();
         
-        // Base query for leave requests
-        $query = LeaveRequest::with(['user', 'user.division', 'approver'])
-            ->where(function ($q) use ($monthStart, $monthEnd) {
-                // Check if the leave period intersects with the selected month
-                $q->whereBetween('start_date', [$monthStart, $monthEnd])
-                  ->orWhereBetween('end_date', [$monthStart, $monthEnd])
-                  ->orWhere(function ($subq) use ($monthStart, $monthEnd) {
-                      $subq->where('start_date', '<=', $monthStart)
-                           ->where('end_date', '>=', $monthEnd);
-                  });
-            });
+        // Approved: Approved requests created in selected month/year
+        $approvedRequests = LeaveRequest::query()
+            ->where('status', 'approved')
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->count();
+        
+        // Pending: All pending requests (no date filter) - Match HRD dashboard logic
+        // HRD sees: approved_by_leader OR (pending for division_leader)
+        $pendingRequests = LeaveRequest::query()
+            ->where(function ($query) {
+                $query->where('status', 'approved_by_leader')
+                      ->orWhere(function ($subquery) {
+                          $subquery->where('status', 'pending')
+                                   ->whereHas('user', function ($userQuery) {
+                                       $userQuery->where('role', 'division_leader');
+                                   });
+                      });
+            })
+            ->count();
+        
+        // Rejected: Rejected requests created in selected month/year
+        $rejectedRequests = LeaveRequest::query()
+            ->where('status', 'rejected')
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->count();
+        
+        // Base query for leave requests table - Filter by created_at (when the request was created) to match dashboard logic
+        $query = LeaveRequest::with(['user', 'user.division', 'approver']);
         
         // Filter by status
         if ($status !== 'all') {
-            $query->where('status', $status);
+            if ($status === 'pending') {
+                // For pending filter, show all pending requests matching HRD dashboard logic (no date filter)
+                $query->where(function ($q) {
+                    $q->where('status', 'approved_by_leader')
+                      ->orWhere(function ($subq) {
+                          $subq->where('status', 'pending')
+                               ->whereHas('user', function ($userQuery) {
+                                   $userQuery->where('role', 'division_leader');
+                               });
+                      });
+                });
+            } else {
+                // For other statuses, filter by created_at month/year
+                $query->where('status', $status)
+                      ->whereMonth('created_at', $month)
+                      ->whereYear('created_at', $year);
+            }
+        } else {
+            // For 'all' status, filter by created_at month/year
+            $query->whereMonth('created_at', $month)
+                  ->whereYear('created_at', $year);
         }
         
         // Filter by division
@@ -57,50 +100,10 @@ class LeaveSummaryController extends Controller
             });
         }
         
-        $leaveRequests = $query->orderBy('created_at', 'desc')->paginate(15);
+        $leaveRequests = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         
         // Get all divisions for filter
         $divisions = Division::all();
-        
-        // Statistics
-        $totalRequests = LeaveRequest::where(function ($q) use ($monthStart, $monthEnd) {
-            $q->whereBetween('start_date', [$monthStart, $monthEnd])
-              ->orWhereBetween('end_date', [$monthStart, $monthEnd])
-              ->orWhere(function ($subq) use ($monthStart, $monthEnd) {
-                  $subq->where('start_date', '<=', $monthStart)
-                       ->where('end_date', '>=', $monthEnd);
-              });
-        })->count();
-        
-        $approvedRequests = LeaveRequest::where('status', 'approved')
-            ->where(function ($q) use ($monthStart, $monthEnd) {
-                $q->whereBetween('start_date', [$monthStart, $monthEnd])
-                  ->orWhereBetween('end_date', [$monthStart, $monthEnd])
-                  ->orWhere(function ($subq) use ($monthStart, $monthEnd) {
-                      $subq->where('start_date', '<=', $monthStart)
-                           ->where('end_date', '>=', $monthEnd);
-                  });
-            })->count();
-        
-        $pendingRequests = LeaveRequest::whereIn('status', ['pending', 'approved_by_leader'])
-            ->where(function ($q) use ($monthStart, $monthEnd) {
-                $q->whereBetween('start_date', [$monthStart, $monthEnd])
-                  ->orWhereBetween('end_date', [$monthStart, $monthEnd])
-                  ->orWhere(function ($subq) use ($monthStart, $monthEnd) {
-                      $subq->where('start_date', '<=', $monthStart)
-                           ->where('end_date', '>=', $monthEnd);
-                  });
-            })->count();
-        
-        $rejectedRequests = LeaveRequest::where('status', 'rejected')
-            ->where(function ($q) use ($monthStart, $monthEnd) {
-                $q->whereBetween('start_date', [$monthStart, $monthEnd])
-                  ->orWhereBetween('end_date', [$monthStart, $monthEnd])
-                  ->orWhere(function ($subq) use ($monthStart, $monthEnd) {
-                      $subq->where('start_date', '<=', $monthStart)
-                           ->where('end_date', '>=', $monthEnd);
-                  });
-            })->count();
         
         return view('hrd.leave-summary', compact(
             'leaveRequests',
