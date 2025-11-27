@@ -19,7 +19,7 @@
     <div class="py-6 sm:py-8 bg-slate-50 min-h-screen animate-fade-in">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <!-- Total Employees Card -->
                 <div class="group bg-white border border-slate-200/60 shadow-sm rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-fade-up" style="animation-delay: 0ms;">
                     <div class="flex items-start justify-between">
@@ -89,6 +89,32 @@
                             <h4 class="text-xs sm:text-sm font-semibold text-slate-500 mb-1">Pending Approval</h4>
                             <p class="text-2xl sm:text-3xl font-bold text-rose-600">{{ $pendingLeaves }}</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kalender Hari Libur Nasional -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mt-6 transition-all duration-300 animate-fade-up mb-6 sm:mb-8" style="animation-delay: 200ms;">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10m-12 8h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-slate-800">Kalender Hari Libur Nasional</h2>
+                        <p class="text-slate-500 text-sm">Hari libur nasional Indonesia</p>
+                    </div>
+                </div>
+
+                <div class="w-full rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                    <div class="relative" style="padding-top: 50%;">
+                        <iframe 
+                            class="absolute inset-0 w-full h-full"
+                            src="https://calendar.google.com/calendar/embed?height=500&wkst=1&bgcolor=%23FFFFFF&ctz=Asia%2FMakassar&src=aWQuaW5kb25lc2lhbiNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%237986CB"
+                            frameborder="0"
+                            scrolling="no">
+                        </iframe>
                     </div>
                 </div>
             </div>

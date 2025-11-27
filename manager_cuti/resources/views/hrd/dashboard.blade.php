@@ -18,7 +18,7 @@
     }" x-init="mounted = true">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8" 
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8" 
                  x-show="mounted"
                  x-transition:enter="transition ease-out duration-500"
                  x-transition:enter-start="opacity-0 translate-y-4"
@@ -35,7 +35,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-xs sm:text-sm font-medium text-[#6B7280] mb-1">Total Leave Requests</h3>
+                                <h3 class="text-xs sm:text-sm font-medium text-[#6B7280] mb-1">Total Requests</h3>
                                 <p class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">{{ $totalLeavesThisMonth }}</p>
                                 <p class="text-xs text-[#6B7280] mt-1">This month</p>
                             </div>
@@ -54,7 +54,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-xs sm:text-sm font-medium text-white/90 mb-1">Pending Final Approval</h3>
+                                <h3 class="text-xs sm:text-sm font-medium text-white/90 mb-1">Pending Approval</h3>
                                 <p class="text-3xl sm:text-4xl font-bold text-white tracking-tight">{{ $pendingFinalApprovals }}</p>
                                 <p class="text-xs text-white/80 mt-1">Awaiting review</p>
                             </div>
@@ -62,136 +62,82 @@
                     </div>
                     <a href="{{ route('hrd.leave-requests.index') }}" 
                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white text-xs sm:text-sm font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                        Review Pending Requests
+                        Review
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </a>
                 </div>
+
+                <!-- Approved This Month -->
+                <div class="group bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1"
+                     style="animation-delay: 200ms;">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/20">
+                                <svg class="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-medium text-[#6B7280] mb-1">Approved</h3>
+                                <p class="text-3xl sm:text-4xl font-bold text-emerald-600 tracking-tight">{{ $approvedLeavesThisMonth }}</p>
+                                <p class="text-xs text-[#6B7280] mt-1">This month</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rejected This Month -->
+                <div class="group bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1"
+                     style="animation-delay: 300ms;">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-rose-500 to-rose-600 shadow-lg shadow-rose-500/20">
+                                <svg class="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-medium text-[#6B7280] mb-1">Rejected</h3>
+                                <p class="text-3xl sm:text-4xl font-bold text-rose-600 tracking-tight">{{ $rejectedLeavesThisMonth }}</p>
+                                <p class="text-xs text-[#6B7280] mt-1">This month</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Current Month Leave Overview -->
-            <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 mb-6 sm:mb-8 transition-all duration-300"
+            <!-- Kalender Hari Libur Nasional -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mt-6 transition-all duration-300 mb-6 sm:mb-8"
                  x-show="mounted"
                  x-transition:enter="transition ease-out duration-500 delay-200"
                  x-transition:enter-start="opacity-0 translate-y-4"
                  x-transition:enter-end="opacity-100 translate-y-0">
-                <div class="flex items-center justify-between mb-4 sm:mb-6">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10m-12 8h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
                     <div>
-                        <h3 class="text-base sm:text-lg font-semibold text-slate-900 mb-1">Absensi Cuti Bulan Ini</h3>
-                        <p class="text-xs sm:text-sm text-[#6B7280]">Employees currently on leave</p>
+                        <h2 class="text-lg font-semibold text-slate-800">Kalender Hari Libur Nasional</h2>
+                        <p class="text-slate-500 text-sm">Hari libur nasional Indonesia</p>
                     </div>
                 </div>
-                
-                @if($onLeaveThisMonth->count() > 0)
-                    <!-- Desktop Table View -->
-                    <div class="hidden md:block overflow-x-auto -mx-2">
-                        <div class="inline-block min-w-full align-middle px-2">
-                            <table class="min-w-full divide-y divide-[#E5E7EB]">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Employee</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Division</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Leave Dates</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Days</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Type</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-[#E5E7EB]">
-                                    @foreach($onLeaveThisMonth as $index => $request)
-                                        <tr class="hover:bg-[#F8FAFC] transition-all duration-200 hover:shadow-sm group"
-                                            x-data="{ mounted: false }"
-                                            x-init="setTimeout(() => mounted = true, {{ $index * 50 }})"
-                                            x-show="mounted"
-                                            x-transition:enter="transition ease-out duration-300"
-                                            x-transition:enter-start="opacity-0 translate-x-4"
-                                            x-transition:enter-end="opacity-100 translate-x-0">
-                                            <td class="px-6 py-5 whitespace-nowrap">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="relative">
-                                                        <x-avatar :user="$request->user" classes="w-12 h-12" />
-                                                        <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
-                                                    </div>
-                                                    <div>
-                                                        <div class="font-semibold text-slate-900">{{ $request->user->name }}</div>
-                                                        <div class="text-xs text-[#6B7280] mt-0.5">{{ $request->user->email }}</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-5 whitespace-nowrap text-sm text-[#6B7280]">
-                                                {{ $request->user->division ? $request->user->division->name : 'N/A' }}
-                                            </td>
-                                            <td class="px-6 py-5 whitespace-nowrap text-sm text-slate-700">
-                                                <div class="font-medium">{{ \Carbon\Carbon::parse($request->start_date)->format('d M Y') }}</div>
-                                                <div class="text-xs text-[#6B7280]">{{ \Carbon\Carbon::parse($request->end_date)->format('d M Y') }}</div>
-                                            </td>
-                                            <td class="px-6 py-5 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-slate-100 text-slate-700">
-                                                    {{ $request->total_days }} days
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-5 whitespace-nowrap">
-                                                <span class="px-3 py-1.5 inline-flex text-xs font-semibold rounded-full shadow-sm
-                                                    {{ $request->isAnnualLeave() ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' : 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' }}">
-                                                    {{ ucfirst($request->leave_type) . ' Leave' }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
 
-                    <!-- Mobile Card View -->
-                    <div class="md:hidden space-y-3">
-                        @foreach($onLeaveThisMonth as $request)
-                            <div class="bg-white border border-[#E5E7EB] rounded-xl p-4 shadow-sm">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="relative">
-                                        <x-avatar :user="$request->user" classes="w-12 h-12" />
-                                        <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-semibold text-slate-900 truncate">{{ $request->user->name }}</h3>
-                                        <p class="text-xs text-[#6B7280] truncate">{{ $request->user->email }}</p>
-                                    </div>
-                                </div>
-                                <div class="space-y-2 pt-3 border-t border-[#E5E7EB]">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-semibold text-[#6B7280]">Division:</span>
-                                        <span class="text-xs font-medium text-slate-700">{{ $request->user->division ? $request->user->division->name : 'N/A' }}</span>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-semibold text-[#6B7280]">Dates:</span>
-                                        <span class="text-xs text-slate-700">{{ \Carbon\Carbon::parse($request->start_date)->format('d M') }} - {{ \Carbon\Carbon::parse($request->end_date)->format('d M Y') }}</span>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-semibold text-[#6B7280]">Days:</span>
-                                        <span class="text-xs font-semibold text-slate-700">{{ $request->total_days }} days</span>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-semibold text-[#6B7280]">Type:</span>
-                                        <span class="px-2.5 py-1 inline-flex text-xs font-semibold rounded-full {{ $request->isAnnualLeave() ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' : 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' }}">
-                                            {{ ucfirst($request->leave_type) . ' Leave' }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+                <div class="w-full rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                    <div class="relative" style="padding-top: 50%;">
+                        <iframe 
+                            class="absolute inset-0 w-full h-full"
+                            src="https://calendar.google.com/calendar/embed?height=500&wkst=1&bgcolor=%23FFFFFF&ctz=Asia%2FMakassar&src=aWQuaW5kb25lc2lhbiNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%237986CB"
+                            frameborder="0"
+                            scrolling="no">
+                        </iframe>
                     </div>
-                @else
-                    <div class="text-center py-8 sm:py-12">
-                        <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-slate-100 mb-4">
-                            <svg class="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm sm:text-base font-semibold text-slate-900 mb-1">Tidak ada karyawan cuti bulan ini</h3>
-                        <p class="text-xs sm:text-sm text-[#6B7280]">Tidak ada karyawan yang sedang cuti pada periode ini.</p>
-                    </div>
-                @endif
+                </div>
             </div>
+
 
             <!-- Division Overview -->
             <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300"
