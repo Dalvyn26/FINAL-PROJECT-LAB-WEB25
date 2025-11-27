@@ -23,7 +23,15 @@ return new class extends Migration
             $table->enum('status', ['pending', 'approved_by_leader', 'approved', 'rejected'])->default('pending');
             $table->text('rejection_note')->nullable();
             $table->unsignedBigInteger('approved_by')->nullable();
+            // Additional columns merged from ADD migrations
+            $table->text('address_during_leave')->nullable();
+            $table->string('emergency_contact')->nullable();
+            $table->text('leader_note')->nullable();
             $table->timestamps();
+            
+            // Foreign keys
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('approved_by')->references('id')->on('users')->onDelete('set null');
         });
     }
 

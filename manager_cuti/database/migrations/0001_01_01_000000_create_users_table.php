@@ -18,7 +18,17 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            // Additional columns merged from ADD migrations
+            $table->enum('role', ['admin', 'hrd', 'division_leader', 'user'])->default('user');
+            $table->unsignedBigInteger('division_id')->nullable();
+            $table->string('phone')->nullable();
+            $table->text('address')->nullable();
+            $table->date('join_date')->nullable();
+            $table->integer('leave_quota')->default(12);
+            $table->boolean('active_status')->default(true);
+            $table->string('avatar')->nullable();
             $table->timestamps();
+            // Note: Foreign key for division_id is added in separate migration after divisions table is created
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
