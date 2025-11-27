@@ -108,10 +108,125 @@
                 </div>
             </div>
 
-            <!-- Kalender Hari Libur Nasional -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mt-6 transition-all duration-300 mb-6 sm:mb-8"
+            <!-- Daftar Karyawan yang Sedang Cuti Bulan Ini -->
+            <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 mb-6 sm:mb-8"
                  x-show="mounted"
                  x-transition:enter="transition ease-out duration-500 delay-200"
+                 x-transition:enter-start="opacity-0 translate-y-4"
+                 x-transition:enter-end="opacity-100 translate-y-0">
+                <div class="flex items-center justify-between mb-4 sm:mb-6">
+                    <div>
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900 mb-1">Karyawan yang Sedang Cuti Bulan Ini</h3>
+                        <p class="text-xs sm:text-sm text-[#6B7280]">Daftar karyawan yang sedang mengambil cuti di bulan {{ \Carbon\Carbon::now()->format('F Y') }}</p>
+                    </div>
+                </div>
+                
+                @if($employeesOnLeave->count() > 0)
+                    <!-- Desktop Table View -->
+                    <div class="hidden md:block overflow-x-auto -mx-2">
+                        <div class="inline-block min-w-full align-middle px-2">
+                            <table class="min-w-full divide-y divide-[#E5E7EB]">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Karyawan</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Divisi</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Tanggal Cuti</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Durasi</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Jenis Cuti</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-[#E5E7EB]">
+                                    @foreach($employeesOnLeave as $leave)
+                                        <tr class="hover:bg-[#F8FAFC] transition-all duration-200 hover:shadow-sm group">
+                                            <td class="px-6 py-5 whitespace-nowrap">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="relative">
+                                                        <x-avatar :user="$leave->user" classes="w-12 h-12" />
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-semibold text-slate-900">{{ $leave->user->name }}</div>
+                                                        <div class="text-xs text-[#6B7280] mt-0.5">{{ $leave->user->email }}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-5 whitespace-nowrap text-sm text-[#6B7280]">
+                                                {{ $leave->user->division ? $leave->user->division->name : 'N/A' }}
+                                            </td>
+                                            <td class="px-6 py-5 whitespace-nowrap text-sm text-slate-700">
+                                                <div class="font-medium">{{ \Carbon\Carbon::parse($leave->start_date)->format('d M Y') }}</div>
+                                                <div class="text-xs text-[#6B7280]">{{ \Carbon\Carbon::parse($leave->end_date)->format('d M Y') }}</div>
+                                            </td>
+                                            <td class="px-6 py-5 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-slate-100 text-slate-700">
+                                                    {{ $leave->total_days }} hari
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-5 whitespace-nowrap">
+                                                <span class="px-3 py-1.5 inline-flex text-xs font-semibold rounded-full shadow-sm
+                                                    {{ $leave->isAnnualLeave() ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' : 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' }}">
+                                                    {{ ucfirst($leave->leave_type) . ' Leave' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Card View -->
+                    <div class="md:hidden space-y-3">
+                        @foreach($employeesOnLeave as $leave)
+                            <div class="bg-white border border-[#E5E7EB] rounded-xl p-4 shadow-sm">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="relative">
+                                        <x-avatar :user="$leave->user" classes="w-12 h-12" />
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="text-sm font-semibold text-slate-900 truncate">{{ $leave->user->name }}</h3>
+                                        <p class="text-xs text-[#6B7280] truncate">{{ $leave->user->email }}</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 pt-3 border-t border-[#E5E7EB]">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-semibold text-[#6B7280]">Divisi:</span>
+                                        <span class="text-xs font-medium text-slate-700">{{ $leave->user->division ? $leave->user->division->name : 'N/A' }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-semibold text-[#6B7280]">Tanggal:</span>
+                                        <span class="text-xs text-slate-700">{{ \Carbon\Carbon::parse($leave->start_date)->format('d M') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('d M Y') }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-semibold text-[#6B7280]">Durasi:</span>
+                                        <span class="text-xs font-semibold text-slate-700">{{ $leave->total_days }} hari</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-semibold text-[#6B7280]">Jenis:</span>
+                                        <span class="px-2.5 py-1 inline-flex text-xs font-semibold rounded-full {{ $leave->isAnnualLeave() ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' : 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' }}">
+                                            {{ ucfirst($leave->leave_type) . ' Leave' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-12">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-100 mb-4">
+                            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-semibold text-slate-900 mb-1">Tidak ada karyawan yang sedang cuti</h3>
+                        <p class="text-sm text-[#6B7280]">Tidak ada karyawan yang sedang mengambil cuti di bulan ini.</p>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Kalender Hari Libur Nasional -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm transition-all duration-300 mb-6 sm:mb-8"
+                 x-show="mounted"
+                 x-transition:enter="transition ease-out duration-500 delay-300"
                  x-transition:enter-start="opacity-0 translate-y-4"
                  x-transition:enter-end="opacity-100 translate-y-0">
                 <div class="flex items-center gap-3 mb-3">
@@ -142,7 +257,7 @@
             <!-- Division Overview -->
             <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300"
                  x-show="mounted"
-                 x-transition:enter="transition ease-out duration-500 delay-300"
+                 x-transition:enter="transition ease-out duration-500 delay-400"
                  x-transition:enter-start="opacity-0 translate-y-4"
                  x-transition:enter-end="opacity-100 translate-y-0">
                 <div class="flex items-center justify-between mb-4 sm:mb-6">

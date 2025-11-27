@@ -50,6 +50,25 @@ class DashboardController extends Controller
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
+        
+        // Get current month's start and end dates
+        $monthStart = Carbon::now()->startOfMonth();
+        $monthEnd = Carbon::now()->endOfMonth();
+        
+        // Employees currently on leave this month (approved leaves that overlap with current month)
+        $employeesOnLeave = LeaveRequest::with(['user', 'user.division'])
+            ->where('status', 'approved')
+            ->where(function ($query) use ($monthStart, $monthEnd) {
+                // Leave period overlaps with current month
+                $query->whereBetween('start_date', [$monthStart, $monthEnd])
+                      ->orWhereBetween('end_date', [$monthStart, $monthEnd])
+                      ->orWhere(function ($subquery) use ($monthStart, $monthEnd) {
+                          $subquery->where('start_date', '<=', $monthStart)
+                                   ->where('end_date', '>=', $monthEnd);
+                      });
+            })
+            ->orderBy('start_date', 'asc')
+            ->get();
             
         // All divisions with member counts
         $divisions = Division::withCount('users')->get();
@@ -59,6 +78,7 @@ class DashboardController extends Controller
             'pendingFinalApprovals',
             'approvedLeavesThisMonth',
             'rejectedLeavesThisMonth',
+            'employeesOnLeave',
             'divisions'
         ));
     }
