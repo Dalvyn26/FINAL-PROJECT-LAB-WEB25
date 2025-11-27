@@ -21,7 +21,7 @@
             <!-- Stats Cards -->
             <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <!-- Total Employees Card -->
-                <div class="group bg-white border border-slate-200/60 shadow-sm rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-fade-up" style="animation-delay: 0ms;">
+                <a href="{{ route('admin.users.index') }}" class="group bg-white border border-slate-200/60 shadow-sm rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer animate-fade-up block" style="animation-delay: 0ms;">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -39,10 +39,10 @@
                             </p>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Total Divisions Card -->
-                <div class="group bg-white border border-slate-200/60 shadow-sm rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-fade-up" style="animation-delay: 50ms;">
+                <a href="{{ route('admin.divisions.index') }}" class="group bg-white border border-slate-200/60 shadow-sm rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer animate-fade-up block" style="animation-delay: 50ms;">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -56,10 +56,10 @@
                             <p class="text-2xl sm:text-3xl font-bold text-slate-900">{{ $totalDivisions }}</p>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Leaves This Month Card -->
-                <div class="group bg-white border border-slate-200/60 shadow-sm rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-fade-up" style="animation-delay: 100ms;">
+                <a href="{{ route('admin.leave-summary.index') }}" class="group bg-white border border-slate-200/60 shadow-sm rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer animate-fade-up block" style="animation-delay: 100ms;">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -69,14 +69,14 @@
                                     </svg>
                                 </div>
                             </div>
-                            <h4 class="text-xs sm:text-sm font-semibold text-slate-500 mb-1">Cuti Bulan Ini</h4>
+                            <h4 class="text-xs sm:text-sm font-semibold text-slate-500 mb-1">Pengajuan Cuti Bulan Ini</h4>
                             <p class="text-2xl sm:text-3xl font-bold text-slate-900">{{ $leavesThisMonth }}</p>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Pending Approval Card -->
-                <div class="group bg-white border border-slate-200/60 shadow-sm rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-fade-up" style="animation-delay: 150ms;">
+                <a href="{{ route('admin.leave-summary.index') }}?status=pending" class="group bg-white border border-slate-200/60 shadow-sm rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer animate-fade-up block" style="animation-delay: 150ms;">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -90,7 +90,7 @@
                             <p class="text-2xl sm:text-3xl font-bold text-rose-600">{{ $pendingLeaves }}</p>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <!-- Kalender Hari Libur Nasional -->
