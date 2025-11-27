@@ -59,8 +59,8 @@
                     <!-- Dashboard -->
                     <a href="{{ route('dashboard') }}"
                        @click="sidebarOpen = false"
-                       class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('dashboard') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('dashboard') || request()->routeIs('hrd.dashboard') || request()->routeIs('admin.dashboard') || request()->routeIs('leader.dashboard') || request()->routeIs('user.dashboard') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('dashboard') || request()->routeIs('hrd.dashboard') || request()->routeIs('admin.dashboard') || request()->routeIs('leader.dashboard') || request()->routeIs('user.dashboard') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"></path>
                         </svg>
@@ -110,7 +110,7 @@
                             <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('admin.holidays.*') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
-                            Hari Libur
+                            Holiday Management
                         </a>
                     @endif
 
@@ -131,10 +131,10 @@
                         </a>
 
                         <!-- Leave Summary -->
-                        <a href="{{ route('hrd.dashboard') }}"
+                        <a href="{{ route('hrd.leave-summary.index') }}"
                            @click="sidebarOpen = false"
-                           class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('hrd.dashboard') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('hrd.dashboard') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('hrd.leave-summary.*') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('hrd.leave-summary.*') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                             </svg>
                             Leave Summary
@@ -243,8 +243,8 @@
 
                 <!-- Dashboard -->
                 <a href="{{ route('dashboard') }}"
-                   class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
-                    <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('dashboard') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('dashboard') || request()->routeIs('hrd.dashboard') || request()->routeIs('admin.dashboard') || request()->routeIs('leader.dashboard') || request()->routeIs('user.dashboard') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
+                    <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('dashboard') || request()->routeIs('hrd.dashboard') || request()->routeIs('admin.dashboard') || request()->routeIs('leader.dashboard') || request()->routeIs('user.dashboard') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"></path>
                     </svg>
@@ -290,7 +290,7 @@
                         <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('admin.holidays.*') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
-                        Hari Libur
+                        Holiday Management
                     </a>
                 @endif
 
@@ -310,9 +310,9 @@
                     </a>
 
                     <!-- Leave Summary -->
-                    <a href="{{ route('hrd.dashboard') }}"
-                       class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('hrd.dashboard') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('hrd.dashboard') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('hrd.leave-summary.index') }}"
+                       class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('hrd.leave-summary.*') ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50/80 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 {{ request()->routeIs('hrd.leave-summary.*') ? 'scale-110' : 'group-hover:scale-110' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                         Leave Summary
