@@ -89,86 +89,9 @@
                 border-color: #4F46E5;
             }
             
-            /* Modern Toggle Switch */
-            .remember-toggle {
-                position: relative;
-                display: inline-flex;
-                align-items: center;
-                cursor: pointer;
-                user-select: none;
-            }
-            
-            .remember-toggle input[type="checkbox"] {
-                position: absolute;
-                opacity: 0;
-                width: 0;
-                height: 0;
-                pointer-events: none;
-            }
-            
-            .toggle-switch-modern {
-                position: relative;
-                display: inline-block;
-                width: 52px;
-                height: 28px;
-                margin-right: 12px;
-            }
-            
-            .toggle-slider-modern {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-                border: 2px solid #e2e8f0;
-                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                border-radius: 28px;
-                box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            
-            .toggle-slider-modern:before {
-                position: absolute;
-                content: "";
-                height: 20px;
-                width: 20px;
-                left: 2px;
-                top: 50%;
-                transform: translateY(-50%);
-                background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                border-radius: 50%;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
-            }
-            
-            .remember-toggle input:checked + .toggle-switch-modern .toggle-slider-modern {
-                background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
-                border-color: #4F46E5;
-                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            
-            .remember-toggle input:checked + .toggle-switch-modern .toggle-slider-modern:before {
-                transform: translateY(-50%) translateX(24px);
-                box-shadow: 0 3px 8px rgba(79, 70, 229, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
-            
-            .remember-toggle:hover .toggle-slider-modern {
-                border-color: #cbd5e1;
-                box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            
-            .remember-toggle input:checked:hover + .toggle-switch-modern .toggle-slider-modern {
-                border-color: #6366F1;
-                box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            
-            .remember-toggle:active .toggle-slider-modern:before {
-                transform: translateY(-50%) translateX(22px) scale(0.95);
-            }
-            
-            .remember-toggle input:checked:active + .toggle-switch-modern .toggle-slider-modern:before {
-                transform: translateY(-50%) translateX(26px) scale(0.95);
+            /* Checkbox Styling */
+            input[type="checkbox"] {
+                accent-color: #4F46E5;
             }
             
             .gradient-button {
@@ -316,9 +239,11 @@
                         <div>
                             <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
                             <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-[20000]">
+                                    <!-- IKON EMAIL -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
                                     </svg>
                                 </div>
                                 <input
@@ -342,9 +267,11 @@
                         <div>
                             <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
                             <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-[20000]">
+                                    <!-- IKON PASSWORD -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                     </svg>
                                 </div>
                                 <input
@@ -364,17 +291,15 @@
 
                         <!-- Remember Me & Forgot Password -->
                         <div class="flex items-center justify-between">
-                            <label for="remember_me" class="remember-toggle">
+                            <label for="remember_me" class="flex items-center cursor-pointer">
                                 <input
                                     id="remember_me"
                                     type="checkbox"
                                     name="remember"
                                     value="1"
+                                    class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 focus:ring-2 cursor-pointer"
                                 >
-                                <span class="toggle-switch-modern">
-                                    <span class="toggle-slider-modern"></span>
-                                </span>
-                                <span class="text-sm text-slate-700 font-medium select-none">Remember me</span>
+                                <span class="ml-2 text-sm text-slate-700 font-medium select-none">Remember me</span>
                             </label>
                             <a href="{{ route('password.request') }}" class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-all duration-200 hover:underline">
                                 Lupa password?
