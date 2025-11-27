@@ -167,9 +167,12 @@
                                 </div>
 
                                 <div class="mb-6">
-                                    <label for="division_id" class="block text-sm font-bold text-slate-700 mb-2">Division</label>
+                                    <label for="division_id" class="block text-sm font-bold text-slate-700 mb-2">
+                                        Division
+                                        <span class="text-rose-500 ml-1">*</span>
+                                    </label>
                                     <div class="relative">
-                                        <select name="division_id" id="division_id" 
+                                        <select name="division_id" id="division_id" required
                                                 class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 appearance-none transition-all">
                                             <option value="">Select Division</option>
                                             @foreach($divisions as $division)
@@ -216,9 +219,12 @@
                                 </div>
 
                                 <div class="mb-6">
-                                    <label for="active_status" class="block text-sm font-bold text-slate-700 mb-2">Status</label>
+                                    <label for="active_status" class="block text-sm font-bold text-slate-700 mb-2">
+                                        Status
+                                        <span class="text-rose-500 ml-1">*</span>
+                                    </label>
                                     <div class="relative">
-                                        <select name="active_status" id="active_status" 
+                                        <select name="active_status" id="active_status" required
                                                 class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 appearance-none transition-all">
                                             <option value="1" {{ old('active_status', true) ? 'selected' : '' }}>Active</option>
                                             <option value="0" {{ !old('active_status', true) ? 'selected' : '' }}>Inactive</option>
@@ -252,14 +258,17 @@
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="mb-6">
-                                    <label for="phone" class="block text-sm font-bold text-slate-700 mb-2">Phone</label>
+                                    <label for="phone" class="block text-sm font-bold text-slate-700 mb-2">
+                                        Phone
+                                        <span class="text-rose-500 ml-1">*</span>
+                                    </label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                             <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                                             </svg>
                                         </div>
-                                        <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
+                                        <input type="text" name="phone" id="phone" value="{{ old('phone') }}" required
                                                placeholder="Enter phone number"
                                                class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all">
                                     </div>
@@ -274,14 +283,17 @@
                                 </div>
 
                                 <div class="mb-6">
-                                    <label for="join_date" class="block text-sm font-bold text-slate-700 mb-2">Join Date</label>
+                                    <label for="join_date" class="block text-sm font-bold text-slate-700 mb-2">
+                                        Join Date
+                                        <span class="text-rose-500 ml-1">*</span>
+                                    </label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                             <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                             </svg>
                                         </div>
-                                        <input type="date" name="join_date" id="join_date" value="{{ old('join_date') }}"
+                                        <input type="date" name="join_date" id="join_date" value="{{ old('join_date') }}" required
                                                class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all">
                                     </div>
                                     @error('join_date')
@@ -296,9 +308,12 @@
                             </div>
                             
                             <div class="mb-6">
-                                <label for="address" class="block text-sm font-bold text-slate-700 mb-2">Address</label>
-                                <textarea name="address" id="address" rows="3"
-                                          placeholder="Enter address (optional)"
+                                <label for="address" class="block text-sm font-bold text-slate-700 mb-2">
+                                    Address
+                                    <span class="text-rose-500 ml-1">*</span>
+                                </label>
+                                <textarea name="address" id="address" rows="3" required
+                                          placeholder="Enter address"
                                           class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none">{{ old('address') }}</textarea>
                                 @error('address')
                                     <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">

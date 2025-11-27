@@ -141,8 +141,12 @@ class UserController extends Controller
                     }
                 },
             ],
-            'division_id' => 'nullable|exists:divisions,id',
+            'division_id' => 'required|exists:divisions,id',
             'leave_quota' => 'required|integer|min:0|max:365',
+            'phone' => 'required|string|max:255',
+            'address' => 'required|string|max:500',
+            'join_date' => 'required|date',
+            'active_status' => 'required|in:0,1',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -152,11 +156,11 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
                 'role' => $request->role,
                 'division_id' => $request->division_id,
-                'phone' => $request->phone ?? null,
-                'address' => $request->address ?? null,
-                'join_date' => $request->join_date ?? null,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'join_date' => $request->join_date,
                 'leave_quota' => $request->leave_quota,
-                'active_status' => $request->active_status ?? true,
+                'active_status' => (bool) $request->active_status,
             ]);
         });
 
