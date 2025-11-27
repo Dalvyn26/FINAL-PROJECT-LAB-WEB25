@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\HolidayController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\Leader\DashboardController as LeaderDashboardController;
 use App\Http\Controllers\Hrd\DashboardController as HrdDashboardController;
+use App\Http\Controllers\Hrd\LeaveSummaryController as HrdLeaveSummaryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -64,6 +65,7 @@ Route::middleware(['auth', 'role:division_leader'])->prefix('leader')->name('lea
 // HRD Routes
 Route::middleware(['auth', 'role:hrd'])->prefix('hrd')->name('hrd.')->group(function () {
     Route::get('/leave-requests', [LeaveRequestController::class, 'indexHrd'])->name('leave-requests.index');
+    Route::get('/leave-summary', [HrdLeaveSummaryController::class, 'index'])->name('leave-summary.index');
     Route::post('/leave-requests/{leaveRequest}/final-approve', [LeaveRequestController::class, 'finalApprove'])->name('leave-requests.final-approve');
     Route::post('/leave-requests/{leaveRequest}/reject', [LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
     Route::post('/leave-requests/bulk-update', [LeaveRequestController::class, 'bulkUpdate'])->name('leave-requests.bulk-update');

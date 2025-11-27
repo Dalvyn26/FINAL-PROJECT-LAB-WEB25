@@ -39,23 +39,17 @@ class DashboardController extends Controller
                   });
         })->count();
         
-        // Get current month's start and end dates
-        $monthStart = Carbon::now()->startOfMonth();
-        $monthEnd = Carbon::now()->endOfMonth();
-        
-        // Employees on leave this month (approved requests overlapping with current month)
-        $onLeaveThisMonth = LeaveRequest::where('status', 'approved')
-            ->where(function ($query) use ($monthStart, $monthEnd) {
-                // Check if the leave period intersects with the current month
-                $query->whereBetween('start_date', [$monthStart, $monthEnd])
-                      ->orWhereBetween('end_date', [$monthStart, $monthEnd])
-                      ->orWhere(function ($q) use ($monthStart, $monthEnd) {
-                          $q->where('start_date', '<=', $monthStart)
-                            ->where('end_date', '>=', $monthEnd);
-                      });
-            })
-            ->with(['user', 'user.division'])
-            ->get();
+        // Total approved leaves this month
+        $approvedLeavesThisMonth = LeaveRequest::where('status', 'approved')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+            
+        // Total rejected leaves this month
+        $rejectedLeavesThisMonth = LeaveRequest::where('status', 'rejected')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
             
         // All divisions with member counts
         $divisions = Division::withCount('users')->get();
@@ -63,7 +57,8 @@ class DashboardController extends Controller
         return view('hrd.dashboard', compact(
             'totalLeavesThisMonth',
             'pendingFinalApprovals',
-            'onLeaveThisMonth',
+            'approvedLeavesThisMonth',
+            'rejectedLeavesThisMonth',
             'divisions'
         ));
     }
