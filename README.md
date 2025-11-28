@@ -21,7 +21,6 @@ Sistem manajemen cuti karyawan berbasis web yang menampilkan alur persetujuan be
 - [📁 Struktur Proyek](#-struktur-proyek)
 - [🗄️ Struktur Database](#️-struktur-database)
 - [🧪 Testing](#-testing)
-- [🤝 Kontribusi](#-kontribusi)
 
 ---
 
@@ -535,17 +534,6 @@ php artisan make:controller ControllerName
 # List semua routes
 php artisan route:list
 ```
-
-## 📝 Kontribusi
-
-Kontribusi sangat diterima! Jika ingin berkontribusi:
-
-1. Fork repository
-2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
-3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buka Pull Request
-
 ## 📄 License
 
 Proyek ini dibuat untuk tujuan pembelajaran dalam rangka Final Project Lab Web Semester 3.
