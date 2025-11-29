@@ -176,7 +176,10 @@
                                         <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h4 class="text-base font-semibold text-slate-900 truncate">{{ $request->user->name }}</h4>
+                                        <h4 class="text-base font-semibold text-slate-900 truncate">{{ $request->user->username ?? $request->user->name }}</h4>
+                                        @if($request->user->username && $request->user->name)
+                                            <p class="text-xs text-[#6B7280] mt-0.5">{{ $request->user->name }}</p>
+                                        @endif
                                         <p class="text-xs text-[#6B7280] mt-0.5">{{ $request->user->division ? $request->user->division->name : 'N/A' }}</p>
                                     </div>
                                 </div>
@@ -217,9 +220,35 @@
                                 </div>
 
                                 <!-- Reason -->
-                                <div class="mb-4 p-3 bg-[#F8FAFC] rounded-xl border border-[#E5E7EB]">
+                                <div class="mb-4 p-3 bg-[#F8FAFC] rounded-xl border border-[#E5E7EB] overflow-hidden" 
+                                     x-data="{ 
+                                         reason: @js($request->reason),
+                                         maxLength: 60,
+                                         isExpanded: false,
+                                         get displayReason() {
+                                             if (!this.reason) return '';
+                                             if (this.isExpanded || this.reason.length <= this.maxLength) {
+                                                 return this.reason;
+                                             }
+                                             return this.reason.substring(0, this.maxLength) + '...';
+                                         },
+                                         get shouldShowToggle() {
+                                             return this.reason && this.reason.length > this.maxLength;
+                                         }
+                                     }">
                                     <p class="text-xs font-semibold text-[#6B7280] mb-1.5">Reason:</p>
-                                    <p class="text-sm text-slate-700 leading-relaxed">{{ Str::limit($request->reason, 100) }}</p>
+                                    <div class="overflow-hidden">
+                                        <p class="text-sm text-slate-700 leading-relaxed break-words overflow-wrap-anywhere" 
+                                           :class="!isExpanded && reason && reason.length > maxLength ? 'line-clamp-3' : ''"
+                                           style="word-break: break-word; overflow-wrap: break-word; max-width: 100%;"
+                                           x-text="displayReason"></p>
+                                    </div>
+                                    <button 
+                                        x-show="shouldShowToggle"
+                                        @click="isExpanded = !isExpanded"
+                                        class="mt-2 text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors underline"
+                                        x-text="isExpanded ? 'Tampilkan lebih sedikit' : 'Baca selengkapnya'">
+                                    </button>
                                 </div>
 
                                 <!-- Medical Certificate Link (if sick leave) -->
@@ -443,9 +472,11 @@
                                         <template x-for="id in selectedIds" :key="id">
                                             <input type="hidden" :name="'ids[]'" :value="id">
                                         </template>
-                                        <label for="bulk_hrd_note" class="block text-sm font-semibold text-slate-700 mb-2">Catatan (Opsional)</label>
+                                        <label for="bulk_hrd_note" class="block text-sm font-semibold text-slate-700 mb-2">
+                                            Catatan <span class="text-slate-500 font-normal">(Opsional)</span>
+                                        </label>
                                         <textarea name="hrd_note" id="bulk_hrd_note" rows="4" x-model="bulkHrdNote" maxlength="500" class="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200 resize-none"></textarea>
-                                        <p class="mt-2 text-xs text-[#6B7280]">Maksimal 500 karakter</p>
+                                        <p class="mt-2 text-xs text-[#6B7280]">Opsional: Maksimal 500 karakter</p>
                                     </form>
                                 </div>
                             </div>
