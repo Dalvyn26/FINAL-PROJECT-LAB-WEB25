@@ -62,9 +62,9 @@ class LeaveRequestService
     /**
      * Process final approval by HRD with transaction
      */
-    public function finalApprove(LeaveRequest $leaveRequest, User $approver): LeaveRequest
+    public function finalApprove(LeaveRequest $leaveRequest, User $approver, string $note = null): LeaveRequest
     {
-        return DB::transaction(function () use ($leaveRequest, $approver) {
+        return DB::transaction(function () use ($leaveRequest, $approver, $note) {
             if ($approver->role !== 'hrd') {
                 throw new \Exception('Unauthorized to finalize approval of this leave request');
             }
@@ -78,6 +78,7 @@ class LeaveRequestService
             $leaveRequest->update([
                 'status' => 'approved',
                 'approved_by' => $approver->id,
+                'hrd_note' => $note,
             ]);
 
             if ($leaveRequest->leave_type === 'annual') {

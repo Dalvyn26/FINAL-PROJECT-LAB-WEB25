@@ -28,6 +28,7 @@ class LeaveRequest extends Model
         'rejection_note',
         'approved_by',
         'leader_note',
+        'hrd_note',
     ];
 
     /**

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->text('address_during_leave')->nullable();
             $table->string('emergency_contact')->nullable();
             $table->text('leader_note')->nullable();
+            $table->text('hrd_note')->nullable();
             $table->timestamps();
             
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

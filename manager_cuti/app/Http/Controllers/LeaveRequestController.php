@@ -130,19 +130,21 @@ class LeaveRequestController extends Controller
             'action' => 'required|in:approve,reject',
             'rejection_note' => $request->action === 'reject' ? 'required|string|min:10|max:500' : 'nullable',
             'leader_note' => $request->action === 'approve' && Auth::user()->role === 'division_leader' ? 'nullable|string|max:500' : 'nullable',
+            'hrd_note' => $request->action === 'approve' && Auth::user()->role === 'hrd' ? 'nullable|string|max:500' : 'nullable',
         ]);
 
         $ids = $request->ids;
         $action = $request->action;
         $rejectionNote = $request->rejection_note;
         $leaderNote = $request->leader_note;
+        $hrdNote = $request->hrd_note;
 
         $successCount = 0;
         $errorCount = 0;
         $errors = [];
 
         try {
-            DB::transaction(function () use ($ids, $action, $rejectionNote, $leaderNote, &$successCount, &$errorCount, &$errors) {
+            DB::transaction(function () use ($ids, $action, $rejectionNote, $leaderNote, $hrdNote, &$successCount, &$errorCount, &$errors) {
                 foreach ($ids as $id) {
                     $leaveRequest = LeaveRequest::find($id);
 
@@ -176,7 +178,7 @@ class LeaveRequestController extends Controller
                                     }
                                 }
 
-                                $this->leaveRequestService->finalApprove($leaveRequest, $user);
+                                $this->leaveRequestService->finalApprove($leaveRequest, $user, $hrdNote);
                                 $successCount++;
                             }
                         } elseif ($action === 'reject') {
@@ -474,10 +476,14 @@ class LeaveRequestController extends Controller
     /**
      * Final approve the leave request by HRD
      */
-    public function finalApprove(LeaveRequest $leaveRequest)
+    public function finalApprove(Request $request, LeaveRequest $leaveRequest)
     {
+        $request->validate([
+            'hrd_note' => 'nullable|string|max:500',
+        ]);
+
         try {
-            $this->leaveRequestService->finalApprove($leaveRequest, Auth::user());
+            $this->leaveRequestService->finalApprove($leaveRequest, Auth::user(), $request->hrd_note);
 
             return redirect()->back()
                 ->with('success', 'Leave request approved successfully');
@@ -693,7 +699,7 @@ class LeaveRequestController extends Controller
             $timeline[] = [
                 'status' => 'approved_hrd',
                 'title' => 'Approved by HRD',
-                'description' => 'Pengajuan disetujui oleh HRD',
+                'description' => $leaveRequest->hrd_note ?: 'Pengajuan disetujui oleh HRD',
                 'datetime' => $leaveRequest->updated_at->format('d M Y, H:i'),
                 'timestamp' => $leaveRequest->updated_at->toIso8601String(),
                 'color' => 'green',
@@ -813,6 +819,7 @@ class LeaveRequestController extends Controller
                 'status_color' => $finalStatusColor,
                 'rejection_note' => $leaveRequest->rejection_note,
                 'leader_note' => $leaveRequest->leader_note,
+                'hrd_note' => $leaveRequest->hrd_note,
             ],
             'pemohon' => [
                 'name' => $leaveRequest->user->name,
