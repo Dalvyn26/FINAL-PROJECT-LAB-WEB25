@@ -11,17 +11,11 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the users with filtering and sorting capabilities.
-     */
     public function index(Request $request)
     {
         $query = User::query();
 
-        // Eager load division
         $query->with('division');
-
-        // Apply filters
         $search = $request->query('search');
         $role = $request->query('role');
         $divisionId = $request->query('division_id');
@@ -31,7 +25,8 @@ class UserController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%");
             });
         }
 
@@ -63,11 +58,8 @@ class UserController extends Controller
             }
         }
 
-        // Apply sorting
         $sort = $request->query('sort', 'name');
         $direction = $request->query('direction', 'asc');
-
-        // Validate and set proper direction based on sort field
         if ($sort === 'name_desc') {
             $direction = 'desc';
             $sort = 'name';
@@ -101,28 +93,21 @@ class UserController extends Controller
 
         $users = $query->paginate(10)->withQueryString();
 
-        // Get divisions for the filter dropdown
         $divisions = Division::all();
 
         return view('admin.users.index', compact('users', 'search', 'role', 'divisionId', 'status', 'tenure', 'sort', 'direction', 'divisions'));
     }
 
-    /**
-     * Show the form for creating a new user.
-     */
     public function create()
     {
-        // Check if HRD already exists
         $hrdExists = User::where('role', 'hrd')->exists();
         return view('admin.users.create', compact('hrdExists'));
     }
 
-    /**
-     * Store a newly created user in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
+            'username' => 'required|string|max:255|unique:users',
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
@@ -130,35 +115,28 @@ class UserController extends Controller
                 'required',
                 'in:hrd,division_leader,user',
                 function ($attribute, $value, $fail) {
-                    // Prevent creating admin role
                     if ($value === 'admin') {
                         $fail('Admin role cannot be created.');
                     }
-                    // Prevent creating HRD if one already exists
                     if ($value === 'hrd' && User::where('role', 'hrd')->exists()) {
                         $fail('HRD role already exists. Only one HRD is allowed.');
                     }
                 },
             ],
             'leave_quota' => 'required|integer|min:0|max:365',
-            'phone' => 'required|string|max:255',
-            'address' => 'required|string|max:500',
-            'join_date' => 'required|date',
-            'active_status' => 'required|in:0,1',
         ]);
 
         DB::transaction(function () use ($request) {
             User::create([
+                'username' => $request->username,
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => $request->role,
                 'division_id' => null,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'join_date' => $request->join_date,
                 'leave_quota' => $request->leave_quota,
-                'active_status' => (bool) $request->active_status,
+                'active_status' => true,
+                'join_date' => now(),
             ]);
         });
 
@@ -166,44 +144,32 @@ class UserController extends Controller
             ->with('success', 'User created successfully');
     }
 
-    /**
-     * Display the specified user.
-     */
     public function show(User $user)
     {
         $user->load(['division', 'division.leader']);
         return view('admin.users.show', compact('user'));
     }
 
-    /**
-     * Show the form for editing the specified user.
-     */
     public function edit(User $user)
     {
         $divisions = Division::all();
-        // Check if HRD already exists (excluding current user being edited)
         $hrdExists = User::where('role', 'hrd')->where('id', '!=', $user->id)->exists();
         return view('admin.users.edit', compact('user', 'divisions', 'hrdExists'));
     }
 
-    /**
-     * Update the specified user in storage.
-     */
     public function update(Request $request, User $user)
     {
         $request->validate([
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
             'role' => [
                 'required',
                 'in:hrd,division_leader,user',
                 function ($attribute, $value, $fail) use ($user) {
-                    // Prevent changing to admin role
                     if ($value === 'admin') {
                         $fail('Admin role cannot be assigned.');
                     }
-                    // Prevent changing to HRD if one already exists (excluding current user)
                     if ($value === 'hrd' && User::where('role', 'hrd')->where('id', '!=', $user->id)->exists()) {
                         $fail('HRD role already exists. Only one HRD is allowed.');
                     }
@@ -211,24 +177,20 @@ class UserController extends Controller
             ],
             'division_id' => 'nullable|exists:divisions,id',
             'leave_quota' => 'required|integer|min:0|max:365',
+            'join_date' => 'nullable|date',
         ]);
 
         DB::transaction(function () use ($request, $user) {
             $data = [
+                'username' => $request->username,
                 'name' => $request->name,
                 'email' => $request->email,
                 'role' => $request->role,
                 'division_id' => $request->division_id,
-                'phone' => $request->phone ?? null,
-                'address' => $request->address ?? null,
-                'join_date' => $request->join_date ?? null,
+                'join_date' => $request->join_date ?? $user->join_date,
                 'leave_quota' => $request->leave_quota,
-                'active_status' => $request->active_status ?? true,
+                'active_status' => $request->active_status ?? $user->active_status,
             ];
-
-            if ($request->password) {
-                $data['password'] = Hash::make($request->password);
-            }
 
             $user->update($data);
         });
@@ -237,9 +199,6 @@ class UserController extends Controller
             ->with('success', 'User updated successfully');
     }
 
-    /**
-     * Remove the specified user from storage.
-     */
     public function destroy(User $user)
     {
         if ($user->id === auth()->id()) {

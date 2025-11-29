@@ -23,9 +23,6 @@ class LeaveRequestController extends Controller
         $this->leaveRequestService = $leaveRequestService;
     }
 
-    /**
-     * Display a listing of the leave requests based on user role.
-     */
     public function index()
     {
         $user = Auth::user();
@@ -39,9 +36,6 @@ class LeaveRequestController extends Controller
         };
     }
 
-    /**
-     * Display a listing of the leave requests for user (karyawan).
-     */
     public function indexUser()
     {
         $user = Auth::user();
@@ -60,9 +54,6 @@ class LeaveRequestController extends Controller
         return view('leave-requests.index', compact('leaveRequests', 'totalLeavesThisYear', 'sickLeavesThisYear'));
     }
 
-    /**
-     * Display a listing of the leave requests for admin.
-     */
     public function indexAdmin()
     {
         $leaveRequests = LeaveRequest::with(['user', 'user.division', 'approver'])->paginate(10);
@@ -70,9 +61,6 @@ class LeaveRequestController extends Controller
         return view('leave-requests.index-admin', compact('leaveRequests'));
     }
 
-    /**
-     * Display a listing of the leave requests for leader.
-     */
     public function indexLeader()
     {
         $user = Auth::user();
@@ -99,9 +87,6 @@ class LeaveRequestController extends Controller
     }
 
 
-    /**
-     * Display a listing of the leave requests for HRD.
-     */
     public function indexHrd()
     {
         $leaveRequests = LeaveRequest::where(function ($query) {
@@ -119,9 +104,6 @@ class LeaveRequestController extends Controller
         return view('leave-requests.index-hrd', compact('leaveRequests'));
     }
 
-    /**
-     * Bulk update multiple leave requests
-     */
     public function bulkUpdate(Request $request)
     {
         $request->validate([
@@ -211,9 +193,6 @@ class LeaveRequestController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new leave request.
-     */
     public function create()
     {
         $user = Auth::user();
@@ -226,9 +205,6 @@ class LeaveRequestController extends Controller
         return view('leave-requests.create', compact('isEligible'));
     }
 
-    /**
-     * Store a newly created leave request in storage.
-     */
     public function store(Request $request)
     {
         $isEligible = false;
@@ -250,8 +226,8 @@ class LeaveRequestController extends Controller
             'address_during_leave' => 'required|string|max:500',
             'emergency_contact' => 'required|string|max:20',
             'attachment' => $request->leave_type === 'sick'
-                ? 'required|file|mimes:pdf,jpg,jpeg,png|max:2048' // Required for sick leave
-                : 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // Optional for annual leave
+                ? 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'
+                : 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
        
@@ -316,9 +292,6 @@ class LeaveRequestController extends Controller
         }
     }
 
-    /**
-     * Display the specified leave request.
-     */
     public function show(LeaveRequest $leaveRequest)
     {
         $user = Auth::user();
@@ -334,9 +307,6 @@ class LeaveRequestController extends Controller
         return view('leave-requests.show', compact('leaveRequest'));
     }
 
-    /**
-     * Show the form for editing the specified leave request.
-     */
     public function edit(LeaveRequest $leaveRequest)
     {
         if ($leaveRequest->user_id !== Auth::id() || $leaveRequest->status !== 'pending') {
@@ -346,9 +316,6 @@ class LeaveRequestController extends Controller
         return view('leave-requests.edit', compact('leaveRequest'));
     }
 
-    /**
-     * Update the specified leave request in storage.
-     */
     public function update(Request $request, LeaveRequest $leaveRequest)
     {
         if ($leaveRequest->user_id !== Auth::id() || $leaveRequest->status !== 'pending') {
@@ -362,11 +329,10 @@ class LeaveRequestController extends Controller
             'address_during_leave' => 'required|string|max:500',
             'emergency_contact' => 'required|string|max:20',
             'attachment' => $request->leave_type === 'sick'
-                ? 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'  // Required for sick leave
-                : 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // Optional for annual leave
+                ? 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'
+                : 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
-        // Calculate total working days (excluding weekends and holidays)
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
         $totalDays = $this->calculateWorkingDays($startDate, $endDate);
@@ -406,7 +372,6 @@ class LeaveRequestController extends Controller
             }
         }
 
-        // Update the leave request
         $leaveRequest->update([
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
@@ -421,9 +386,6 @@ class LeaveRequestController extends Controller
             ->with('success', 'Leave request updated successfully');
     }
 
-    /**
-     * Cancel the specified leave request.
-     */
     public function cancel(LeaveRequest $leaveRequest)
     {
         try {
@@ -437,9 +399,6 @@ class LeaveRequestController extends Controller
         }
     }
 
-    /**
-     * Delete the specified leave request.
-     */
     public function destroy(LeaveRequest $leaveRequest)
     {
         try {
@@ -453,9 +412,6 @@ class LeaveRequestController extends Controller
         }
     }
 
-    /**
-     * Approve the leave request by division leader
-     */
     public function approveByLeader(Request $request, LeaveRequest $leaveRequest)
     {
         $request->validate([
@@ -473,9 +429,6 @@ class LeaveRequestController extends Controller
         }
     }
 
-    /**
-     * Final approve the leave request by HRD
-     */
     public function finalApprove(Request $request, LeaveRequest $leaveRequest)
     {
         $request->validate([
@@ -493,9 +446,6 @@ class LeaveRequestController extends Controller
         }
     }
 
-    /**
-     * Reject the leave request
-     */
     public function reject(Request $request, LeaveRequest $leaveRequest)
     {
         $request->validate([
@@ -513,9 +463,6 @@ class LeaveRequestController extends Controller
         }
     }
 
-    /**
-     * Download PDF surat cuti untuk pengajuan yang sudah approved
-     */
     public function downloadPdf(LeaveRequest $leaveRequest)
     {
         $user = Auth::user();
@@ -555,9 +502,6 @@ class LeaveRequestController extends Controller
         return $pdf->download($fileName);
     }
 
-    /**
-     * Get holidays for a date range (API endpoint for frontend).
-     */
     public function getHolidays(Request $request)
     {
         $request->validate([
@@ -578,9 +522,6 @@ class LeaveRequestController extends Controller
         return response()->json($holidays);
     }
 
-    /**
-     * Get detail of leave request (API endpoint for modal).
-     */
     public function getDetail(LeaveRequest $leaveRequest)
     {
         $user = Auth::user();
@@ -788,7 +729,7 @@ class LeaveRequestController extends Controller
         $finalStatusColor = match($leaveRequest->status) {
             'approved' => 'green',
             'pending' => 'orange',
-            'rejected' => 'red', // Both canceled and rejected use red
+            'rejected' => 'red',
             'approved_by_leader' => 'indigo',
             default => 'slate',
         };
@@ -824,7 +765,7 @@ class LeaveRequestController extends Controller
             'pemohon' => [
                 'name' => $leaveRequest->user->name,
                 'email' => $leaveRequest->user->email,
-                'nip' => $leaveRequest->user->email, // Using email as NIP if NIP field doesn't exist
+                'nip' => $leaveRequest->user->email,
                 'division' => $leaveRequest->user->division ? $leaveRequest->user->division->name : 'N/A',
             ],
             'timeline' => $timeline,
@@ -835,13 +776,6 @@ class LeaveRequestController extends Controller
         ]);
     }
 
-    /**
-     * Calculate working days excluding weekends and holidays.
-     * 
-     * @param Carbon $startDate
-     * @param Carbon $endDate
-     * @return int
-     */
     private function calculateWorkingDays(Carbon $startDate, Carbon $endDate): int
     {
         $holidays = Holiday::whereBetween('holiday_date', [

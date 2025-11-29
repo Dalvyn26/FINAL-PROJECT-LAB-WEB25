@@ -10,9 +10,6 @@ use Carbon\Carbon;
 
 class HolidayController extends Controller
 {
-    /**
-     * Display a listing of the holidays.
-     */
     public function index(Request $request)
     {
         $query = Holiday::query();
@@ -53,17 +50,11 @@ class HolidayController extends Controller
         return view('admin.holidays.index', compact('holidays', 'search', 'sort', 'filter'));
     }
 
-    /**
-     * Show the form for creating a new holiday.
-     */
     public function create()
     {
         return view('admin.holidays.create');
     }
 
-    /**
-     * Store a newly created holiday in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -83,17 +74,11 @@ class HolidayController extends Controller
             ->with('success', 'Hari libur berhasil ditambahkan');
     }
 
-    /**
-     * Show the form for editing the specified holiday.
-     */
     public function edit(Holiday $holiday)
     {
         return view('admin.holidays.edit', compact('holiday'));
     }
 
-    /**
-     * Update the specified holiday in storage.
-     */
     public function update(Request $request, Holiday $holiday)
     {
         $request->validate([
@@ -112,9 +97,6 @@ class HolidayController extends Controller
             ->with('success', 'Hari libur berhasil diperbarui');
     }
 
-    /**
-     * Remove the specified holiday from storage.
-     */
     public function destroy(Holiday $holiday)
     {
         $holiday->delete();
@@ -123,9 +105,6 @@ class HolidayController extends Controller
             ->with('success', 'Hari libur berhasil dihapus');
     }
 
-    /**
-     * Remove multiple holidays from storage.
-     */
     public function bulkDelete(Request $request)
     {
         $request->validate([
@@ -145,9 +124,6 @@ class HolidayController extends Controller
             ->with('success', "Berhasil menghapus {$count} hari libur");
     }
 
-    /**
-     * Fetch and sync holidays from Google Calendar (Indonesian National Holidays).
-     */
     public function fetchGoogleHolidays()
     {
         try {
@@ -194,9 +170,6 @@ class HolidayController extends Controller
         }
     }
 
-    /**
-     * Parse iCal content and extract holidays.
-     */
     private function parseICal(string $icalContent): array
     {
         $holidays = [];

@@ -10,9 +10,6 @@ use Illuminate\Validation\Rule;
 
 class DivisionController extends Controller
 {
-    /**
-     * Display a listing of the divisions with filtering and sorting capabilities.
-     */
     public function index(Request $request)
     {
         $search = $request->query('search', '');
@@ -20,10 +17,7 @@ class DivisionController extends Controller
 
         $query = Division::query();
 
-        // Eager load leader and count members
         $query->with('leader')->withCount('users');
-
-        // Apply search filter
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
@@ -33,7 +27,6 @@ class DivisionController extends Controller
             });
         }
 
-        // Apply sorting
         switch ($sort) {
             case 'name_asc':
                 $query->orderBy('name', 'asc');
@@ -63,9 +56,6 @@ class DivisionController extends Controller
         return view('admin.divisions.index', compact('divisions', 'search', 'sort'));
     }
 
-    /**
-     * Show the form for creating a new division.
-     */
     public function create()
     {
         $availableLeaders = User::where('role', 'division_leader')
@@ -74,9 +64,6 @@ class DivisionController extends Controller
         return view('admin.divisions.create', compact('availableLeaders'));
     }
 
-    /**
-     * Store a newly created division in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -99,16 +86,16 @@ class DivisionController extends Controller
             'leader_id' => $request->leader_id,
         ]);
 
+        User::where('id', $request->leader_id)->update([
+            'division_id' => $division->id
+        ]);
+
         return redirect()->route('admin.divisions.index')
             ->with('success', 'Division created successfully');
     }
 
-    /**
-     * Display the specified division.
-     */
     public function show(Division $division)
     {
-        // Load leader relationship eagerly
         $division->load('leader');
 
         $members = $division->users()->orderBy('name')->paginate(10);
@@ -119,9 +106,6 @@ class DivisionController extends Controller
         return view('admin.divisions.show', compact('division', 'members', 'availableUsers'));
     }
 
-    /**
-     * Add a member to the division.
-     */
     public function storeMember(Request $request, Division $division)
     {
         $request->validate([
@@ -130,13 +114,11 @@ class DivisionController extends Controller
 
         $user = User::findOrFail($request->user_id);
 
-        // Check if user already has a division
         if ($user->division_id) {
             return redirect()->back()
                 ->withErrors(['user_id' => 'User is already assigned to another division.']);
         }
 
-        // Check if the user's role is 'user' (regular employee)
         if ($user->role !== 'user') {
             return redirect()->back()
                 ->withErrors(['user_id' => 'Only users with role "user" can be added to division.']);
@@ -148,43 +130,34 @@ class DivisionController extends Controller
             ->with('success', 'Member added successfully to the division.');
     }
 
-    /**
-     * Remove a member from the division.
-     */
     public function removeMember(Division $division, User $user)
     {
-        // Only allow removing users from the division (not deleting the user account)
+        if ($division->leader_id == $user->id) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Cannot remove division leader from the division. Please change the leader first in the edit division page.']);
+        }
+
         $user->update(['division_id' => null]);
 
         return redirect()->back()
             ->with('success', 'Member removed from division successfully.');
     }
 
-    /**
-     * Show the form for editing the specified division.
-     */
     public function edit(Division $division)
     {
-        // Get all division leaders and filter them in PHP to include the current division's leader
         $allLeaders = User::where('role', 'division_leader')->get();
 
-        // Filter leaders that are not assigned to other divisions, but include the current division's leader
         $availableLeaders = $allLeaders->filter(function ($leader) use ($division) {
-            // Check if this leader is already assigned to a different division
             $assignedToOtherDivision = Division::where('leader_id', $leader->id)
                 ->where('id', '!=', $division->id)
                 ->exists();
 
-            // Include the leader if they are not assigned to another division OR they're the current division's leader
             return !$assignedToOtherDivision || $leader->id == $division->leader_id;
         });
 
         return view('admin.divisions.edit', compact('division', 'availableLeaders'));
     }
 
-    /**
-     * Update the specified division in storage.
-     */
     public function update(Request $request, Division $division)
     {
         $request->validate([
@@ -200,26 +173,37 @@ class DivisionController extends Controller
             'leader_id.unique' => 'Selected leader is already assigned to another division.'
         ]);
 
+        $oldLeaderId = $division->leader_id;
+        
         $division->update([
             'name' => $request->name,
             'description' => $request->description,
             'leader_id' => $request->leader_id,
         ]);
 
+        if ($oldLeaderId && $oldLeaderId != $request->leader_id) {
+            User::where('id', $oldLeaderId)->update(['division_id' => null]);
+        }
+        
+        if ($request->leader_id) {
+            User::where('id', $request->leader_id)->update([
+                'division_id' => $division->id
+            ]);
+        }
+
         return redirect()->route('admin.divisions.index')
             ->with('success', 'Division updated successfully');
     }
 
-    /**
-     * Remove the specified division from storage.
-     */
     public function destroy(Division $division)
     {
         \DB::transaction(function () use ($division) {
-            // Step 1: Detach all members from this division by setting their division_id to NULL
             User::where('division_id', $division->id)->update(['division_id' => null]);
+            
+            if ($division->leader_id) {
+                User::where('id', $division->leader_id)->update(['division_id' => null]);
+            }
 
-            // Step 2: Now delete the division
             $division->delete();
         });
 
