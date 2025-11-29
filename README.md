@@ -19,8 +19,14 @@ Sistem manajemen cuti karyawan berbasis web yang menampilkan alur persetujuan be
 - [⚙️ Konfigurasi](#️-konfigurasi)
 - [📖 Penggunaan](#-penggunaan)
 - [📁 Struktur Proyek](#-struktur-proyek)
+- [🏗️ Arsitektur & Design Patterns](#️-arsitektur--design-patterns)
 - [🗄️ Struktur Database](#️-struktur-database)
+- [🔧 Artisan Commands](#-artisan-commands)
+- [🔄 Model Observers](#-model-observers)
 - [🧪 Testing](#-testing)
+- [🎨 Development](#-development)
+- [🔍 Troubleshooting](#-troubleshooting)
+- [📚 Referensi & Resources](#-referensi--resources)
 
 ---
 
@@ -28,27 +34,40 @@ Sistem manajemen cuti karyawan berbasis web yang menampilkan alur persetujuan be
 
 ### 1. **Manajemen Pengajuan Cuti**
 - Pengajuan cuti tahunan (annual leave) dan cuti sakit (sick leave)
-- Perhitungan hari cuti otomatis dengan mengecualikan hari libur nasional
-- Upload dokumen pendukung (attachment)
+- Perhitungan hari cuti otomatis dengan mengecualikan hari libur nasional dan weekend
+- Validasi tanggal (start date <= end date)
+- Upload dokumen pendukung (attachment) - disimpan di storage
 - Pelacakan status pengajuan secara real-time
-- Unduh surat cuti dalam format PDF
+- Unduh surat cuti dalam format PDF (generate dengan DomPDF)
+- Batalkan pengajuan jika masih pending
+- Detail view untuk setiap pengajuan (AJAX modal)
+- Filter dan pagination untuk daftar pengajuan
 
 ### 2. **Alur Persetujuan Bertingkat**
 - **Tingkat 1**: Persetujuan oleh Division Leader (Ketua Divisi)
 - **Tingkat 2**: Persetujuan final oleh HRD
 - Penolakan dengan catatan (minimal 10 karakter)
-- Catatan persetujuan dari leader
+- Catatan persetujuan dari leader (`leader_note`)
+- Catatan persetujuan dari HRD (`hrd_note`)
+- Tracking user yang menyetujui (`approved_by`)
+- Bulk approve/reject untuk efisiensi
 
 ### 3. **Manajemen Kuota Cuti**
 - Tracking kuota cuti tahunan per karyawan (default: 12 hari)
-- Pengurangan kuota otomatis saat cuti tahunan disetujui
+- Pengurangan kuota otomatis saat cuti tahunan disetujui oleh HRD
 - Validasi kuota sebelum pengajuan cuti tahunan
+- Validasi kuota saat final approval oleh HRD
 - Cuti sakit tidak mengurangi kuota cuti tahunan
+- Command untuk reset kuota tahunan (`leave:reset-quota`)
 
 ### 4. **Manajemen Hari Libur**
 - Manajemen hari libur nasional dan internal perusahaan
-- Sinkronisasi otomatis hari libur dari Google Calendar (opsional)
+- Sinkronisasi otomatis hari libur dari Google Calendar Indonesia
+- Parsing iCal format dari Google Calendar
+- Filter dan sort untuk hari libur (national/manual, tanggal, judul)
+- Bulk delete hari libur
 - Penghitungan hari kerja otomatis (exclude weekends dan hari libur)
+- API endpoint untuk mendapatkan daftar hari libur (AJAX)
 
 ### 5. **Manajemen Divisi**
 - Manajemen divisi/departemen
@@ -57,25 +76,52 @@ Sistem manajemen cuti karyawan berbasis web yang menampilkan alur persetujuan be
 
 ### 6. **Dashboard Berdasarkan Role**
 - Dashboard khusus untuk setiap role (Admin, HRD, Division Leader, User)
-- Statistik dan ringkasan data relevan per role
+- Statistik dan ringkasan data relevan per role:
+  - **Admin**: Total pengguna, divisi, hari libur, pengajuan cuti
+  - **HRD**: Pengajuan menunggu approval, ringkasan cuti
+  - **Leader**: Pengajuan dari anggota divisi yang pending
+  - **User**: Statistik cuti sendiri, kuota tersisa, riwayat
 - Notifikasi pengajuan yang menunggu persetujuan
+- Quick access ke fitur utama per role
 
 ### 7. **Manajemen Pengguna**
 - Manajemen data karyawan (CRUD)
 - Penetapan role dan divisi
-- Manajemen status aktif/nonaktif karyawan
+- Manajemen status aktif/nonaktif karyawan (otomatis atau manual)
 - Manajemen kuota cuti per karyawan
+- Upload avatar/foto profil
+- Manajemen username, email, phone, address
+- Manajemen tanggal bergabung (join_date)
+- Validasi unique untuk email dan username
 
 ### 8. **Laporan dan Ringkasan**
-- Ringkasan pengajuan cuti untuk Admin dan HRD
-- Filter berdasarkan divisi, periode, dan status
-- Statistik pengajuan cuti
+- Ringkasan pengajuan cuti untuk Admin, HRD, dan Leader
+- Filter berdasarkan divisi, periode, status, dan tipe cuti
+- Statistik pengajuan cuti (total, approved, rejected, pending)
+- Ringkasan kuota cuti per karyawan
+- Export data (jika diperlukan)
 
-### 9. **Keamanan**
+### 9. **Manajemen Status Karyawan Otomatis**
+- Update status aktif/nonaktif karyawan otomatis berdasarkan cuti yang disetujui
+- Status otomatis inactive saat karyawan sedang dalam masa cuti
+- Status otomatis active kembali setelah masa cuti selesai
+- Command untuk sinkronisasi status karyawan (`leave:sync-employee-status`)
+
+### 10. **Reset Kuota Cuti Otomatis**
+- Command untuk reset kuota cuti tahunan (`leave:reset-quota`)
+- Reset otomatis kuota menjadi 12 hari untuk karyawan eligible
+- Validasi berdasarkan tanggal join karyawan
+
+### 11. **Bulk Operations**
+- Bulk approve/reject pengajuan cuti untuk Leader dan HRD
+- Bulk delete hari libur untuk Admin
+
+### 12. **Keamanan**
 - Autentikasi berbasis Laravel Breeze
-- Middleware role-based access control
+- Middleware role-based access control (CheckRole middleware)
 - Verifikasi email (opsional)
-- Reset password
+- Reset password (dengan log file untuk development)
+- Validasi form request terpusat
 
 ## 🛠️ Teknologi yang Digunakan
 
@@ -95,6 +141,8 @@ Sistem manajemen cuti karyawan berbasis web yang menampilkan alur persetujuan be
 - **Laravel DomPDF 3.1** - Generate PDF untuk surat cuti
 - **Laravel Pint 1.24** - Code style fixer
 - **PHPUnit 11.5.3** - Testing framework
+- **Guzzle HTTP** - HTTP client untuk Google Calendar sync
+- **Carbon** - Date manipulation library
 
 ### Development Tools
 - **Laravel Sail 1.41** - Docker development environment
@@ -119,6 +167,7 @@ FINAL-PROJECT-LAB-WEB25/
 │   │   │   ├── Requests/         # Form request validation
 │   │   │   └── Rules/            # Custom validation rules
 │   │   ├── Models/               # Eloquent models
+│   │   ├── Observers/            # Model observers (LeaveRequestObserver)
 │   │   ├── Providers/            # Service providers
 │   │   ├── Services/             # Business logic services
 │   │   └── View/                 # View components
@@ -128,6 +177,9 @@ FINAL-PROJECT-LAB-WEB25/
 │   │   ├── migrations/           # Database migrations
 │   │   ├── seeders/              # Database seeders
 │   │   └── factories/            # Model factories
+│   ├── app/
+│   │   └── Console/
+│   │       └── Commands/         # Custom Artisan commands
 │   ├── public/                   # Public assets
 │   ├── resources/
 │   │   ├── css/                  # Stylesheets
@@ -357,7 +409,29 @@ Setelah menjalankan seeder, akun default berikut tersedia:
 
 ⚠️ **PENTING**: Ubah password default setelah instalasi pertama!
 
+### Konfigurasi Google Calendar Sync
+
+Untuk menggunakan fitur sync hari libur dari Google Calendar:
+
+1. Buka Google Calendar Indonesia: https://calendar.google.com/calendar/ical/id.indonesian%23holiday%40group.v.calendar.google.com/public/basic.ics
+2. URL ini sudah dikonfigurasi di `HolidayController` untuk sync otomatis
+3. Klik tombol "Sync Google Calendar" di halaman Admin → Holidays
+
+**Catatan**: Sync akan mengambil hari libur nasional untuk tahun berjalan dan tahun depan.
+
 ## 📖 Penggunaan
+
+### 🔐 Reset Password
+
+Untuk melakukan reset password di development environment:
+
+1. Akses halaman forgot password: `http://localhost:8000/forgot-password`
+2. Masukkan email yang terdaftar
+3. Reset link akan tersimpan di log file (karena menggunakan mail driver `log`)
+4. Buka file `storage/logs/laravel.log` dan cari URL reset link
+5. Copy URL dan buka di browser untuk reset password
+
+Untuk panduan lengkap, lihat: `manager_cuti/HOW_TO_FORGET_PASSWORD.md`
 
 ### Untuk Karyawan (User)
 
@@ -411,17 +485,48 @@ Setelah menjalankan seeder, akun default berikut tersedia:
    - Sinkronisasi dari Google Calendar (opsional)
 5. **Lihat Semua Pengajuan** dan ringkasan
 
+## 🏗️ Arsitektur & Design Patterns
+
+### Service Layer
+Sistem menggunakan **Service Layer Pattern** untuk memisahkan business logic dari controller:
+
+- **LeaveRequestService**: Menangani semua operasi terkait pengajuan cuti
+  - `createLeaveRequest()`: Membuat pengajuan cuti baru dengan validasi kuota
+  - `approveByLeader()`: Persetujuan oleh division leader (validasi authorization)
+  - `finalApprove()`: Persetujuan final oleh HRD dengan pengurangan kuota otomatis
+  - `reject()`: Penolakan pengajuan dengan validasi minimal 10 karakter
+  - `cancel()`: Pembatalan oleh user (hanya untuk pending status)
+  - `delete()`: Hapus pengajuan (termasuk attachment cleanup)
+
+**Keuntungan Service Layer:**
+- Business logic terpusat dan reusable
+- Mudah di-test
+- Controller lebih clean dan fokus pada HTTP handling
+
+### Model Observers
+- **LeaveRequestObserver**: Otomatis update status karyawan berdasarkan cuti
+
+### Middleware
+- **CheckRole**: Middleware untuk role-based access control
+
+### Validation
+- Custom validation rules (`DivisionLeaderRule`)
+- Form Request Validation (`ProfileUpdateRequest`, `LoginRequest`)
+
 ## 🗄️ Struktur Database
 
 Sistem menggunakan 4 tabel utama:
 
 ### 1. **users**
 Menyimpan data pengguna/karyawan:
-- Informasi personal (nama, email, phone, address)
+- Informasi personal (username, nama, email, phone, address)
 - Role (admin, hrd, division_leader, user)
 - Division ID (relasi ke divisions)
-- Leave quota (kuota cuti tahunan)
-- Active status
+- Join date (tanggal bergabung)
+- Leave quota (kuota cuti tahunan, default: 12)
+- Active status (boolean, otomatis update berdasarkan cuti)
+- Avatar (path ke file avatar)
+- Email verification timestamp
 
 ### 2. **divisions**
 Menyimpan data divisi/departemen:
@@ -443,9 +548,26 @@ Menyimpan pengajuan cuti:
 ### 4. **holidays**
 Menyimpan hari libur:
 - Title (nama hari libur)
-- Holiday date
+- Holiday date (unique, untuk menghindari duplikasi)
 - Description
-- Is national holiday (boolean)
+- Is national holiday (boolean, true jika dari Google Calendar)
+
+### Relasi Database
+
+```
+users (1) ──→ (N) divisions (leader_id)
+users (1) ──→ (N) leave_requests (user_id)
+users (1) ──→ (N) leave_requests (approved_by)
+divisions (1) ──→ (N) users (division_id)
+```
+
+### Constraints & Indexes
+
+- **users.email**: UNIQUE
+- **users.username**: UNIQUE
+- **holidays.holiday_date**: UNIQUE
+- Foreign keys dengan `ON DELETE CASCADE` atau `ON DELETE SET NULL`
+- Index pada kolom yang sering digunakan untuk query
 
 ### ERD Diagram
 
@@ -453,6 +575,88 @@ File ERD tersedia di `manager_cuti/ERD_CUTI_IN.dbml`. Anda dapat melihat diagram
 1. Buka https://dbdiagram.io
 2. Copy paste isi file ERD_CUTI_IN.dbml
 3. Diagram akan otomatis ter-render
+
+## 🔧 Artisan Commands
+
+### Custom Commands
+
+#### 1. Reset Annual Leave Quota
+Reset kuota cuti tahunan menjadi 12 hari untuk semua karyawan yang eligible:
+
+```bash
+# Reset kuota (aktual)
+php artisan leave:reset-quota
+
+# Dry run (simulasi tanpa perubahan)
+php artisan leave:reset-quota --dry-run
+```
+
+**Cara kerja:**
+- Reset kuota menjadi 12 hari untuk karyawan yang join date <= 1 Januari tahun lalu
+- Ideal untuk dijalankan setiap 1 Januari (via scheduler)
+
+#### 2. Sync Employee Status
+Sinkronisasi status aktif/nonaktif karyawan berdasarkan cuti yang disetujui:
+
+```bash
+# Sync status (aktual)
+php artisan leave:sync-employee-status
+
+# Dry run (simulasi tanpa perubahan)
+php artisan leave:sync-employee-status --dry-run
+```
+
+**Cara kerja:**
+- Set status inactive untuk karyawan yang sedang dalam masa cuti (approved/approved_by_leader)
+- Set status active kembali untuk karyawan yang sudah selesai cuti
+
+### Standard Laravel Commands
+
+```bash
+# Clear cache
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+php artisan route:clear
+
+# Run migrations
+php artisan migrate
+php artisan migrate:fresh --seed
+
+# Generate model dengan migration
+php artisan make:model ModelName -m
+
+# Generate controller
+php artisan make:controller ControllerName
+
+# List semua routes
+php artisan route:list
+
+# Queue worker
+php artisan queue:work
+php artisan queue:listen
+
+# Tinker (interactive shell)
+php artisan tinker
+```
+
+## 🔄 Model Observers
+
+Sistem menggunakan **LeaveRequestObserver** untuk otomatis mengupdate status karyawan:
+
+### LeaveRequestObserver
+
+Observer ini akan:
+- **On Created**: 
+  - Jika cuti dibuat dengan status approved/approved_by_leader dan tanggal sudah dimulai → set karyawan menjadi inactive
+  - Skip untuk role admin
+  
+- **On Updated**: 
+  - Jika cuti disetujui dan tanggal sudah dimulai → set inactive
+  - Jika cuti berakhir atau ditolak → cek apakah ada cuti aktif lain, jika tidak set active kembali
+  - Skip untuk role admin
+
+**Catatan**: Observer hanya berjalan untuk karyawan dengan role selain admin.
 
 ## 🧪 Testing
 
@@ -508,35 +712,119 @@ Ini akan menjalankan:
 Gunakan Laravel Pint untuk format code:
 
 ```bash
+# Format semua file
 ./vendor/bin/pint
+
+# Format specific file
+./vendor/bin/pint app/Models/User.php
+
+# Test format (dry run)
+./vendor/bin/pint --test
 ```
 
-### Artisan Commands
+### Schedule Tasks (Cron Jobs)
 
-Beberapa command yang tersedia:
+Untuk production, tambahkan ke crontab:
 
 ```bash
-# Clear cache
-php artisan cache:clear
-php artisan config:clear
-php artisan view:clear
-
-# Run migrations
-php artisan migrate
-php artisan migrate:fresh --seed
-
-# Generate model dengan migration
-php artisan make:model ModelName -m
-
-# Generate controller
-php artisan make:controller ControllerName
-
-# List semua routes
-php artisan route:list
+* * * * * cd /path-to-project/manager_cuti && php artisan schedule:run >> /dev/null 2>&1
 ```
-## 📄 License
 
-Proyek ini dibuat untuk tujuan pembelajaran dalam rangka Final Project Lab Web Semester 3.
+Atau konfigurasi di `app/Console/Kernel.php` untuk:
+- Reset kuota cuti setiap 1 Januari
+- Sync status karyawan setiap hari
+
+### Environment Variables
+
+Pastikan file `.env` sudah dikonfigurasi dengan benar:
+
+```env
+APP_NAME=CUTI-IN
+APP_ENV=local
+APP_KEY=base64:...
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nama_database
+DB_USERNAME=username
+DB_PASSWORD=password
+
+MAIL_MAILER=log
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+## 🔍 Troubleshooting
+
+### Masalah Umum
+
+#### 1. Error saat migrate
+```bash
+# Pastikan database sudah dibuat
+# Cek konfigurasi di .env
+php artisan config:clear
+php artisan migrate:fresh --seed
+```
+
+#### 2. Asset tidak ter-load
+```bash
+npm install
+npm run build
+# atau untuk development
+npm run dev
+```
+
+#### 3. Permission denied pada storage
+```bash
+# Linux/Mac
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+
+# Windows
+# Pastikan folder storage dan bootstrap/cache memiliki permission write
+```
+
+#### 4. PDF tidak bisa di-generate
+- Pastikan extension GD atau Imagick sudah terinstall di PHP
+- Cek file `public/check-gd.php` untuk verifikasi
+
+#### 5. Email tidak terkirim (development)
+- Sistem menggunakan mail driver `log` untuk development
+- Cek email di `storage/logs/laravel.log`
+- Untuk production, ubah `MAIL_MAILER` di `.env`
+
+### Log & Debugging
+
+```bash
+# Lihat log real-time
+php artisan pail
+
+# Lihat log file
+tail -f storage/logs/laravel.log
+
+# Clear semua cache
+php artisan optimize:clear
+```
+
+## 📚 Referensi & Resources
+
+### Dokumentasi
+- [Laravel Documentation](https://laravel.com/docs)
+- [Laravel Breeze](https://laravel.com/docs/breeze)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [Alpine.js](https://alpinejs.dev/)
+- [DomPDF](https://github.com/barryvdh/laravel-dompdf)
+
+### Internal Documentation
+- `HOW_TO_FORGET_PASSWORD.md` - Panduan reset password
+- `ERD_CUTI_IN.dbml` - Database ERD diagram
 
 ## 👤 Author
 
@@ -548,6 +836,7 @@ Proyek ini dibuat untuk tujuan pembelajaran dalam rangka Final Project Lab Web S
 - Laravel Breeze
 - Tailwind CSS
 - Alpine.js
+- DomPDF
 - Semua kontributor open source yang digunakan dalam proyek ini
 
 ---
