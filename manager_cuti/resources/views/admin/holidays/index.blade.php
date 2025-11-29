@@ -135,7 +135,7 @@
                                     <select name="filter" id="filter" class="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 appearance-none transition-all">
                                         <option value="">All Holidays</option>
                                         <option value="national" {{ request('filter') == 'national' ? 'selected' : '' }}>National Holidays</option>
-                                        <option value="manual" {{ request('filter') == 'manual' ? 'selected' : '' }}>Manual Holidays</option>
+                                        <option value="manual" {{ request('filter') == 'manual' ? 'selected' : '' }}>Company Holidays</option>
                                     </select>
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -167,37 +167,6 @@
                                 </div>
 
                                 <div class="mb-6">
-                                    <label for="division_id" class="block text-sm font-bold text-slate-700 mb-2">
-                                        Division
-                                        <span class="text-rose-500 ml-1">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <select name="division_id" id="division_id" required
-                                                class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 appearance-none transition-all">
-                                            <option value="">Select Division</option>
-                                            @foreach($divisions as $division)
-                                                <option value="{{ $division->id }}" {{ old('division_id') == $division->id ? 'selected' : '' }}>
-                                                    {{ $division->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    @error('division_id')
-                                        <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-6">
                                     <label for="leave_quota" class="block text-sm font-bold text-slate-700 mb-2">
                                         Leave Quota
                                         <span class="text-rose-500 ml-1">*</span>

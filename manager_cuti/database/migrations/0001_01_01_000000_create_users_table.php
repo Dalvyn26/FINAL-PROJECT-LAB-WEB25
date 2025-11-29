@@ -18,7 +18,6 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            // Additional columns merged from ADD migrations
             $table->enum('role', ['admin', 'hrd', 'division_leader', 'user'])->default('user');
             $table->unsignedBigInteger('division_id')->nullable();
             $table->string('phone')->nullable();

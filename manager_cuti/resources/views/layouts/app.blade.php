@@ -116,18 +116,21 @@
                 document.addEventListener('submit', function(e) {
                     const form = e.target;
                     const confirmDelete = form.getAttribute('data-confirm-delete');
+                    const doubleConfirm = form.getAttribute('data-double-confirm');
+                    const customMessage = form.getAttribute('data-confirm-message');
 
                     if (confirmDelete) {
                         e.preventDefault(); // Prevent form submission
 
+                        // First confirmation
                         Swal.fire({
                             title: 'Apakah Anda yakin?',
-                            text: "Data yang dihapus tidak bisa dikembalikan!",
+                            text: customMessage || "Data yang dihapus tidak bisa dikembalikan!",
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#4f46e5',
                             cancelButtonColor: '#e11d48',
-                            confirmButtonText: 'Ya, Hapus!',
+                            confirmButtonText: 'Ya, Lanjutkan!',
                             cancelButtonText: 'Batal',
                             reverseButtons: true,
                             customClass: {
@@ -137,8 +140,33 @@
                             }
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // Submit the form programmatically
-                                form.submit();
+                                // If double confirm is required, show second confirmation
+                                if (doubleConfirm) {
+                                    Swal.fire({
+                                        title: 'PERINGATAN!',
+                                        text: 'Anda yakin ingin menghapus divisi ini? Tindakan ini tidak dapat dibatalkan dan semua anggota akan dikeluarkan dari divisi.',
+                                        icon: 'error',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#e11d48',
+                                        cancelButtonColor: '#6b7280',
+                                        confirmButtonText: 'Ya, Hapus Sekarang!',
+                                        cancelButtonText: 'Batal',
+                                        reverseButtons: true,
+                                        customClass: {
+                                            popup: 'rounded-lg shadow-lg',
+                                            confirmButton: 'bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg',
+                                            cancelButton: 'bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg'
+                                        }
+                                    }).then((secondResult) => {
+                                        if (secondResult.isConfirmed) {
+                                            // Submit the form programmatically after second confirmation
+                                            form.submit();
+                                        }
+                                    });
+                                } else {
+                                    // Submit the form programmatically after first confirmation
+                                    form.submit();
+                                }
                             }
                         });
                     }

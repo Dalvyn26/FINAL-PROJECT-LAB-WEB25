@@ -194,7 +194,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                                 </svg>
                                             </a>
-                                            <form action="{{ route('admin.divisions.destroy', $division) }}" method="POST" class="inline" data-confirm-delete="true" data-confirm-message="Apakah Anda yakin? Semua anggota di divisi ini akan dikeluarkan (menjadi Non-Divisi).">
+                                            <form action="{{ route('admin.divisions.destroy', $division) }}" method="POST" class="inline" data-confirm-delete="true" data-double-confirm="true" data-confirm-message="Apakah Anda yakin? Semua anggota di divisi ini akan dikeluarkan (menjadi Non-Divisi).">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="group p-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-all duration-200 hover:scale-110">
@@ -248,7 +248,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                         </svg>
                                     </a>
-                                    <form action="{{ route('admin.divisions.destroy', $division) }}" method="POST" class="inline" data-confirm-delete="true" data-confirm-message="Apakah Anda yakin? Semua anggota di divisi ini akan dikeluarkan (menjadi Non-Divisi).">
+                                    <form action="{{ route('admin.divisions.destroy', $division) }}" method="POST" class="inline" data-confirm-delete="true" data-double-confirm="true" data-confirm-message="Apakah Anda yakin? Semua anggota di divisi ini akan dikeluarkan (menjadi Non-Divisi).">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
