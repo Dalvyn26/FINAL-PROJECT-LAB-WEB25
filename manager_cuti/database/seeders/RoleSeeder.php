@@ -14,9 +14,9 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Admin if not exists
         if (!User::where('email', 'admin@example.com')->exists()) {
             User::create([
+                'username' => 'admin',
                 'name' => 'Admin User',
                 'email' => 'admin@example.com',
                 'password' => Hash::make('Password'),
@@ -29,9 +29,9 @@ class RoleSeeder extends Seeder
             ]);
         }
 
-        // Create HRD if not exists
         if (!User::where('email', 'hrd@example.com')->exists()) {
             User::create([
+                'username' => 'hrd',
                 'name' => 'HRD User',
                 'email' => 'hrd@example.com',
                 'password' => Hash::make('Password'),
@@ -44,7 +44,6 @@ class RoleSeeder extends Seeder
             ]);
         }
 
-        // Create Divisions if not exist
         if (!Division::where('name', 'IT')->exists()) {
             $itDivision = Division::create([
                 'name' => 'IT',
@@ -54,18 +53,9 @@ class RoleSeeder extends Seeder
             $itDivision = Division::where('name', 'IT')->first();
         }
 
-        if (!Division::where('name', 'Finance')->exists()) {
-            $financeDivision = Division::create([
-                'name' => 'Finance',
-                'description' => 'Finance Division',
-            ]);
-        } else {
-            $financeDivision = Division::where('name', 'Finance')->first();
-        }
-
-        // Create Division Leader for IT if not exists
         if (!User::where('email', 'lead.it@example.com')->exists()) {
             $itLeader = User::create([
+                'username' => 'leadit',
                 'name' => 'IT Division Leader',
                 'email' => 'lead.it@example.com',
                 'password' => Hash::make('Password'),
@@ -78,13 +68,12 @@ class RoleSeeder extends Seeder
                 'active_status' => true,
             ]);
 
-            // Update the division with the leader
             $itDivision->update(['leader_id' => $itLeader->id]);
         }
 
-        // Create Staff Members if not exist
         if (!User::where('email', 'staff.it@example.com')->exists()) {
             User::create([
+                'username' => 'staffit',
                 'name' => 'IT Staff',
                 'email' => 'staff.it@example.com',
                 'password' => Hash::make('Password'),
@@ -97,20 +86,3 @@ class RoleSeeder extends Seeder
                 'active_status' => true,
             ]);
         }
-
-        if (!User::where('email', 'staff.finance@example.com')->exists()) {
-            User::create([
-                'name' => 'Finance Staff',
-                'email' => 'staff.finance@example.com',
-                'password' => Hash::make('Password'),
-                'role' => 'user',
-                'division_id' => $financeDivision->id,
-                'phone' => '081234567894',
-                'address' => 'Finance Staff Address',
-                'join_date' => now(),
-                'leave_quota' => 12,
-                'active_status' => true,
-            ]);
-        }
-    }
-}
