@@ -16,7 +16,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Main Dashboard Route - redirects based on user role
 Route::get('/dashboard', function () {
     $user = auth()->user();
 
@@ -61,6 +60,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 // Leader Routes
 Route::middleware(['auth', 'role:division_leader'])->prefix('leader')->name('leader.')->group(function () {
     Route::get('/leave-requests', [LeaveRequestController::class, 'indexLeader'])->name('leave-requests.index');
+    Route::get('/leave-summary', [\App\Http\Controllers\Leader\LeaveSummaryController::class, 'index'])->name('leave-summary.index');
     Route::post('/leave-requests/{leaveRequest}/approve-by-leader', [LeaveRequestController::class, 'approveByLeader'])->name('leave-requests.approve-by-leader');
     Route::post('/leave-requests/{leaveRequest}/reject', [LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
     Route::post('/leave-requests/bulk-update', [LeaveRequestController::class, 'bulkUpdate'])->name('leave-requests.bulk-update');
@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('leave-requests', LeaveRequestController::class);
     Route::post('/leave-requests/{leaveRequest}/cancel', [LeaveRequestController::class, 'cancel'])->name('leave-requests.cancel');
     Route::get('/leave-requests/{leaveRequest}/download-pdf', [LeaveRequestController::class, 'downloadPdf'])->name('leave-requests.download-pdf');
+    Route::get('/leave-requests/{leaveRequest}/detail', [LeaveRequestController::class, 'getDetail'])->name('leave-requests.detail');
     
     // API: Get holidays for date range (for frontend calculation)
     Route::get('/api/holidays', [LeaveRequestController::class, 'getHolidays'])->name('api.holidays');

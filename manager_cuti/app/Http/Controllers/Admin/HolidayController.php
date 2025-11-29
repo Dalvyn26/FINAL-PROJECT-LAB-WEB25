@@ -17,13 +17,11 @@ class HolidayController extends Controller
     {
         $query = Holiday::query();
 
-        // Apply search filter
         $search = $request->query('search');
         if ($search) {
             $query->where('title', 'like', "%{$search}%");
         }
 
-        // Apply filter by national holiday
         $filter = $request->query('filter');
         if ($filter === 'national') {
             $query->where('is_national_holiday', true);
@@ -31,7 +29,6 @@ class HolidayController extends Controller
             $query->where('is_national_holiday', false);
         }
 
-        // Apply sorting
         $sort = $request->query('sort', 'holiday_date_asc');
         switch ($sort) {
             case 'holiday_date_asc':
@@ -79,7 +76,7 @@ class HolidayController extends Controller
             'title' => $request->title,
             'holiday_date' => $request->holiday_date,
             'description' => $request->description,
-            'is_national_holiday' => false, // Manual input is not national holiday
+            'is_national_holiday' => false,
         ]);
 
         return redirect()->route('admin.holidays.index')
@@ -156,7 +153,6 @@ class HolidayController extends Controller
         try {
             $url = 'https://calendar.google.com/calendar/ical/id.indonesian%23holiday%40group.v.calendar.google.com/public/basic.ics';
             
-            // Fetch the iCal data
             $response = Http::timeout(30)->get($url);
             
             if (!$response->successful()) {
@@ -166,10 +162,8 @@ class HolidayController extends Controller
 
             $icalContent = $response->body();
             
-            // Parse iCal content
             $holidays = $this->parseICal($icalContent);
             
-            // Filter only this year and next year
             $currentYear = Carbon::now()->year;
             $nextYear = $currentYear + 1;
             
@@ -178,7 +172,6 @@ class HolidayController extends Controller
                 return $year == $currentYear || $year == $nextYear;
             });
 
-            // Save to database using updateOrCreate
             $count = 0;
             foreach ($filteredHolidays as $holiday) {
                 Holiday::updateOrCreate(
@@ -207,28 +200,23 @@ class HolidayController extends Controller
     private function parseICal(string $icalContent): array
     {
         $holidays = [];
-        $lines = explode("\r\n", $icalContent); // Try CRLF first
+        $lines = explode("\r\n", $icalContent);
         if (count($lines) === 1) {
-            $lines = explode("\n", $icalContent); // Fallback to LF
+            $lines = explode("\n", $icalContent);
         }
         
-        // Normalize line continuations (lines starting with space/tab are continuations)
         $normalizedLines = [];
         $currentLine = '';
         foreach ($lines as $line) {
-            // Check if line is a continuation (starts with space or tab)
             if (preg_match('/^[ \t]/', $line)) {
-                // This is a continuation line - append to current line (remove leading space/tab)
                 $currentLine .= ltrim($line, " \t");
             } else {
-                // New line - save previous line if exists
                 if ($currentLine !== '') {
                     $normalizedLines[] = $currentLine;
                 }
                 $currentLine = trim($line);
             }
         }
-        // Don't forget the last line
         if ($currentLine !== '') {
             $normalizedLines[] = $currentLine;
         }
@@ -236,16 +224,13 @@ class HolidayController extends Controller
         $currentEvent = null;
         
         foreach ($normalizedLines as $line) {
-            // Reset event when new VEVENT starts
             if (preg_match('/^BEGIN:VEVENT$/', $line)) {
                 $currentEvent = null;
                 continue;
             }
             
-            // Check for DTSTART;VALUE=DATE or DTSTART:YYYYMMDD
             if (preg_match('/^DTSTART(?:;VALUE=DATE)?:(\d{8})$/', $line, $matches)) {
                 $dateStr = $matches[1];
-                // Format: YYYYMMDD
                 try {
                     $date = Carbon::createFromFormat('Ymd', $dateStr)->format('Y-m-d');
                     if (!$currentEvent) {
@@ -253,12 +238,10 @@ class HolidayController extends Controller
                     }
                     $currentEvent['date'] = $date;
                 } catch (\Exception $e) {
-                    // Skip invalid date
                     continue;
                 }
             }
             
-            // Check for SUMMARY (holiday title)
             if (preg_match('/^SUMMARY:(.+)$/', $line, $matches)) {
                 if (!$currentEvent) {
                     $currentEvent = [];
@@ -266,18 +249,15 @@ class HolidayController extends Controller
                 $currentEvent['title'] = trim($matches[1]);
             }
             
-            // Check for DESCRIPTION
             if (preg_match('/^DESCRIPTION:(.+)$/', $line, $matches)) {
                 if (!$currentEvent) {
                     $currentEvent = [];
                 }
-                // Remove \n from description if present
                 $description = trim($matches[1]);
                 $description = str_replace('\\n', ' ', $description);
                 $currentEvent['description'] = $description;
             }
             
-            // End of event - save it
             if (preg_match('/^END:VEVENT$/', $line)) {
                 if ($currentEvent && isset($currentEvent['date']) && isset($currentEvent['title'])) {
                     $holidays[] = $currentEvent;
@@ -286,7 +266,6 @@ class HolidayController extends Controller
             }
         }
         
-        // Handle last event if exists (shouldn't happen with proper iCal, but just in case)
         if ($currentEvent && isset($currentEvent['date']) && isset($currentEvent['title'])) {
             $holidays[] = $currentEvent;
         }

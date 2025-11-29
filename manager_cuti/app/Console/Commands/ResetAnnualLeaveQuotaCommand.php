@@ -54,14 +54,9 @@ class ResetAnnualLeaveQuotaCommand extends Command
 
         foreach ($users as $user) {
             $joinDate = Carbon::parse($user->join_date);
-            
-            // Check if user has worked for at least 1 year
-            // User is eligible if their join_date is before or on January 1st of the previous year
-            // This means they've worked at least 1 full year by January 1st
             $eligibilityDate = $januaryFirst->copy()->subYear();
             
             if ($joinDate->lte($eligibilityDate)) {
-                // User is eligible for annual leave quota reset
                 if (!$isDryRun) {
                     $user->update(['leave_quota' => self::DEFAULT_QUOTA]);
                 }
@@ -88,8 +83,3 @@ class ResetAnnualLeaveQuotaCommand extends Command
         return Command::SUCCESS;
     }
 }
-
-// Test command secara manual:
-// php artisan leave:reset-quota --dry-run
-// Test dengan perubahan data (hati-hati):
-// php artisan leave:reset-quota

@@ -18,15 +18,12 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
-        // Ensure only division leaders can access this page
         if ($user->role !== 'division_leader') {
             abort(403, 'Unauthorized access to leader dashboard');
         }
         
-        // Get the division ID for the current leader
         $division = $user->divisionLeader;
         if (!$division) {
-            // Find which division this user leads by looking for their ID in the leader_id column
             $division = \App\Models\Division::where('leader_id', $user->id)->first();
         }
 
@@ -36,35 +33,28 @@ class DashboardController extends Controller
 
         $divisionId = $division->id;
         
-        // Total leave requests from division members
         $totalRequests = LeaveRequest::whereHas('user', function ($query) use ($divisionId) {
             $query->where('division_id', $divisionId);
         })->count();
         
-        // Pending leave requests from division members (need approval)
-        // Excluding the leader's own requests to match the approval list
         $pendingRequests = LeaveRequest::whereHas('user', function ($query) use ($divisionId) {
             $query->where('division_id', $divisionId);
         })
         ->where('status', 'pending')
-        ->where('user_id', '!=', Auth::id()) // Important: exclude leader's own requests
+        ->where('user_id', '!=', Auth::id())
         ->count();
         
-        // Members in the division
         $members = User::where('division_id', $divisionId)->get();
         
-        // Get current week range
         $weekStart = Carbon::now()->startOfWeek();
         $weekEnd = Carbon::now()->endOfWeek();
         
-        // Users currently on leave this week (approved leave requests that intersect with current week)
         $onLeaveThisWeek = LeaveRequest::with('user')
             ->whereHas('user', function ($query) use ($divisionId) {
                 $query->where('division_id', $divisionId);
             })
             ->where('status', 'approved')
             ->where(function ($query) use ($weekStart, $weekEnd) {
-                // Check if the leave period intersects with the current week
                 $query->whereBetween('start_date', [$weekStart, $weekEnd])
                       ->orWhereBetween('end_date', [$weekStart, $weekEnd])
                       ->orWhere(function ($q) use ($weekStart, $weekEnd) {

@@ -30,9 +30,8 @@ class LeaveRequestController extends Controller
     {
         $user = Auth::user();
 
-        // Redirect to appropriate index based on role
         return match ($user->role) {
-            'division_leader' => $this->indexUser(), // Division leader also sees their own leave history
+            'division_leader' => $this->indexUser(),
             'hrd' => $this->indexHrd(),
             'admin' => $this->indexAdmin(),
             'user' => $this->indexUser(),
@@ -48,7 +47,6 @@ class LeaveRequestController extends Controller
         $user = Auth::user();
         $leaveRequests = $user->leaveRequests()->with('approver')->latest()->paginate(10);
 
-        // Calculate statistics
         $currentYear = now()->year;
         $totalLeavesThisYear = $user->leaveRequests()
             ->whereYear('created_at', $currentYear)
@@ -79,25 +77,33 @@ class LeaveRequestController extends Controller
     {
         $user = Auth::user();
 
-        // Leader can see pending leave requests from users in their division, excluding their own requests
-        $leaveRequests = LeaveRequest::whereHas('user', function ($query) use ($user) {
-            $query->where('division_id', $user->divisionLeader->id);
+        $division = $user->divisionLeader;
+        if (!$division) {
+            $division = \App\Models\Division::where('leader_id', $user->id)->first();
+        }
+
+        if (!$division) {
+            abort(404, 'Division not found for this leader');
+        }
+
+        $divisionId = $division->id;
+
+        $leaveRequests = LeaveRequest::whereHas('user', function ($query) use ($divisionId) {
+            $query->where('division_id', $divisionId);
         })
-        ->where('user_id', '!=', $user->id) // Exclude leader's own requests
+        ->where('user_id', '!=', $user->id)
         ->where('status', 'pending')
         ->with(['user', 'approver'])->paginate(10);
 
         return view('leave-requests.index-leader', compact('leaveRequests'));
     }
 
+
     /**
      * Display a listing of the leave requests for HRD.
      */
     public function indexHrd()
     {
-        // HRD can see:
-        // 1. Requests approved by leaders (from regular staff - status: approved_by_leader)
-        // 2. Pending requests from division leaders (which bypass leader approval)
         $leaveRequests = LeaveRequest::where(function ($query) {
             $query->where('status', 'approved_by_leader')
                   ->orWhere(function ($subQuery) {
@@ -150,10 +156,7 @@ class LeaveRequestController extends Controller
                         $user = Auth::user();
                         
                         if ($action === 'approve') {
-                            // Check user role to determine which approval method to use
                             if ($user->role === 'division_leader') {
-                                // Division leader approval - status becomes 'approved_by_leader'
-                                // Validate annual leave quota
                                 if ($leaveRequest->leave_type === 'annual') {
                                     if (!$leaveRequest->user->hasSufficientAnnualLeaveQuota($leaveRequest->total_days)) {
                                         $errors[] = "Insufficient leave quota for {$leaveRequest->user->name}'s request (ID: {$id})";
@@ -162,12 +165,9 @@ class LeaveRequestController extends Controller
                                     }
                                 }
                                 
-                                // Use approveByLeader for division leaders with optional note
                                 $this->leaveRequestService->approveByLeader($leaveRequest, $user, $leaderNote);
                                 $successCount++;
                             } else {
-                                // HRD final approval - status becomes 'approved'
-                                // Validate annual leave quota
                                 if ($leaveRequest->leave_type === 'annual') {
                                     if (!$leaveRequest->user->hasSufficientAnnualLeaveQuota($leaveRequest->total_days)) {
                                         $errors[] = "Insufficient leave quota for {$leaveRequest->user->name}'s request (ID: {$id})";
@@ -216,7 +216,6 @@ class LeaveRequestController extends Controller
     {
         $user = Auth::user();
 
-        // Calculate if user is eligible for annual leave (work period >= 1 year)
         $isEligible = false;
         if ($user->join_date) {
             $isEligible = \Carbon\Carbon::parse($user->join_date)->diffInYears(now()) >= 1;
@@ -230,7 +229,6 @@ class LeaveRequestController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate eligibility for annual leave
         $isEligible = false;
         if (Auth::user()->join_date) {
             $isEligible = \Carbon\Carbon::parse(Auth::user()->join_date)->diffInYears(now()) >= 1;
@@ -254,27 +252,23 @@ class LeaveRequestController extends Controller
                 : 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // Optional for annual leave
         ]);
 
-        // Calculate total working days (excluding weekends and holidays)
+       
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
         $totalDays = $this->calculateWorkingDays($startDate, $endDate);
 
-        // Handle file upload if present
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
             $attachmentPath = $request->file('attachment')->store('leave-attachments', 'public');
         }
 
-        // Additional validation for sick leave
         if ($request->leave_type === 'sick' && !$attachmentPath) {
             return redirect()->back()
                 ->withErrors(['attachment' => 'Medical certificate is required for sick leave'])
                 ->withInput();
         }
 
-        // Additional validation for annual leave
         if ($request->leave_type === 'annual') {
-            // Check if start_date is at least 3 days from today
             $minStartDate = \Carbon\Carbon::now()->addDays(3)->startOfDay();
             if ($startDate->lt($minStartDate)) {
                 return redirect()->back()
@@ -282,7 +276,6 @@ class LeaveRequestController extends Controller
                     ->withInput();
             }
 
-            // Check if user has sufficient leave quota
             $user = Auth::user();
             if ($totalDays > $user->leave_quota) {
                 return redirect()->back()
@@ -293,8 +286,6 @@ class LeaveRequestController extends Controller
 
         try {
             $leaveRequest = DB::transaction(function () use ($request, $totalDays, $attachmentPath) {
-                // All leave requests start with 'pending' status regardless of role
-                // For division leaders, their requests will be visible to HRD for approval
                 $initialStatus = 'pending';
 
                 return $this->leaveRequestService->createLeaveRequest([
@@ -328,7 +319,6 @@ class LeaveRequestController extends Controller
      */
     public function show(LeaveRequest $leaveRequest)
     {
-        // Authorization check
         $user = Auth::user();
         $canView = $user->id === $leaveRequest->user_id ||
                    $user->isAdmin() ||
@@ -347,7 +337,6 @@ class LeaveRequestController extends Controller
      */
     public function edit(LeaveRequest $leaveRequest)
     {
-        // Only allow editing if the request is still pending and belongs to the current user
         if ($leaveRequest->user_id !== Auth::id() || $leaveRequest->status !== 'pending') {
             abort(403, 'Unauthorized to edit this leave request');
         }
@@ -360,7 +349,6 @@ class LeaveRequestController extends Controller
      */
     public function update(Request $request, LeaveRequest $leaveRequest)
     {
-        // Only allow updating if the request is still pending and belongs to the current user
         if ($leaveRequest->user_id !== Auth::id() || $leaveRequest->status !== 'pending') {
             abort(403, 'Unauthorized to update this leave request');
         }
@@ -381,10 +369,8 @@ class LeaveRequestController extends Controller
         $endDate = Carbon::parse($request->end_date);
         $totalDays = $this->calculateWorkingDays($startDate, $endDate);
 
-        // Handle file upload if present
-        $attachmentPath = $leaveRequest->attachment_path; // Keep existing if no new file
+        $attachmentPath = $leaveRequest->attachment_path;
         if ($request->hasFile('attachment')) {
-            // Delete old attachment if exists
             if ($leaveRequest->attachment_path) {
                 Storage::disk('public')->delete($leaveRequest->attachment_path);
             }
@@ -392,16 +378,13 @@ class LeaveRequestController extends Controller
             $attachmentPath = $request->file('attachment')->store('leave-attachments', 'public');
         }
 
-        // Additional validation for sick leave
         if ($leaveRequest->leave_type === 'sick' && !$attachmentPath) {
             return redirect()->back()
                 ->withErrors(['attachment' => 'Medical certificate is required for sick leave'])
                 ->withInput();
         }
 
-        // Additional validation for annual leave
         if ($leaveRequest->leave_type === 'annual') {
-            // Check if start_date is at least 3 days from today
             $minStartDate = \Carbon\Carbon::now()->addDays(3)->startOfDay();
             if ($startDate->lt($minStartDate)) {
                 return redirect()->back()
@@ -409,13 +392,10 @@ class LeaveRequestController extends Controller
                     ->withInput();
             }
 
-            // For updates, we need to consider that quota was already reduced
-            // Calculate the difference between old and new total days
             $quotaDiff = $totalDays - $leaveRequest->total_days;
 
             if ($quotaDiff > 0) {
-                // Only check if the additional days exceed the available quota
-                $availableQuota = $leaveRequest->user->leave_quota + $leaveRequest->total_days; // Add back the original days
+                $availableQuota = $leaveRequest->user->leave_quota + $leaveRequest->total_days;
                 if ($quotaDiff > $availableQuota) {
                     return redirect()->back()
                         ->withErrors(['start_date' => "Insufficient leave quota. You need {$quotaDiff} more days but only have {$availableQuota} days available."])
@@ -476,7 +456,6 @@ class LeaveRequestController extends Controller
      */
     public function approveByLeader(Request $request, LeaveRequest $leaveRequest)
     {
-        // Validate optional leader note
         $request->validate([
             'leader_note' => 'nullable|string|max:500',
         ]);
@@ -514,7 +493,7 @@ class LeaveRequestController extends Controller
     public function reject(Request $request, LeaveRequest $leaveRequest)
     {
         $request->validate([
-            'rejection_note' => 'required|string|min:10|max:500', // Minimum 10 characters
+            'rejection_note' => 'required|string|min:10|max:500',
         ]);
 
         try {
@@ -535,10 +514,8 @@ class LeaveRequestController extends Controller
     {
         $user = Auth::user();
 
-        // Load relationships
         $leaveRequest->load(['user.division', 'approver']);
 
-        // Validasi: Hanya user pemilik cuti ATAU HRD/Admin yang boleh download
         $canDownload = $user->id === $leaveRequest->user_id || 
                        $user->isAdmin() || 
                        $user->isHrd();
@@ -547,13 +524,11 @@ class LeaveRequestController extends Controller
             abort(403, 'Unauthorized to download this leave request');
         }
 
-        // Validasi Status: Hanya bisa download jika status == 'approved'
         if ($leaveRequest->status !== 'approved') {
             return redirect()->back()
                 ->withErrors(['error' => 'Surat cuti hanya dapat diunduh untuk pengajuan yang sudah disetujui (Approved)']);
         }
 
-        // Encode logo to base64 untuk menghindari kebutuhan GD extension
         $logoPath = public_path('logo/LogoCutiin.png');
         $logoBase64 = null;
         if (file_exists($logoPath)) {
@@ -561,7 +536,6 @@ class LeaveRequestController extends Controller
             $logoBase64 = base64_encode($logoData);
         }
 
-        // Load view pdf.leave_letter dengan data cuti
         $pdf = Pdf::loadView('pdf.leave_letter', [
             'leaveRequest' => $leaveRequest,
             'user' => $leaveRequest->user,
@@ -569,11 +543,9 @@ class LeaveRequestController extends Controller
             'logoBase64' => $logoBase64,
         ]);
 
-        // Generate nama file
         $fileName = 'Surat_Cuti_' . $leaveRequest->user->name . '_' . $leaveRequest->id . '.pdf';
         $fileName = str_replace(' ', '_', $fileName);
 
-        // Return download
         return $pdf->download($fileName);
     }
 
@@ -601,6 +573,262 @@ class LeaveRequestController extends Controller
     }
 
     /**
+     * Get detail of leave request (API endpoint for modal).
+     */
+    public function getDetail(LeaveRequest $leaveRequest)
+    {
+        $user = Auth::user();
+        $canView = $user->id === $leaveRequest->user_id ||
+                   $user->isAdmin() ||
+                   $user->isHrd() ||
+                   ($user->isDivisionLeader() && $leaveRequest->user->division_id === $user->divisionLeader->id);
+
+        if (!$canView) {
+            return response()->json(['error' => 'Unauthorized to view this leave request'], 403);
+        }
+
+        $leaveRequest->load(['user.division.leader', 'approver']);
+
+        $timeline = [];
+        
+        $timeline[] = [
+            'status' => 'created',
+            'title' => 'Pengajuan Dibuat',
+            'description' => 'Pengajuan cuti telah dibuat',
+            'datetime' => $leaveRequest->created_at->format('d M Y, H:i'),
+            'timestamp' => $leaveRequest->created_at->toIso8601String(),
+            'color' => 'slate',
+        ];
+
+        $isCanceledByUser = $leaveRequest->status === 'rejected' && 
+                           $leaveRequest->rejection_note === 'Canceled by user' && 
+                           !$leaveRequest->approver;
+
+        if (!$leaveRequest->user->isDivisionLeader()) {
+            $rejectedByHrd = $leaveRequest->status === 'rejected' && 
+                            $leaveRequest->approver && 
+                            $leaveRequest->approver->isHrd() &&
+                            !$isCanceledByUser;
+            
+            if ($leaveRequest->status === 'pending' && !$isCanceledByUser) {
+                $timeline[] = [
+                    'status' => 'pending_leader',
+                    'title' => 'Pending Review Leader',
+                    'description' => 'Menunggu persetujuan dari Leader',
+                    'datetime' => null,
+                    'timestamp' => null,
+                    'color' => 'slate',
+                ];
+            } elseif ($leaveRequest->status === 'approved_by_leader' || $leaveRequest->status === 'approved') {
+                $timeline[] = [
+                    'status' => 'approved_leader',
+                    'title' => 'Approved by Leader',
+                    'description' => $leaveRequest->leader_note ?: 'Pengajuan disetujui oleh Leader',
+                    'datetime' => $leaveRequest->updated_at->format('d M Y, H:i'),
+                    'timestamp' => $leaveRequest->updated_at->toIso8601String(),
+                    'color' => 'green',
+                    'approver' => ($leaveRequest->status === 'approved_by_leader' && $leaveRequest->approver) 
+                        ? $leaveRequest->approver->name 
+                        : ($leaveRequest->user->division && $leaveRequest->user->division->leader 
+                            ? $leaveRequest->user->division->leader->name 
+                            : null),
+                ];
+            } elseif ($rejectedByHrd) {
+                $timeDiffMinutes = $leaveRequest->created_at->diffInMinutes($leaveRequest->updated_at);
+                
+                $minMinutes = max(5, floor($timeDiffMinutes * 0.3));
+                $maxMinutes = min(floor($timeDiffMinutes * 0.7), $timeDiffMinutes - 10);
+                
+                $estimatedMinutes = max($minMinutes, min($maxMinutes, floor($timeDiffMinutes * 0.4)));
+                
+                $approvalDatetime = $leaveRequest->created_at->copy()->addMinutes($estimatedMinutes);
+                
+                if ($approvalDatetime->lte($leaveRequest->created_at)) {
+                    $approvalDatetime = $leaveRequest->created_at->copy()->addMinutes(5);
+                }
+                
+                $minBeforeRejection = $leaveRequest->updated_at->copy()->subMinutes(10);
+                if ($approvalDatetime->gte($minBeforeRejection)) {
+                    $approvalDatetime = $minBeforeRejection->copy();
+                }
+                
+                if ($approvalDatetime->gte($leaveRequest->updated_at)) {
+                    $approvalDatetime = $leaveRequest->updated_at->copy()->subMinutes(10);
+                }
+                
+                $timeline[] = [
+                    'status' => 'approved_leader',
+                    'title' => 'Approved by Leader',
+                    'description' => $leaveRequest->leader_note ?: 'Pengajuan disetujui oleh Leader',
+                    'datetime' => $approvalDatetime->format('d M Y, H:i'),
+                    'timestamp' => $approvalDatetime->toIso8601String(),
+                    'color' => 'green',
+                    'approver' => ($leaveRequest->user->division && $leaveRequest->user->division->leader 
+                        ? $leaveRequest->user->division->leader->name 
+                        : null),
+                ];
+            } elseif ($leaveRequest->status === 'rejected' && $leaveRequest->approver && $leaveRequest->approver->isDivisionLeader()) {
+                $timeline[] = [
+                    'status' => 'rejected_leader',
+                    'title' => 'Rejected by Leader',
+                    'description' => $leaveRequest->rejection_note ?: 'Pengajuan ditolak oleh Leader',
+                    'datetime' => $leaveRequest->updated_at->format('d M Y, H:i'),
+                    'timestamp' => $leaveRequest->updated_at->toIso8601String(),
+                    'color' => 'red',
+                    'approver' => $leaveRequest->approver->name,
+                ];
+            }
+        }
+
+        if ($leaveRequest->status === 'approved_by_leader') {
+            $timeline[] = [
+                'status' => 'pending_hrd',
+                'title' => 'Waiting for HRD Approval',
+                'description' => 'Menunggu persetujuan dari HRD',
+                'datetime' => null,
+                'timestamp' => null,
+                'color' => 'slate',
+            ];
+        } elseif ($leaveRequest->status === 'approved') {
+            $timeline[] = [
+                'status' => 'approved_hrd',
+                'title' => 'Approved by HRD',
+                'description' => 'Pengajuan disetujui oleh HRD',
+                'datetime' => $leaveRequest->updated_at->format('d M Y, H:i'),
+                'timestamp' => $leaveRequest->updated_at->toIso8601String(),
+                'color' => 'green',
+                'approver' => $leaveRequest->approver ? $leaveRequest->approver->name : null,
+            ];
+        } elseif ($leaveRequest->status === 'rejected' && $leaveRequest->approver && $leaveRequest->approver->isHrd()) {
+            $timeline[] = [
+                'status' => 'rejected_hrd',
+                'title' => 'Rejected by HRD',
+                'description' => $leaveRequest->rejection_note ?: 'Pengajuan ditolak oleh HRD',
+                'datetime' => $leaveRequest->updated_at->format('d M Y, H:i'),
+                'timestamp' => $leaveRequest->updated_at->toIso8601String(),
+                'color' => 'red',
+                'approver' => $leaveRequest->approver->name,
+            ];
+        } elseif ($leaveRequest->status === 'pending' && $leaveRequest->user->isDivisionLeader()) {
+            $timeline[] = [
+                'status' => 'pending_hrd',
+                'title' => 'Waiting for HRD Approval',
+                'description' => 'Menunggu persetujuan dari HRD',
+                'datetime' => null,
+                'timestamp' => null,
+                'color' => 'slate',
+            ];
+        }
+
+        if ($isCanceledByUser) {
+            $canceledTimeline = [
+                'status' => 'canceled',
+                'title' => 'Canceled by User',
+                'description' => 'Pengajuan cuti dibatalkan oleh pemohon',
+                'datetime' => $leaveRequest->updated_at->format('d M Y, H:i'),
+                'timestamp' => $leaveRequest->updated_at->toIso8601String(),
+                'color' => 'red',
+                'approver' => $leaveRequest->user->name,
+            ];
+            
+            $timeline[] = $canceledTimeline;
+        }
+
+        usort($timeline, function ($a, $b) {
+            if ($a['status'] === 'created') {
+                return -1;
+            }
+            if ($b['status'] === 'created') {
+                return 1;
+            }
+            
+            $hasTimestampA = $a['timestamp'] !== null;
+            $hasTimestampB = $b['timestamp'] !== null;
+            
+            if ($hasTimestampA && $hasTimestampB) {
+                $timeA = strtotime($a['timestamp']);
+                $timeB = strtotime($b['timestamp']);
+                
+                return ($timeA < $timeB) ? -1 : (($timeA > $timeB) ? 1 : 0);
+            }
+            
+            if ($hasTimestampA && !$hasTimestampB) {
+                if ($a['status'] === 'approved_leader' && $b['status'] === 'pending_hrd') {
+                    return -1;
+                }
+                return -1;
+            }
+            
+            if (!$hasTimestampA && $hasTimestampB) {
+                if ($b['status'] === 'approved_leader' && $a['status'] === 'pending_hrd') {
+                    return 1;
+                }
+                return 1;
+            }
+            
+            $statusA = $a['status'];
+            $statusB = $b['status'];
+            
+            if ($statusA === 'pending_leader' && $statusB === 'pending_hrd') {
+                return -1;
+            }
+            if ($statusA === 'pending_hrd' && $statusB === 'pending_leader') {
+                return 1;
+            }
+            
+            return 0;
+        });
+
+        $finalStatusColor = match($leaveRequest->status) {
+            'approved' => 'green',
+            'pending' => 'orange',
+            'rejected' => 'red', // Both canceled and rejected use red
+            'approved_by_leader' => 'indigo',
+            default => 'slate',
+        };
+
+        $finalStatusLabel = match($leaveRequest->status) {
+            'approved' => 'Approved',
+            'pending' => 'Pending',
+            'rejected' => $isCanceledByUser ? 'Canceled' : 'Rejected',
+            'approved_by_leader' => 'Approved by Leader',
+            default => ucfirst(str_replace('_', ' ', $leaveRequest->status)),
+        };
+
+        return response()->json([
+            'pengajuan' => [
+                'id' => $leaveRequest->id,
+                'leave_type' => $leaveRequest->leave_type,
+                'leave_type_label' => ucfirst($leaveRequest->leave_type) . ' Leave',
+                'start_date' => $leaveRequest->start_date->format('d M Y'),
+                'end_date' => $leaveRequest->end_date->format('d M Y'),
+                'total_days' => $leaveRequest->total_days,
+                'reason' => $leaveRequest->reason,
+                'address_during_leave' => $leaveRequest->address_during_leave,
+                'emergency_contact' => $leaveRequest->emergency_contact,
+                'attachment_path' => $leaveRequest->attachment_path,
+                'attachment_url' => $leaveRequest->attachment_path ? Storage::url($leaveRequest->attachment_path) : null,
+                'status' => $leaveRequest->status,
+                'status_label' => $finalStatusLabel,
+                'status_color' => $finalStatusColor,
+                'rejection_note' => $leaveRequest->rejection_note,
+                'leader_note' => $leaveRequest->leader_note,
+            ],
+            'pemohon' => [
+                'name' => $leaveRequest->user->name,
+                'email' => $leaveRequest->user->email,
+                'nip' => $leaveRequest->user->email, // Using email as NIP if NIP field doesn't exist
+                'division' => $leaveRequest->user->division ? $leaveRequest->user->division->name : 'N/A',
+            ],
+            'timeline' => $timeline,
+            'approver' => $leaveRequest->approver ? [
+                'name' => $leaveRequest->approver->name,
+                'role' => $leaveRequest->approver->role,
+            ] : null,
+        ]);
+    }
+
+    /**
      * Calculate working days excluding weekends and holidays.
      * 
      * @param Carbon $startDate
@@ -609,7 +837,6 @@ class LeaveRequestController extends Controller
      */
     private function calculateWorkingDays(Carbon $startDate, Carbon $endDate): int
     {
-        // Get all holidays within the date range
         $holidays = Holiday::whereBetween('holiday_date', [
             $startDate->format('Y-m-d'),
             $endDate->format('Y-m-d')
@@ -621,9 +848,7 @@ class LeaveRequestController extends Controller
         $currentDate = clone $startDate;
 
         while ($currentDate <= $endDate) {
-            // Skip weekends (Saturday = 6, Sunday = 0)
             if ($currentDate->isWeekday()) {
-                // Check if current date is a holiday
                 $dateString = $currentDate->format('Y-m-d');
                 if (!in_array($dateString, $holidays)) {
                     $totalDays++;
