@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class LeaveRequestService
 {
-    /**
-     * Create a new leave request with proper validation and transaction
-     */
     public function createLeaveRequest(array $data, User $user): LeaveRequest
     {
         return DB::transaction(function () use ($data, $user) {
@@ -39,9 +36,6 @@ class LeaveRequestService
         });
     }
 
-    /**
-     * Process approval by division leader with transaction
-     */
     public function approveByLeader(LeaveRequest $leaveRequest, User $approver, string $note = null): LeaveRequest
     {
         return DB::transaction(function () use ($leaveRequest, $approver, $note) {
@@ -59,9 +53,6 @@ class LeaveRequestService
         });
     }
 
-    /**
-     * Process final approval by HRD with transaction
-     */
     public function finalApprove(LeaveRequest $leaveRequest, User $approver, string $note = null): LeaveRequest
     {
         return DB::transaction(function () use ($leaveRequest, $approver, $note) {
@@ -89,9 +80,6 @@ class LeaveRequestService
         });
     }
 
-    /**
-     * Process rejection with transaction
-     */
     public function reject(LeaveRequest $leaveRequest, User $approver, string $rejectionNote): LeaveRequest
     {
         return DB::transaction(function () use ($leaveRequest, $approver, $rejectionNote) {
@@ -120,9 +108,6 @@ class LeaveRequestService
         });
     }
 
-    /**
-     * Cancel a leave request with transaction
-     */
     public function cancel(LeaveRequest $leaveRequest, User $user): LeaveRequest
     {
         return DB::transaction(function () use ($leaveRequest, $user) {
@@ -149,9 +134,6 @@ class LeaveRequestService
         });
     }
 
-    /**
-     * Delete a leave request with transaction
-     */
     public function delete(LeaveRequest $leaveRequest, User $user): bool
     {
         return DB::transaction(function () use ($leaveRequest, $user) {

@@ -44,65 +44,41 @@ class LeaveRequest extends Model
         'approved_by' => 'integer',
     ];
 
-    /**
-     * Relationship: Leave Request belongs to a User
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Relationship: Leave Request belongs to an Approver (User)
-     */
     public function approver()
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
 
-    /**
-     * Check if leave request is pending
-     */
     public function isPending(): bool
     {
         return $this->status === 'pending';
     }
 
-    /**
-     * Check if leave request is approved by division leader
-     */
     public function isApprovedByLeader(): bool
     {
         return $this->status === 'approved_by_leader';
     }
 
-    /**
-     * Check if leave request is fully approved
-     */
     public function isApproved(): bool
     {
         return $this->status === 'approved';
     }
 
-    /**
-     * Check if leave request is rejected
-     */
     public function isRejected(): bool
     {
         return $this->status === 'rejected';
     }
 
-    /**
-     * Check if leave request is for annual leave
-     */
     public function isAnnualLeave(): bool
     {
         return $this->leave_type === 'annual';
     }
 
-    /**
-     * Check if leave request is for sick leave
-     */
     public function isSickLeave(): bool
     {
         return $this->leave_type === 'sick';
