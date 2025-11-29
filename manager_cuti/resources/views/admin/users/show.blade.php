@@ -10,7 +10,7 @@
                 </div>
                 <div>
                     <h2 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight truncate">
-                        View User: {{ $user->name }}
+                        View User: {{ $user->username ?? $user->name }}
                     </h2>
                     <p class="text-xs text-slate-500 mt-0.5">User profile and information details</p>
                 </div>
@@ -47,7 +47,10 @@
                             <div class="absolute -bottom-1 -right-1 w-6 h-6 sm:w-7 sm:h-7 {{ $user->active_status ? 'bg-emerald-500' : 'bg-slate-400' }} border-4 border-white rounded-full"></div>
                         </div>
                         <div class="flex-1 text-white text-center sm:text-left">
-                            <h3 class="text-xl sm:text-2xl font-bold mb-1">{{ $user->name }}</h3>
+                            <h3 class="text-xl sm:text-2xl font-bold mb-1">{{ $user->username ?? $user->name }}</h3>
+                            @if($user->username && $user->name)
+                                <p class="text-xs sm:text-sm text-white/70 mb-1">{{ $user->name }}</p>
+                            @endif
                             <p class="text-sm sm:text-base text-white/80 mb-3">{{ $user->email }}</p>
                             <div class="flex items-center gap-3">
                                 <span class="px-3 py-1.5 inline-flex text-xs font-semibold rounded-full bg-white/20 backdrop-blur-sm

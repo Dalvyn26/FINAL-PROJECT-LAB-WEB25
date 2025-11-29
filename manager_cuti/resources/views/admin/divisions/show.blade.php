@@ -121,7 +121,7 @@
                                     <select name="user_id" id="user_id" class="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 appearance-none transition-all">
                                         <option value="">Select User to Add</option>
                                         @foreach($availableUsers as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }} - {{ $user->email }}</option>
+                                            <option value="{{ $user->id }}">{{ $user->username ?? $user->name }} - {{ $user->email }}</option>
                                         @endforeach
                                     </select>
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -225,15 +225,19 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-5 whitespace-nowrap">
-                                            <form action="{{ route('admin.divisions.members.destroy', ['division' => $division, 'user' => $member]) }}" method="POST" class="inline" data-confirm-delete="true" data-confirm-message="Apakah Anda yakin ingin mengeluarkan user ini dari divisi?">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="group p-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-all duration-200 hover:scale-110">
-                                                    <svg class="w-5 h-5 group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
-                                                </button>
-                                            </form>
+                                            @if($division->leader_id != $member->id)
+                                                <form action="{{ route('admin.divisions.members.destroy', ['division' => $division, 'user' => $member]) }}" method="POST" class="inline" data-confirm-delete="true" data-confirm-message="Apakah Anda yakin ingin mengeluarkan user ini dari divisi?">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="group p-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-all duration-200 hover:scale-110">
+                                                        <svg class="w-5 h-5 group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="text-xs text-slate-400 italic">Leader</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -259,15 +263,19 @@
                                             <div class="text-xs text-slate-500 truncate mt-0.5">{{ $member->email }}</div>
                                         </div>
                                     </div>
-                                    <form action="{{ route('admin.divisions.members.destroy', ['division' => $division, 'user' => $member]) }}" method="POST" class="inline" data-confirm-delete="true" data-confirm-message="Apakah Anda yakin ingin mengeluarkan user ini dari divisi?">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    @if($division->leader_id != $member->id)
+                                        <form action="{{ route('admin.divisions.members.destroy', ['division' => $division, 'user' => $member]) }}" method="POST" class="inline" data-confirm-delete="true" data-confirm-message="Apakah Anda yakin ingin mengeluarkan user ini dari divisi?">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-xs text-slate-400 italic">Leader</span>
+                                    @endif
                                 </div>
                                 
                                 <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-slate-100">

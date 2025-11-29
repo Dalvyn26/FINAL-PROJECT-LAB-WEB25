@@ -50,8 +50,26 @@
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="mb-6">
+                                    <label for="username" class="block text-sm font-bold text-slate-700 mb-2">
+                                        Username
+                                        <span class="text-rose-500 ml-1">*</span>
+                                    </label>
+                                    <input type="text" name="username" id="username" value="{{ old('username') }}" required 
+                                           placeholder="Enter username"
+                                           class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all">
+                                    @error('username')
+                                        <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-6">
                                     <label for="name" class="block text-sm font-bold text-slate-700 mb-2">
-                                        Name
+                                       Full Name
                                         <span class="text-rose-500 ml-1">*</span>
                                     </label>
                                     <input type="text" name="name" id="name" value="{{ old('name') }}" required 
@@ -168,7 +186,7 @@
 
                                 <div class="mb-6">
                                     <label for="leave_quota" class="block text-sm font-bold text-slate-700 mb-2">
-                                        Leave Quota
+                                        Kuota Cuti Awal
                                         <span class="text-rose-500 ml-1">*</span>
                                     </label>
                                     <div class="relative">
@@ -186,112 +204,6 @@
                                         </p>
                                     @enderror
                                 </div>
-
-                                <div class="mb-6">
-                                    <label for="active_status" class="block text-sm font-bold text-slate-700 mb-2">
-                                        Status
-                                        <span class="text-rose-500 ml-1">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <select name="active_status" id="active_status" required
-                                                class="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 appearance-none transition-all">
-                                            <option value="1" {{ old('active_status', true) ? 'selected' : '' }}>Active</option>
-                                            <option value="0" {{ !old('active_status', true) ? 'selected' : '' }}>Inactive</option>
-                                        </select>
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    @error('active_status')
-                                        <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Contact Information Section -->
-                        <div class="mb-8">
-                            <h4 class="text-base font-bold text-slate-800 mb-5 pb-3 border-b border-slate-200 flex items-center gap-2 animate-fade-up" style="animation-delay: 200ms;">
-                                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                </svg>
-                                Contact Information
-                            </h4>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="mb-6">
-                                    <label for="phone" class="block text-sm font-bold text-slate-700 mb-2">
-                                        Phone
-                                        <span class="text-rose-500 ml-1">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                            </svg>
-                                        </div>
-                                        <input type="text" name="phone" id="phone" value="{{ old('phone') }}" required
-                                               placeholder="Enter phone number"
-                                               class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all">
-                                    </div>
-                                    @error('phone')
-                                        <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-6">
-                                    <label for="join_date" class="block text-sm font-bold text-slate-700 mb-2">
-                                        Join Date
-                                        <span class="text-rose-500 ml-1">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                            </svg>
-                                        </div>
-                                        <input type="date" name="join_date" id="join_date" value="{{ old('join_date') }}" required
-                                               class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all">
-                                    </div>
-                                    @error('join_date')
-                                        <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
-                                </div>
-                            </div>
-                            
-                            <div class="mb-6">
-                                <label for="address" class="block text-sm font-bold text-slate-700 mb-2">
-                                    Address
-                                    <span class="text-rose-500 ml-1">*</span>
-                                </label>
-                                <textarea name="address" id="address" rows="3" required
-                                          placeholder="Enter address"
-                                          class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none">{{ old('address') }}</textarea>
-                                @error('address')
-                                    <p class="mt-2 text-sm text-rose-600 flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
                             </div>
                         </div>
 

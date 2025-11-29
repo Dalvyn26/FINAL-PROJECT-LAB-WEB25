@@ -90,7 +90,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                         </svg>
                                     </div>
-                                    <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Name/Email..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all">
+                                    <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Name/Email/Username..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all">
                                 </div>
                             </div>
 
@@ -274,7 +274,12 @@
                                                     <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name ?? 'User') }}&background=4F46E5&color=fff" class="w-11 h-11 rounded-full ring-2 ring-white shadow-sm" alt="{{ $user->name }}">
                                                 @endif
                                             </div>
-                                            <div class="font-semibold text-slate-900">{{ $user->name }}</div>
+                                            <div>
+                                                <div class="font-semibold text-slate-900">{{ $user->username ?? $user->name }}</div>
+                                                @if($user->username && $user->name)
+                                                    <div class="text-xs text-[#6B7280] mt-0.5">{{ $user->name }}</div>
+                                                @endif
+                                            </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-5 whitespace-nowrap">
@@ -373,7 +378,10 @@
                                         @endif
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-bold text-slate-900 truncate">{{ $user->name }}</h3>
+                                        <h3 class="text-sm font-bold text-slate-900 truncate">{{ $user->username ?? $user->name }}</h3>
+                                        @if($user->username && $user->name)
+                                            <p class="text-xs text-[#6B7280] mt-0.5 truncate">{{ $user->name }}</p>
+                                        @endif
                                         <p class="text-xs text-slate-500 truncate">{{ $user->email }}</p>
                                     </div>
                                 </div>
