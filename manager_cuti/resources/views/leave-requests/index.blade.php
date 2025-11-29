@@ -150,8 +150,12 @@
                                                     {{ $request->total_days }} days
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-5 text-sm text-slate-600 max-w-xs">
-                                                {{ Str::limit($request->reason, 50) }}
+                                            <td class="px-6 py-5 text-sm text-slate-600">
+                                                <div class="max-w-[200px] overflow-hidden">
+                                                    <p class="text-sm text-slate-600 break-words overflow-wrap-anywhere line-clamp-2" style="word-break: break-word; overflow-wrap: break-word;">
+                                                        {{ Str::limit($request->reason, 40) }}
+                                                    </p>
+                                                </div>
                                             </td>
                                             <td class="px-6 py-5 whitespace-nowrap">
                                                 <div class="flex items-center justify-start">
@@ -253,7 +257,11 @@
                                 </div>
                                 <div class="mb-3">
                                     <p class="text-xs font-semibold text-[#6B7280] mb-1">Alasan:</p>
-                                    <p class="text-sm text-slate-700">{{ Str::limit($request->reason, 80) }}</p>
+                                    <div class="overflow-hidden">
+                                        <p class="text-sm text-slate-700 break-words overflow-wrap-anywhere" style="word-break: break-word; overflow-wrap: break-word; max-width: 100%;">
+                                            {{ Str::limit($request->reason, 60) }}
+                                        </p>
+                                    </div>
                                 </div>
                                 <div class="flex items-center justify-between gap-3 pt-3 border-t border-[#E5E7EB]">
                                     <div class="flex items-center gap-2">
@@ -384,7 +392,7 @@
                     <!-- Body -->
                     <div class="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
                         <!-- Section Info -->
-                        <div class="bg-slate-50 rounded-2xl p-6 mb-6 border border-slate-200">
+                        <div class="bg-slate-50 rounded-2xl p-6 mb-6 border border-slate-200 w-full max-w-full overflow-hidden">
                             <h3 class="text-lg font-semibold text-slate-900 mb-4">Data Pengajuan Cuti</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -414,9 +422,39 @@
                                     </template>
                                 </div>
                             </div>
-                            <div class="mt-4 pt-4 border-t border-slate-200">
+                            <div class="mt-4 pt-4 border-t border-slate-200" x-data="{ 
+                                maxLength: 80,
+                                isExpanded: false,
+                                get reason() {
+                                    return detailData && detailData.pengajuan ? (detailData.pengajuan.reason || '') : '';
+                                },
+                                get displayReason() {
+                                    if (!this.reason) return '';
+                                    if (this.isExpanded || this.reason.length <= this.maxLength) {
+                                        return this.reason;
+                                    }
+                                    return this.reason.substring(0, this.maxLength) + '...';
+                                },
+                                get shouldShowToggle() {
+                                    return this.reason && this.reason.length > this.maxLength;
+                                }
+                            }" x-init="$watch('detailData', () => {
+                                isExpanded = false;
+                            })">
                                 <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Alasan & Catatan</label>
-                                <p class="text-sm text-slate-700 whitespace-pre-wrap" x-text="detailData && detailData.pengajuan ? detailData.pengajuan.reason : ''"></p>
+                                <div class="bg-white rounded-lg p-3 border border-slate-200 w-full" 
+                                     :class="!isExpanded && reason && reason.length > maxLength ? 'max-h-32 overflow-hidden' : ''">
+                                    <p class="text-sm text-slate-700 break-words overflow-wrap-anywhere w-full" 
+                                       :class="isExpanded ? 'whitespace-pre-wrap' : 'whitespace-normal'"
+                                       style="word-break: break-word; overflow-wrap: break-word; max-width: 100%;"
+                                       x-text="displayReason"></p>
+                                </div>
+                                <button 
+                                    x-show="shouldShowToggle"
+                                    @click="isExpanded = !isExpanded"
+                                    class="mt-2 text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors underline"
+                                    x-text="isExpanded ? 'Tampilkan lebih sedikit' : 'Baca selengkapnya'">
+                                </button>
                             </div>
                         </div>
 
