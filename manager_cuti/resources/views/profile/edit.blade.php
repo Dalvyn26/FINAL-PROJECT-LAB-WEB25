@@ -46,7 +46,22 @@
                                 </div>
                             </div>
                             
-                            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">{{ $user->name }}</h3>
+                            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">{{ $user->username ?? $user->name }}</h3>
+                            @if($user->username && $user->name)
+                                <p class="text-xs sm:text-sm text-[#6B7280] mb-1">{{ $user->name }}</p>
+                            @endif
+                            @if($user->username)
+                                <p class="text-[#4F46E5] text-xs sm:text-sm mb-1 font-medium">
+                                    <svg class="w-3 h-3 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                    <span>@</span>{{ $user->username }}
+                                </p>
+                            @else
+                                <p class="text-[#6B7280] text-xs sm:text-sm mb-1 italic">
+                                    Username belum diatur
+                                </p>
+                            @endif
                             <p class="text-[#6B7280] text-xs sm:text-sm mb-4">{{ $user->email }}</p>
                             
                             <div class="mb-6">
@@ -177,19 +192,25 @@
                             </div>
                         @endif
 
-                        <!-- Name & Email (Admin only editable) -->
+                        <!-- Username & Full Name (Editable by all users) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                             <div>
-                                <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Full Name *</label>
-                                <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" 
-                                       @if($user->role !== 'admin') disabled @endif
-                                       class="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200
-                                              {{ $user->role !== 'admin' ? 'bg-slate-50 cursor-not-allowed' : 'hover:border-[#6B7280]' }}">
-                                <p class="mt-2 text-xs text-[#6B7280]">
-                                    {{ $user->role !== 'admin' ? 'Field is readonly for non-admin users' : 'Your full name' }}
-                                </p>
+                                <label for="username" class="block text-sm font-semibold text-slate-700 mb-2">Username</label>
+                                <input type="text" name="username" id="username" value="{{ old('username', $user->username) }}" 
+                                       class="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200 hover:border-[#6B7280]">
+                                <p class="mt-2 text-xs text-[#6B7280]">Your username</p>
                             </div>
 
+                            <div>
+                                <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap *</label>
+                                <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" required
+                                       class="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200 hover:border-[#6B7280]">
+                                <p class="mt-2 text-xs text-[#6B7280]">Your full name</p>
+                            </div>
+                        </div>
+
+                        <!-- Email (Admin only editable) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                             <div>
                                 <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email Address *</label>
                                 <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" 
@@ -200,17 +221,9 @@
                                     {{ $user->role !== 'admin' ? 'Field is readonly for non-admin users' : 'Your email address' }}
                                 </p>
                             </div>
-                        </div>
 
-                        <!-- Username & Role (Admin only editable) -->
-                        @if($user->role === 'admin')
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-                                <div>
-                                    <label for="username" class="block text-sm font-semibold text-slate-700 mb-2">Username</label>
-                                    <input type="text" name="username" id="username" value="{{ old('username', $user->name) }}" 
-                                           class="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200 hover:border-[#6B7280]">
-                                </div>
-
+                            <!-- Role (Admin only) -->
+                            @if($user->role === 'admin')
                                 <div>
                                     <label for="role" class="block text-sm font-semibold text-slate-700 mb-2">Role</label>
                                     <select name="role" id="role" 
@@ -221,8 +234,8 @@
                                         <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
                                     </select>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
 
                         <!-- Phone & Address -->
                         <div class="mb-6">
@@ -237,9 +250,8 @@
                                       class="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-[#4F46E5] transition-all duration-200 hover:border-[#6B7280] resize-none">{{ old('address', $user->address) }}</textarea>
                         </div>
 
-                        <!-- Avatar Upload (for non-admin users) -->
-                        @if($user->role !== 'admin')
-                            <div class="mb-6">
+                        <!-- Avatar Upload -->
+                        <div class="mb-6">
                                 <label for="avatar" class="block text-sm font-semibold text-slate-700 mb-2">Upload Avatar</label>
                                 @if($user->avatar)
                                     <p class="text-sm text-[#6B7280] mb-3">
@@ -302,7 +314,6 @@
                                     @enderror
                                 </div>
                             </div>
-                        @endif
 
                         <!-- Password Change -->
                         <div class="mb-6">

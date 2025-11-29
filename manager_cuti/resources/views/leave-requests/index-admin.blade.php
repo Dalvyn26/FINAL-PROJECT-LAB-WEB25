@@ -54,7 +54,7 @@
                                 @forelse($leaveRequests as $request)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            {{ $request->user->name }}
+                                            {{ $request->user->username ?? $request->user->name }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ $request->user->division ? $request->user->division->name : 'N/A' }}
@@ -115,7 +115,10 @@
                             <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm">
                                 <div class="flex items-start justify-between mb-3">
                                     <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{{ $request->user->name }}</h3>
+                                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{{ $request->user->username ?? $request->user->name }}</h3>
+                                        @if($request->user->username && $request->user->name)
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $request->user->name }}</p>
+                                        @endif
                                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $request->user->division ? $request->user->division->name : 'N/A' }}</p>
                                     </div>
                                     <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ml-2

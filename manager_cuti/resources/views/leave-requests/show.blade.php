@@ -26,7 +26,10 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                         <div class="bg-slate-50 dark:bg-slate-700 rounded-xl p-4">
                             <p class="text-sm text-slate-500 dark:text-slate-400">Employee</p>
-                            <p class="font-medium text-slate-800 dark:text-slate-200">{{ $leaveRequest->user->name }}</p>
+                            <p class="font-medium text-slate-800 dark:text-slate-200">{{ $leaveRequest->user->username ?? $leaveRequest->user->name }}</p>
+                            @if($leaveRequest->user->username && $leaveRequest->user->name)
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $leaveRequest->user->name }}</p>
+                            @endif
                         </div>
                         <div class="bg-slate-50 dark:bg-slate-700 rounded-xl p-4">
                             <p class="text-sm text-slate-500 dark:text-slate-400">Leave Type</p>
