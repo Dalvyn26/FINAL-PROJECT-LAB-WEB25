@@ -112,10 +112,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        $divisions = Division::all();
         // Check if HRD already exists
         $hrdExists = User::where('role', 'hrd')->exists();
-        return view('admin.users.create', compact('divisions', 'hrdExists'));
+        return view('admin.users.create', compact('hrdExists'));
     }
 
     /**
@@ -141,7 +140,6 @@ class UserController extends Controller
                     }
                 },
             ],
-            'division_id' => 'required|exists:divisions,id',
             'leave_quota' => 'required|integer|min:0|max:365',
             'phone' => 'required|string|max:255',
             'address' => 'required|string|max:500',
@@ -155,7 +153,7 @@ class UserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => $request->role,
-                'division_id' => $request->division_id,
+                'division_id' => null,
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'join_date' => $request->join_date,
