@@ -24,6 +24,13 @@ return Application::configure(basePath: dirname(__DIR__))
             ->cron('0 0 1 1 *')
             ->timezone('Asia/Makassar')
             ->description('Reset annual leave quota for all eligible employees');
+        
+        // Sync employee status based on leave requests daily at 00:00
+        // This ensures employees who finished their leave are automatically set back to active
+        $schedule->command('leave:sync-employee-status')
+            ->daily()
+            ->timezone('Asia/Makassar')
+            ->description('Sync employee active status based on leave requests');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

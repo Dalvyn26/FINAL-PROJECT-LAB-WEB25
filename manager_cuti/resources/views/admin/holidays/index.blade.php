@@ -15,18 +15,18 @@
         </div>
     </x-slot>
 
-    <div class="py-6 sm:py-8 bg-slate-50 min-h-screen animate-fade-in" x-data="holidayModal()">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="py-4 sm:py-6 lg:py-8 bg-slate-50 min-h-screen animate-fade-in" x-data="holidayModal()">
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
             <div class="bg-white border border-slate-200/60 shadow-sm rounded-2xl overflow-hidden transition-all duration-300 animate-fade-up">
                 <!-- Gradient Top Border -->
                 <div class="h-1 bg-gradient-to-r from-indigo-500 via-indigo-400 to-indigo-500"></div>
                 
                 <!-- Header Section with Action Buttons -->
-                <div class="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800">Hari Libur</h3>
-                            <p class="text-xs text-slate-500 mt-1">Total {{ $holidays->total() }} holidays</p>
+                <div class="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                        <div class="flex-shrink-0">
+                            <h3 class="text-base sm:text-lg font-bold text-slate-800">Hari Libur</h3>
+                            <p class="text-xs text-slate-500 mt-0.5 sm:mt-1">Total {{ $holidays->total() }} holidays</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                             <!-- Bulk Delete Button -->
@@ -35,11 +35,11 @@
                                     @csrf
                                     <input type="hidden" name="ids" :value="JSON.stringify(selectedIds)">
                                     <button type="submit" 
-                                            class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 text-sm sm:text-base">
-                                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 text-xs sm:text-sm">
+                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
-                                        <span x-text="`Delete (${selectedIds.length})`"></span>
+                                        <span x-text="`Delete (${selectedIds.length})`" class="truncate"></span>
                                     </button>
                                 </form>
                             </template>
@@ -47,46 +47,46 @@
                             <form action="{{ route('admin.holidays.sync') }}" method="POST" class="inline w-full sm:w-auto">
                                 @csrf
                                 <button type="submit" 
-                                        class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-2.5 px-4 sm:px-5 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 text-sm sm:text-base"
+                                        class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 text-xs sm:text-sm"
                                         title="Import libur nasional otomatis">
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 flex-shrink-0 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12m0 0l4-4m-4 4l-4 4"></path>
                                     </svg>
-                                    <span class="hidden sm:inline">Sync Google Calendar</span>
-                                    <span class="sm:hidden">Sync</span>
+                                    <span class="hidden sm:inline truncate">Sync Google Calendar</span>
+                                    <span class="sm:hidden truncate">Sync</span>
                                 </button>
                             </form>
                             <!-- Add Holiday Button -->
                             <button @click="openModal()" 
-                                    class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2.5 px-4 sm:px-6 rounded-full transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:scale-105 text-sm sm:text-base">
-                                <svg class="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    class="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2 sm:py-2.5 px-3 sm:px-5 rounded-full transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:scale-105 text-xs sm:text-sm">
+                                <svg class="w-4 h-4 flex-shrink-0 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
-                                Add Holiday
+                                <span class="truncate">Add Holiday</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Flash Messages -->
-                <div class="px-6 pt-6">
+                <div class="px-4 sm:px-6 pt-4 sm:pt-6">
                     @if(session('success'))
-                        <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl mb-4 flex items-center gap-2 animate-fade-up">
-                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl mb-3 sm:mb-4 flex items-start sm:items-center gap-2 animate-fade-up">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5 sm:mt-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <span>{{ session('success') }}</span>
+                            <span class="text-xs sm:text-sm break-words">{{ session('success') }}</span>
                         </div>
                     @endif
 
                     @if($errors->any())
-                        <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl mb-4 flex items-start gap-2 animate-fade-up">
-                            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-rose-50 border border-rose-200 text-rose-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl mb-3 sm:mb-4 flex items-start gap-2 animate-fade-up">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <ul class="list-disc list-inside">
+                            <ul class="list-disc list-inside text-xs sm:text-sm space-y-1">
                                 @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
+                                    <li class="break-words">{{ $error }}</li>
                                 @endforeach
                             </ul>
                         </div>
@@ -94,26 +94,26 @@
                 </div>
 
                 <!-- Filter Toolbar -->
-                <div class="px-6 pb-6" x-data="{ filtersOpen: false, isDesktop: window.innerWidth >= 1024 }" @resize.window="isDesktop = window.innerWidth >= 1024">
+                <div class="px-4 sm:px-6 pb-4 sm:pb-6" x-data="{ filtersOpen: false, isDesktop: window.innerWidth >= 1024 }" @resize.window="isDesktop = window.innerWidth >= 1024">
                     <!-- Mobile Filter Toggle -->
-                    <div class="lg:hidden mb-4">
-                        <button @click="filtersOpen = !filtersOpen" type="button" class="w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all">
+                    <div class="lg:hidden mb-3 sm:mb-4">
+                        <button @click="filtersOpen = !filtersOpen" type="button" class="w-full flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all">
                             <span class="text-sm font-semibold text-slate-700">Filters</span>
-                            <svg class="w-5 h-5 text-slate-500 transition-transform duration-200" :class="{ 'rotate-180': filtersOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-slate-500 transition-transform duration-200 flex-shrink-0" :class="{ 'rotate-180': filtersOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
                     </div>
 
                     <form method="GET" action="{{ route('admin.holidays.index') }}" 
-                          class="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl p-6 shadow-sm transition-all duration-300 animate-fade-up hidden lg:block"
+                          class="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl p-4 sm:p-6 shadow-sm transition-all duration-300 animate-fade-up hidden lg:block"
                           :class="{ 'hidden': !filtersOpen && !isDesktop, 'block': filtersOpen || isDesktop }"
                           x-show="filtersOpen || isDesktop"
                           x-transition:enter="transition ease-out duration-200"
                           x-transition:enter-start="opacity-0 transform -translate-y-2"
                           x-transition:enter-end="opacity-100 transform translate-y-0"
                           style="animation-delay: 50ms;">
-                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                             <!-- Search Input -->
                             <div>
                                 <label for="search" class="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Search</label>
@@ -164,18 +164,18 @@
                             </div>
                             
                             <!-- Action Buttons -->
-                            <div class="flex items-end gap-3">
-                                <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2.5 px-5 rounded-full transition-all duration-200 hover:shadow-lg hover:scale-105">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-2 sm:gap-3 md:col-span-2 lg:col-span-1">
+                                <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold py-2 sm:py-2.5 px-4 sm:px-5 rounded-full transition-all duration-200 hover:shadow-lg hover:scale-105 text-sm">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                                     </svg>
-                                    Filter
+                                    <span class="truncate">Filter</span>
                                 </button>
-                                <a href="{{ route('admin.holidays.index') }}" class="flex-1 inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-5 rounded-full transition-all duration-200 hover:shadow-md">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <a href="{{ route('admin.holidays.index') }}" class="flex-1 inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 sm:py-2.5 px-4 sm:px-5 rounded-full transition-all duration-200 hover:shadow-md text-sm">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                     </svg>
-                                    Reset
+                                    <span class="truncate">Reset</span>
                                 </a>
                             </div>
                         </div>
@@ -284,10 +284,10 @@
                 </div>
 
                 <!-- Mobile Card View -->
-                <div class="lg:hidden px-6 pb-6 space-y-4 pt-6">
+                <div class="lg:hidden px-4 sm:px-6 pb-6 space-y-3 sm:space-y-4 pt-6">
                     <!-- Mobile Select All -->
-                    <div class="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm mb-4">
-                        <div class="flex items-center justify-between">
+                    <div class="bg-white border border-slate-200/60 rounded-2xl p-3 sm:p-4 shadow-sm mb-4">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <input type="checkbox" 
                                        @change="toggleSelectAll()"
@@ -296,11 +296,11 @@
                                 <span class="text-sm font-semibold text-slate-700">Select All</span>
                             </label>
                             <template x-if="selectedIds.length > 0">
-                                <form action="{{ route('admin.holidays.bulk-delete') }}" method="POST" class="inline" data-confirm-delete="true">
+                                <form action="{{ route('admin.holidays.bulk-delete') }}" method="POST" class="inline w-full sm:w-auto" data-confirm-delete="true">
                                     @csrf
                                     <input type="hidden" name="ids" :value="JSON.stringify(selectedIds)">
                                     <button type="submit" 
-                                            class="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 text-sm">
+                                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 text-sm">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
@@ -311,90 +311,92 @@
                         </div>
                     </div>
                     @forelse($holidays as $holiday)
-                        <div class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-200">
-                            <div class="flex items-start justify-between mb-4">
-                                <div class="flex items-start gap-3 flex-1">
-                                    <input type="checkbox" 
-                                           value="{{ $holiday->id }}"
-                                           @change="toggleSelect({{ $holiday->id }})"
-                                           :checked="selectedIds.includes({{ $holiday->id }})"
-                                           class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 mt-1">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-3 mb-2">
+                        <div class="bg-white border border-slate-200/60 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200">
+                            <div class="flex items-start gap-3 mb-3 sm:mb-4">
+                                <input type="checkbox" 
+                                       value="{{ $holiday->id }}"
+                                       @change="toggleSelect({{ $holiday->id }})"
+                                       :checked="selectedIds.includes({{ $holiday->id }})"
+                                       class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 mt-1 flex-shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
                                         <div class="flex-shrink-0">
-                                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/10 to-indigo-500/5 flex items-center justify-center">
-                                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-indigo-500/10 to-indigo-500/5 flex items-center justify-center">
+                                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                 </svg>
                                             </div>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <div class="text-sm font-bold text-slate-900">{{ $holiday->holiday_date->format('d M Y') }}</div>
-                                            <div class="text-xs text-slate-500">{{ $holiday->holiday_date->translatedFormat('l') }}</div>
+                                            <div class="text-sm sm:text-base font-bold text-slate-900 break-words">{{ $holiday->holiday_date->format('d M Y') }}</div>
+                                            <div class="text-xs text-slate-500 mt-0.5">{{ $holiday->holiday_date->translatedFormat('l') }}</div>
                                         </div>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h3 class="text-base font-semibold text-slate-900 mb-1">{{ $holiday->title }}</h3>
+                                    <div class="mb-3 sm:mb-4">
+                                        <h3 class="text-sm sm:text-base font-semibold text-slate-900 mb-1 break-words">{{ $holiday->title }}</h3>
                                         @if($holiday->description)
-                                            <p class="text-xs text-slate-500">{{ Str::limit($holiday->description, 80) }}</p>
+                                            <p class="text-xs text-slate-500 break-words line-clamp-2">{{ Str::limit($holiday->description, 100) }}</p>
                                         @endif
                                     </div>
+                                    <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                                        <div class="flex-1">
+                                            @if($holiday->is_national_holiday)
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-semibold rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
+                                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    <span class="truncate">National Holiday</span>
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-semibold rounded-full bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 ring-1 ring-blue-200">
+                                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                                    </svg>
+                                                    <span class="truncate">Company Holiday</span>
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="flex items-center gap-1.5 sm:gap-2 ml-2 flex-shrink-0">
+                                            <button @click="openModal({{ $holiday->id }}, '{{ $holiday->title }}', '{{ $holiday->holiday_date->format('Y-m-d') }}', '{{ addslashes($holiday->description ?? '') }}')" 
+                                                    class="p-1.5 sm:p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
+                                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                                </svg>
+                                            </button>
+                                            <form action="{{ route('admin.holidays.destroy', $holiday) }}" method="POST" class="inline" data-confirm-delete="true" data-confirm-message="Apakah Anda yakin ingin menghapus hari libur ini?">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-1.5 sm:p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+                                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-2 ml-4">
-                                    <button @click="openModal({{ $holiday->id }}, '{{ $holiday->title }}', '{{ $holiday->holiday_date->format('Y-m-d') }}', '{{ addslashes($holiday->description ?? '') }}')" 
-                                            class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                                        </svg>
-                                    </button>
-                                    <form action="{{ route('admin.holidays.destroy', $holiday) }}" method="POST" class="inline" data-confirm-delete="true" data-confirm-message="Apakah Anda yakin ingin menghapus hari libur ini?">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                            
-                            <div class="pt-4 border-t border-slate-100">
-                                @if($holiday->is_national_holiday)
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        National Holiday
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 ring-1 ring-blue-200">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                        </svg>
-                                        Company Holiday
-                                    </span>
-                                @endif
                             </div>
                         </div>
                     @empty
-                        <div class="bg-white border border-slate-200/60 rounded-2xl p-12 text-center">
+                        <div class="bg-white border border-slate-200/60 rounded-2xl p-8 sm:p-12 text-center">
                             <div class="flex flex-col items-center justify-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
-                                    <svg class="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-100 mb-4">
+                                    <svg class="h-6 w-6 sm:h-8 sm:w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
                                 </div>
                                 <h3 class="text-sm font-semibold text-slate-900 mb-1">No holidays found</h3>
-                                <p class="text-sm text-slate-500">Try adjusting your filters to see more results.</p>
+                                <p class="text-xs sm:text-sm text-slate-500">Try adjusting your filters to see more results.</p>
                             </div>
                         </div>
                     @endforelse
                 </div>
 
                 <!-- Pagination -->
-                <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/30">
-                    {{ $holidays->links() }}
+                <div class="px-4 sm:px-6 py-4 sm:py-5 border-t border-slate-100 bg-slate-50/30 overflow-x-auto">
+                    <div class="min-w-max">
+                        {{ $holidays->links() }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -413,8 +415,8 @@
             <div class="fixed inset-0 bg-black bg-opacity-50" @click="closeModal()"></div>
             
             <!-- Modal Content -->
-            <div class="flex items-center justify-center min-h-screen px-4 py-4">
-                <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-4 sm:p-6 relative z-50 max-h-[90vh] overflow-y-auto"
+            <div class="flex items-center justify-center min-h-screen px-3 sm:px-4 py-3 sm:py-4">
+                <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-4 sm:p-6 relative z-50 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
                      @click.away="closeModal()"
                      x-transition:enter="ease-out duration-300"
                      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -423,10 +425,10 @@
                      x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                      x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                     <!-- Modal Header -->
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-slate-800" x-text="isEdit ? 'Edit Holiday' : 'Add New Holiday'"></h3>
-                        <button @click="closeModal()" class="text-slate-400 hover:text-slate-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex justify-between items-center mb-3 sm:mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-800 break-words" x-text="isEdit ? 'Edit Holiday' : 'Add New Holiday'"></h3>
+                        <button @click="closeModal()" class="text-slate-400 hover:text-slate-600 flex-shrink-0 ml-2">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
@@ -439,8 +441,8 @@
                         <input type="hidden" name="_method" :value="isEdit ? 'PUT' : 'POST'">
 
                         <!-- Title Field -->
-                        <div class="mb-4">
-                            <label for="modal_title" class="block text-sm font-medium text-slate-700 mb-1">
+                        <div class="mb-3 sm:mb-4">
+                            <label for="modal_title" class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">
                                 Title <span class="text-red-500">*</span>
                             </label>
                             <input type="text" 
@@ -448,13 +450,13 @@
                                    name="title" 
                                    x-model="formData.title"
                                    required
-                                   class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                   class="w-full px-3 py-2 text-sm sm:text-base bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                    placeholder="e.g., Hari Raya Idul Fitri">
                         </div>
 
                         <!-- Date Field -->
-                        <div class="mb-4">
-                            <label for="modal_date" class="block text-sm font-medium text-slate-700 mb-1">
+                        <div class="mb-3 sm:mb-4">
+                            <label for="modal_date" class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">
                                 Date <span class="text-red-500">*</span>
                             </label>
                             <input type="date" 
@@ -462,31 +464,31 @@
                                    name="holiday_date" 
                                    x-model="formData.holiday_date"
                                    required
-                                   class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                   class="w-full px-3 py-2 text-sm sm:text-base bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
                         <!-- Description Field -->
-                        <div class="mb-6">
-                            <label for="modal_description" class="block text-sm font-medium text-slate-700 mb-1">
+                        <div class="mb-4 sm:mb-6">
+                            <label for="modal_description" class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">
                                 Description
                             </label>
                             <textarea id="modal_description" 
                                       name="description" 
                                       x-model="formData.description"
                                       rows="3"
-                                      class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                      class="w-full px-3 py-2 text-sm sm:text-base bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
                                       placeholder="Optional description about this holiday"></textarea>
                         </div>
 
                         <!-- Modal Footer -->
-                        <div class="flex items-center justify-end space-x-3">
+                        <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 sm:space-x-3">
                             <button type="button" 
                                     @click="closeModal()"
-                                    class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2 px-4 rounded-lg transition-all">
+                                    class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2 px-4 rounded-lg transition-all text-sm sm:text-base">
                                 Cancel
                             </button>
                             <button type="submit" 
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all">
+                                    class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all text-sm sm:text-base">
                                 <span x-text="isEdit ? 'Update' : 'Create'"></span>
                             </button>
                         </div>

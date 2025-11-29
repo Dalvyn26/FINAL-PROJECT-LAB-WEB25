@@ -202,7 +202,22 @@ class LeaveRequestController extends Controller
             $isEligible = \Carbon\Carbon::parse($user->join_date)->diffInYears(now()) >= 1;
         }
 
-        return view('leave-requests.create', compact('isEligible'));
+        // Get all holidays for date picker styling
+        try {
+            $holidays = Holiday::select('holiday_date')
+                ->where('holiday_date', '>=', now()->startOfYear())
+                ->where('holiday_date', '<=', now()->addYear()->endOfYear())
+                ->get()
+                ->map(function ($holiday) {
+                    return $holiday->holiday_date->format('Y-m-d');
+                })
+                ->toArray();
+        } catch (\Exception $e) {
+            // If holidays table doesn't exist or error occurs, use empty array
+            $holidays = [];
+        }
+
+        return view('leave-requests.create', compact('isEligible', 'holidays'));
     }
 
     public function store(Request $request)

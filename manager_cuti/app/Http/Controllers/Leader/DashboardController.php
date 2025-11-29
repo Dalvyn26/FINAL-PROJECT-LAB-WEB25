@@ -33,6 +33,9 @@ class DashboardController extends Controller
 
         $divisionId = $division->id;
         
+        // Sync employee status for division members
+        $this->syncDivisionEmployeeStatus($divisionId);
+        
         $totalRequests = LeaveRequest::whereHas('user', function ($query) use ($divisionId) {
             $query->where('division_id', $divisionId);
         })->count();
@@ -70,5 +73,39 @@ class DashboardController extends Controller
             'members', 
             'onLeaveThisWeek'
         ));
+    }
+
+    /**
+     * Sync employee status for division members based on their leave requests
+     */
+    private function syncDivisionEmployeeStatus(int $divisionId): void
+    {
+        $today = Carbon::today();
+        
+        $employees = User::where('division_id', $divisionId)
+            ->where('role', '!=', 'admin')
+            ->with(['leaveRequests' => function($query) {
+                $query->whereIn('status', ['approved_by_leader', 'approved'])
+                      ->orderBy('end_date', 'desc');
+            }])
+            ->get();
+
+        foreach ($employees as $employee) {
+            $activeLeave = $employee->leaveRequests->first(function($leave) use ($today) {
+                return $today->between($leave->start_date, $leave->end_date);
+            });
+
+            if ($activeLeave) {
+                // Sedang dalam masa cuti, pastikan status inactive
+                if ($employee->active_status === true) {
+                    $employee->update(['active_status' => false]);
+                }
+            } else {
+                // Tidak ada cuti aktif, pastikan status active
+                if ($employee->active_status === false) {
+                    $employee->update(['active_status' => true]);
+                }
+            }
+        }
     }
 }

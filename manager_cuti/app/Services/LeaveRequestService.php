@@ -49,6 +49,12 @@ class LeaveRequestService
                 'leader_note' => $note,
             ]);
 
+            // Refresh model untuk memastikan Observer terpanggil
+            $leaveRequest->refresh();
+            
+            // Update status karyawan langsung untuk memastikan berjalan
+            $this->syncEmployeeStatus($leaveRequest);
+
             return $leaveRequest;
         });
     }
@@ -75,6 +81,12 @@ class LeaveRequestService
             if ($leaveRequest->leave_type === 'annual') {
                 $leaveRequest->user->decrement('leave_quota', $leaveRequest->total_days);
             }
+
+            // Refresh model untuk memastikan Observer terpanggil
+            $leaveRequest->refresh();
+            
+            // Update status karyawan langsung untuk memastikan berjalan
+            $this->syncEmployeeStatus($leaveRequest);
 
             return $leaveRequest;
         });
@@ -103,6 +115,12 @@ class LeaveRequestService
                 'rejection_note' => $rejectionNote,
                 'approved_by' => $approver->id,
             ]);
+
+            // Refresh model untuk memastikan Observer terpanggil
+            $leaveRequest->refresh();
+            
+            // Update status karyawan langsung untuk memastikan berjalan
+            $this->syncEmployeeStatus($leaveRequest);
 
             return $leaveRequest;
         });
@@ -155,5 +173,48 @@ class LeaveRequestService
 
             return $result;
         });
+    }
+
+    /**
+     * Sync employee status based on leave request
+     * This method ensures employee status is updated correctly
+     */
+    private function syncEmployeeStatus(LeaveRequest $leaveRequest): void
+    {
+        $user = $leaveRequest->user;
+        
+        if ($user->role === 'admin') {
+            return;
+        }
+
+        $today = \Carbon\Carbon::today();
+        $isInLeaveRange = $today->between($leaveRequest->start_date, $leaveRequest->end_date);
+        $isLeaveEnded = $leaveRequest->end_date->lt($today);
+        $isApproved = in_array($leaveRequest->status, ['approved', 'approved_by_leader']);
+
+        // Cek apakah ada cuti aktif lainnya (selain cuti saat ini)
+        $hasActiveLeave = $user->leaveRequests()
+            ->where('id', '!=', $leaveRequest->id)
+            ->whereIn('status', ['approved', 'approved_by_leader'])
+            ->where(function($query) use ($today) {
+                $query->where(function($q) use ($today) {
+                    $q->whereDate('start_date', '<=', $today)
+                      ->whereDate('end_date', '>=', $today);
+                });
+            })
+            ->exists();
+
+        if ($isApproved && $isInLeaveRange) {
+            // Jika cuti disetujui dan sedang dalam masa cuti, ubah status menjadi inactive
+            if ($user->active_status === true) {
+                $user->update(['active_status' => false]);
+            }
+        } elseif ($isLeaveEnded || $leaveRequest->status === 'rejected' || ($isApproved && $isLeaveEnded)) {
+            // Jika masa cuti sudah selesai, ditolak, atau disetujui setelah masa cuti selesai
+            // Pastikan status kembali aktif jika tidak ada cuti aktif lainnya
+            if (!$hasActiveLeave && $user->active_status === false) {
+                $user->update(['active_status' => true]);
+            }
+        }
     }
 }

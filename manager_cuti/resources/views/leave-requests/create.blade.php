@@ -17,6 +17,11 @@
         <!-- Flatpickr CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+        
+        <!-- Holidays data for date picker -->
+        <script>
+            window.holidaysData = @json(isset($holidays) ? $holidays : []);
+        </script>
     </head>
     <body class="font-sans antialiased bg-gray-50">
         <x-app-layout>
@@ -168,6 +173,9 @@
                             this.flatpickrInstance.destroy();
                         }
                         
+                        // Get holidays from server (stored in window object)
+                        const holidays = window.holidaysData || [];
+                        
                         // Initialize flatpickr instance
                         this.flatpickrInstance = flatpickr(dateInput, {
                             mode: 'range',
@@ -190,6 +198,26 @@
                                     return date < minAllowedDate;
                                 }
                             ],
+                            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                                try {
+                                    // Check if date is weekend (Saturday = 6, Sunday = 0)
+                                    if (dayElem.dateObj) {
+                                        const dayOfWeek = dayElem.dateObj.getDay();
+                                        const dateStr = fp.formatDate(dayElem.dateObj, 'Y-m-d');
+                                        
+                                        // Check if date is a holiday
+                                        const isHoliday = holidays && holidays.includes ? holidays.includes(dateStr) : false;
+                                        
+                                        // Add red color class for weekends and holidays
+                                        if (dayOfWeek === 0 || dayOfWeek === 6 || isHoliday) {
+                                            dayElem.classList.add('red-date');
+                                        }
+                                    }
+                                } catch (e) {
+                                    // Silently fail if there's an error
+                                    console.error('Error in onDayCreate:', e);
+                                }
+                            },
                             onChange: function(selectedDates, dateStr, instance) {
                                 if (selectedDates.length === 2) {
                                     // Use Flatpickr's internal date formatter to avoid timezone conversion issues
@@ -441,9 +469,29 @@
             <!-- Flatpickr JS -->
             <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
             
-            <!-- Add x-cloak style -->
+            <!-- Add x-cloak style and red date styling -->
             <style>
                 [x-cloak] { display: none !important; }
+                
+                /* Style for weekend and holiday dates in Flatpickr */
+                .flatpickr-calendar .flatpickr-day.red-date {
+                    color: #dc2626 !important;
+                    font-weight: 600;
+                }
+                
+                .flatpickr-calendar .flatpickr-day.red-date:hover {
+                    background: #fee2e2 !important;
+                    border-color: #dc2626 !important;
+                }
+                
+                .flatpickr-calendar .flatpickr-day.red-date.selected,
+                .flatpickr-calendar .flatpickr-day.red-date.startRange,
+                .flatpickr-calendar .flatpickr-day.red-date.endRange,
+                .flatpickr-calendar .flatpickr-day.red-date.inRange {
+                    background: #dc2626 !important;
+                    border-color: #dc2626 !important;
+                    color: #ffffff !important;
+                }
             </style>
         </x-app-layout>
     </body>

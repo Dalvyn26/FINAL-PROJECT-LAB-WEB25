@@ -66,21 +66,13 @@ class SyncEmployeeStatusFromLeaveCommand extends Command
                     $noChangeCount++;
                 }
             } else {
+                // Tidak ada cuti aktif saat ini, pastikan status karyawan aktif
                 if ($employee->active_status === false) {
-                    $recentEndedLeave = $employee->leaveRequests->first(function($leave) use ($today) {
-                        return $leave->end_date->lt($today) && 
-                               $leave->end_date->gte($today->copy()->subDays(30));
-                    });
-
-                    if ($recentEndedLeave || $employee->leaveRequests->isEmpty()) {
-                        if (!$isDryRun) {
-                            $employee->update(['active_status' => true]);
-                        }
-                        $setToActiveCount++;
-                        $this->line("  ✓ {$employee->name} - Status diubah menjadi Active");
-                    } else {
-                        $noChangeCount++;
+                    if (!$isDryRun) {
+                        $employee->update(['active_status' => true]);
                     }
+                    $setToActiveCount++;
+                    $this->line("  ✓ {$employee->name} - Status diubah menjadi Active (masa cuti sudah selesai)");
                 } else {
                     $noChangeCount++;
                 }

@@ -23,6 +23,9 @@ class DashboardController extends Controller
             abort(403, 'Unauthorized access to HRD dashboard');
         }
         
+        // Sync employee status based on leave requests (background check)
+        $this->syncEmployeeStatusFromLeaves();
+        
         // Total leave requests this month
         $totalLeavesThisMonth = LeaveRequest::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
@@ -54,8 +57,22 @@ class DashboardController extends Controller
         // Get current month's start and end dates
         $monthStart = Carbon::now()->startOfMonth();
         $monthEnd = Carbon::now()->endOfMonth();
+        $today = Carbon::today();
         
-        // Employees currently on leave this month (approved leaves that overlap with current month)
+        // Employees currently on leave (ongoing - inactive status)
+        // These are employees whose leave is currently active (today is between start_date and end_date)
+        $employeesCurrentlyOnLeave = LeaveRequest::with(['user', 'user.division'])
+            ->where('status', 'approved')
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->whereHas('user', function ($query) {
+                $query->where('active_status', false)
+                      ->where('role', '!=', 'admin');
+            })
+            ->orderBy('start_date', 'asc')
+            ->get();
+        
+        // Employees on leave this month (all approved leaves that overlap with current month)
         $employeesOnLeave = LeaveRequest::with(['user', 'user.division'])
             ->where('status', 'approved')
             ->where(function ($query) use ($monthStart, $monthEnd) {
@@ -78,8 +95,43 @@ class DashboardController extends Controller
             'pendingFinalApprovals',
             'approvedLeavesThisMonth',
             'rejectedLeavesThisMonth',
+            'employeesCurrentlyOnLeave',
             'employeesOnLeave',
             'divisions'
         ));
+    }
+
+    /**
+     * Sync employee status based on their leave requests
+     * This ensures status is always up-to-date when dashboard is accessed
+     */
+    private function syncEmployeeStatusFromLeaves(): void
+    {
+        $today = Carbon::today();
+        
+        $employees = User::where('role', '!=', 'admin')
+            ->with(['leaveRequests' => function($query) {
+                $query->whereIn('status', ['approved_by_leader', 'approved'])
+                      ->orderBy('end_date', 'desc');
+            }])
+            ->get();
+
+        foreach ($employees as $employee) {
+            $activeLeave = $employee->leaveRequests->first(function($leave) use ($today) {
+                return $today->between($leave->start_date, $leave->end_date);
+            });
+
+            if ($activeLeave) {
+                // Sedang dalam masa cuti, pastikan status inactive
+                if ($employee->active_status === true) {
+                    $employee->update(['active_status' => false]);
+                }
+            } else {
+                // Tidak ada cuti aktif, pastikan status active
+                if ($employee->active_status === false) {
+                    $employee->update(['active_status' => true]);
+                }
+            }
+        }
     }
 }
