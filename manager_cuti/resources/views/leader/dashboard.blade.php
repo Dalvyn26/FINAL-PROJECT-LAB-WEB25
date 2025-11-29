@@ -125,7 +125,10 @@
                                     <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-slate-900 truncate">{{ $request->user->name }}</p>
+                                    <p class="text-sm font-semibold text-slate-900 truncate">{{ $request->user->username ?? $request->user->name }}</p>
+                                    @if($request->user->username && $request->user->name)
+                                        <p class="text-xs text-[#6B7280] mt-0.5 truncate">{{ $request->user->name }}</p>
+                                    @endif
                                     <div class="flex items-center gap-2 mt-2 flex-wrap">
                                         <span class="px-2.5 py-1 inline-flex text-xs font-semibold rounded-full shadow-sm
                                             {{ $request->isAnnualLeave() ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' : 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' }}">

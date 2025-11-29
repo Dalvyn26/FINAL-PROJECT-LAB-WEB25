@@ -25,8 +25,9 @@
                  x-transition:enter-end="opacity-100 translate-y-0">
                 
                 <!-- Total Leaves This Month -->
-                <div class="group bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1"
-                     style="animation-delay: 0ms;">
+                <a href="{{ route('hrd.leave-summary.index', array_merge(request()->query(), ['status' => 'all', 'month' => now()->month, 'year' => now()->year])) }}" 
+                   class="group bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1 cursor-pointer block"
+                   style="animation-delay: 0ms;">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3 sm:gap-4">
                             <div class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1] shadow-lg shadow-indigo-500/20">
@@ -41,7 +42,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Pending Final Approvals -->
                 <div class="group bg-gradient-to-br from-orange-500 to-amber-500 rounded-[20px] p-4 sm:p-6 text-white shadow-lg shadow-orange-500/20 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-1 hover:scale-[1.02]"
@@ -70,8 +71,9 @@
                 </div>
 
                 <!-- Approved This Month -->
-                <div class="group bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1"
-                     style="animation-delay: 200ms;">
+                <a href="{{ route('hrd.leave-summary.index', array_merge(request()->query(), ['status' => 'approved', 'month' => now()->month, 'year' => now()->year])) }}" 
+                   class="group bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1 cursor-pointer block {{ request('status') === 'approved' && request('month') == now()->month && request('year') == now()->year ? 'ring-2 ring-emerald-500 border-emerald-500' : '' }}"
+                   style="animation-delay: 200ms;">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3 sm:gap-4">
                             <div class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/20">
@@ -86,11 +88,12 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Rejected This Month -->
-                <div class="group bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1"
-                     style="animation-delay: 300ms;">
+                <a href="{{ route('hrd.leave-summary.index', array_merge(request()->query(), ['status' => 'rejected', 'month' => now()->month, 'year' => now()->year])) }}" 
+                   class="group bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1 cursor-pointer block {{ request('status') === 'rejected' && request('month') == now()->month && request('year') == now()->year ? 'ring-2 ring-rose-500 border-rose-500' : '' }}"
+                   style="animation-delay: 300ms;">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3 sm:gap-4">
                             <div class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-rose-500 to-rose-600 shadow-lg shadow-rose-500/20">
@@ -105,7 +108,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <!-- Daftar Karyawan yang Sedang Cuti Bulan Ini -->
@@ -144,7 +147,10 @@
                                                         <x-avatar :user="$leave->user" classes="w-12 h-12" />
                                                     </div>
                                                     <div>
-                                                        <div class="font-semibold text-slate-900">{{ $leave->user->name }}</div>
+                                                        <div class="font-semibold text-slate-900">{{ $leave->user->username ?? $leave->user->name }}</div>
+                                                        @if($leave->user->username && $leave->user->name)
+                                                            <div class="text-xs text-[#6B7280] mt-0.5">{{ $leave->user->name }}</div>
+                                                        @endif
                                                         <div class="text-xs text-[#6B7280] mt-0.5">{{ $leave->user->email }}</div>
                                                     </div>
                                                 </div>
@@ -183,7 +189,10 @@
                                         <x-avatar :user="$leave->user" classes="w-12 h-12" />
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-semibold text-slate-900 truncate">{{ $leave->user->name }}</h3>
+                                        <h3 class="text-sm font-semibold text-slate-900 truncate">{{ $leave->user->username ?? $leave->user->name }}</h3>
+                                        @if($leave->user->username && $leave->user->name)
+                                            <p class="text-xs text-[#6B7280] mt-0.5 truncate">{{ $leave->user->name }}</p>
+                                        @endif
                                         <p class="text-xs text-[#6B7280] truncate">{{ $leave->user->email }}</p>
                                     </div>
                                 </div>

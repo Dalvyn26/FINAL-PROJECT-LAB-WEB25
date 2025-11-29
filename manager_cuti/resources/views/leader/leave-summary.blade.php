@@ -175,7 +175,10 @@
                                                         <x-avatar :user="$request->user" classes="w-12 h-12" />
                                                     </div>
                                                     <div>
-                                                        <div class="font-semibold text-slate-900">{{ $request->user->name }}</div>
+                                                        <div class="font-semibold text-slate-900">{{ $request->user->username ?? $request->user->name }}</div>
+                                                        @if($request->user->username && $request->user->name)
+                                                            <div class="text-xs text-[#6B7280] mt-0.5">{{ $request->user->name }}</div>
+                                                        @endif
                                                         <div class="text-xs text-[#6B7280] mt-0.5">{{ $request->user->email }}</div>
                                                     </div>
                                                 </div>
@@ -225,7 +228,10 @@
                                         <x-avatar :user="$request->user" classes="w-12 h-12" />
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-semibold text-slate-900 truncate">{{ $request->user->name }}</h3>
+                                        <h3 class="text-sm font-semibold text-slate-900 truncate">{{ $request->user->username ?? $request->user->name }}</h3>
+                                        @if($request->user->username && $request->user->name)
+                                            <p class="text-xs text-[#6B7280] mt-0.5 truncate">{{ $request->user->name }}</p>
+                                        @endif
                                         <p class="text-xs text-[#6B7280] truncate">{{ $request->user->email }}</p>
                                     </div>
                                 </div>

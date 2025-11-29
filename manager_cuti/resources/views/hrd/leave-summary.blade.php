@@ -27,7 +27,8 @@
                  x-transition:enter-end="opacity-100 translate-y-0">
                 
                 <!-- Total Requests -->
-                <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1">
+                <a href="{{ route('hrd.leave-summary.index', array_merge(request()->query(), ['status' => 'all'])) }}" 
+                   class="bg-white/80 backdrop-blur-sm border {{ request('status') === 'all' || !request()->has('status') ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-[#E5E7EB]' }} shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1 cursor-pointer block">
                     <div class="flex items-center gap-3 sm:gap-4">
                         <div class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1] shadow-lg shadow-indigo-500/20">
                             <svg class="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,10 +40,11 @@
                             <p class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">{{ $totalRequests }}</p>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Approved -->
-                <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1">
+                <a href="{{ route('hrd.leave-summary.index', array_merge(request()->query(), ['status' => 'approved'])) }}" 
+                   class="bg-white/80 backdrop-blur-sm border {{ request('status') === 'approved' ? 'border-emerald-500 ring-2 ring-emerald-500' : 'border-[#E5E7EB]' }} shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1 cursor-pointer block">
                     <div class="flex items-center gap-3 sm:gap-4">
                         <div class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/20">
                             <svg class="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,10 +56,11 @@
                             <p class="text-3xl sm:text-4xl font-bold text-emerald-600 tracking-tight">{{ $approvedRequests }}</p>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Pending -->
-                <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1">
+                <a href="{{ route('hrd.leave-summary.index', array_merge(request()->query(), ['status' => 'pending'])) }}" 
+                   class="bg-white/80 backdrop-blur-sm border {{ request('status') === 'pending' ? 'border-amber-500 ring-2 ring-amber-500' : 'border-[#E5E7EB]' }} shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1 cursor-pointer block">
                     <div class="flex items-center gap-3 sm:gap-4">
                         <div class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-500/20">
                             <svg class="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,10 +72,11 @@
                             <p class="text-3xl sm:text-4xl font-bold text-amber-600 tracking-tight">{{ $pendingRequests }}</p>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Rejected -->
-                <div class="bg-white/80 backdrop-blur-sm border border-[#E5E7EB] shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1">
+                <a href="{{ route('hrd.leave-summary.index', array_merge(request()->query(), ['status' => 'rejected'])) }}" 
+                   class="bg-white/80 backdrop-blur-sm border {{ request('status') === 'rejected' ? 'border-rose-500 ring-2 ring-rose-500' : 'border-[#E5E7EB]' }} shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] rounded-[20px] p-4 sm:p-6 transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:-translate-y-1 cursor-pointer block">
                     <div class="flex items-center gap-3 sm:gap-4">
                         <div class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-rose-500 to-rose-600 shadow-lg shadow-rose-500/20">
                             <svg class="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,7 +88,7 @@
                             <p class="text-3xl sm:text-4xl font-bold text-rose-600 tracking-tight">{{ $rejectedRequests }}</p>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <!-- Filters -->
@@ -187,7 +191,10 @@
                                                         <x-avatar :user="$request->user" classes="w-12 h-12" />
                                                     </div>
                                                     <div>
-                                                        <div class="font-semibold text-slate-900">{{ $request->user->name }}</div>
+                                                        <div class="font-semibold text-slate-900">{{ $request->user->username ?? $request->user->name }}</div>
+                                                        @if($request->user->username && $request->user->name)
+                                                            <div class="text-xs text-[#6B7280] mt-0.5">{{ $request->user->name }}</div>
+                                                        @endif
                                                         <div class="text-xs text-[#6B7280] mt-0.5">{{ $request->user->email }}</div>
                                                     </div>
                                                 </div>
@@ -240,7 +247,10 @@
                                         <x-avatar :user="$request->user" classes="w-12 h-12" />
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-semibold text-slate-900 truncate">{{ $request->user->name }}</h3>
+                                        <h3 class="text-sm font-semibold text-slate-900 truncate">{{ $request->user->username ?? $request->user->name }}</h3>
+                                        @if($request->user->username && $request->user->name)
+                                            <p class="text-xs text-[#6B7280] mt-0.5 truncate">{{ $request->user->name }}</p>
+                                        @endif
                                         <p class="text-xs text-[#6B7280] truncate">{{ $request->user->email }}</p>
                                     </div>
                                 </div>
